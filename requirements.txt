@@ -1,0 +1,8 @@
+flask
+gunicorn
+gevent
+gevent-websocket
+pymysql
+redis
+paramiko
+sqlalchemy
