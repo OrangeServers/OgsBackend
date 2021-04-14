@@ -5,10 +5,10 @@ from datetime import timedelta
 import argparse
 from app.foo.decorator import wrapper
 from app.foo.ServerManagement import ServerAdd, ServerCmd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, GroupList, ServerUpdate
-from app.foo.user import UserLogin, CheckUser, CheckMail, UserRegister
+from app.foo.user import UserLogin, CheckUser, CheckMail, UserRegister, User_List
 from app.conf.conf_test import *
 from app.foo.LocalShell import LocalDirList
-from app.sqldb.SqlAlchemySettings import User2, Host
+from app.sqldb.SqlAlchemyDB import User2, Host
 from app.foo.MailApi import OrangeMailApi
 from app.tools.SqlListTool import ListTool
 
@@ -66,6 +66,18 @@ def index():
     server_ip = ServerList().server_user
     server_group = ServerList().server_group
     return render_template('static/index.html', dir1=dir1, server_ip=server_ip, server_group=server_group, **data, hostls=list_msg, host_title=host_title)
+
+
+@app.route('/account/acc_user_list_all', methods=['GET', 'POST'])
+def acc_user_list_all():
+    ul = User_List()
+    return ul.acc_user_list_all
+
+
+@app.route('/account/group_list_all', methods=['GET', 'POST'])
+def group_list_all():
+    ul = User_List()
+    return ul.group_list_all
 
 
 @app.route('/account/login_dl', methods=['GET', 'POST'])
@@ -128,6 +140,12 @@ def server_cmd():
 def group_cmd():
     gopcmd = GroupCmd()
     return gopcmd.sh_cmd
+
+
+@app.route('/server/sys_user_list_all', methods=['GET', 'POST'] )
+def sys_user_list_all():
+    serlit = ServerList()
+    return serlit.sys_user_list_all
 
 
 @app.route('/server/host_list_all', methods=['GET', 'POST'] )

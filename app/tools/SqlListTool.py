@@ -52,3 +52,14 @@ class ListTool:
             ds_ls.pop('host_password')
             msg.append(ds_ls)
         return msg
+
+    @staticmethod
+    def dict_ls_reset_dict_auto(ls_dict, pop=None):
+        msg = []
+        for ds in ls_dict:
+            ds_ls = ds.__dict__
+            ds_ls.pop('_sa_instance_state')
+            if pop:
+                ds_ls.pop(pop)
+            msg.append(ds_ls)
+        return msg

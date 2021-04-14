@@ -3,8 +3,10 @@ from flask import request, jsonify, session
 from app.tools.redisdb import ConnRedis
 from app.tools.sendmail import SendMail
 from app.tools.basesec import BaseSec
+from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyConf import DBSession, User
-from app.sqldb.SqlAlchemySettings import User2, db
+from app.sqldb.SqlAlchemySettings import db
+from app.sqldb.SqlAlchemyDB import User2, t_acc_user, t_group
 from app.conf.conf_test import MAIL_CONF, REDIS_CONF
 
 
@@ -30,6 +32,39 @@ class User2Sqlalh:
         sql = User2(name=name, password=password, mail=mail)
         db.session.add(sql)
         db.session.commit()
+
+
+class User_List:
+    def __init__(self):
+        self.lt = ListTool()
+
+    @property
+    def acc_user_list_all(self):
+        try:
+            query_msg = t_acc_user.query.all()
+            list_msg = self.lt.dict_ls_reset_dict_auto(query_msg, 'password')
+            len_msg = t_acc_user.query.count()
+            return jsonify({"host_status": 0,
+                            "acc_user_list_msg": list_msg,
+                            "msg": "",
+                            "acc_user_len_msg": len_msg})
+        except IOError:
+            return jsonify({"host_list_msg": 'select list msg error',
+                            "host_len_msg": 0})
+
+    @property
+    def group_list_all(self):
+        try:
+            query_msg = t_group.query.all()
+            list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
+            len_msg = t_group.query.count()
+            return jsonify({"host_status": 0,
+                            "group_list_msg": list_msg,
+                            "msg": "",
+                            "group_len_msg": len_msg})
+        except IOError:
+            return jsonify({"host_list_msg": 'select list msg error',
+                            "host_len_msg": 0})
 
 
 class CheckMail:

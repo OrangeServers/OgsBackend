@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.tools.shellcmd import RemoteConnection
-from app.sqldb.SqlAlchemySettings import Host, db, t_group, t_sys_user, User2
+from app.sqldb.SqlAlchemyDB import Host, db, t_group, t_sys_user, User2
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
 
@@ -49,6 +49,20 @@ class ServerList:
         query_msg = Host.query.with_entities(Host.group).all()
         msg = self.ls_tool.list_rep_gather(query_msg)
         return msg
+
+    @property
+    def sys_user_list_all(self):
+        try:
+            query_msg = t_sys_user.query.all()
+            list_msg = self.ls_tool.dict_ls_reset_dict_auto(query_msg, 'host_password')
+            len_msg = t_sys_user.query.count()
+            return jsonify({"host_status": 0,
+                            "sys_user_list_msg": list_msg,
+                            "msg": "",
+                            "sys_user_len_msg": len_msg})
+        except IOError:
+            return jsonify({"host_list_msg": 'select list msg error',
+                            "host_len_msg": 0})
 
     @property
     def server_list(self):
