@@ -8,6 +8,7 @@ from app.foo.local.Basics import CountList
 from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, GroupList, ServerUpdate
 from app.foo.user.AccUser import UserLogin, CheckUser, CheckMail, UserRegister, User_List
 from app.foo.property.SysUser import SysUserList, SysUserAdd, SysUserUpdate, SysUserDel
+from app.foo.user.group import GroupList as UserGroupList
 from app.conf.conf_test import *
 from app.foo.local.LocalShell import LocalDirList
 from app.sqldb.SqlAlchemyDB import User2, Host
@@ -78,7 +79,7 @@ def acc_user_list_all():
 
 @app.route('/account/group_list_all', methods=['GET', 'POST'])
 def group_list_all():
-    ul = User_List()
+    ul = UserGroupList()
     return ul.group_list_all
 
 
@@ -90,8 +91,8 @@ def login_dl():
 
 @app.route('/account/chk_username', methods=['GET', 'POST'])
 def chk_username():
-    chkuser = CheckUser()
-    return chkuser.check()
+    cu = CheckUser()
+    return cu.check()
 
 
 @app.route('/mail/send_user_mail', methods=['GET', 'POST'])
@@ -108,34 +109,32 @@ def send_mail():
 
 @app.route('/account/com_register', methods=['GET', 'POST'])
 def com_register():
-    zhuce = UserRegister()
-    return zhuce.register()
+    zc = UserRegister()
+    return zc.register()
 
 
 @app.route('/server/host_add', methods=['GET', 'POST'])
 def server_add():
-    seradd = ServerAdd()
-    return seradd.host_add
+    sd = ServerAdd()
+    return sd.host_add
 
 
 @app.route('/server/host_update', methods=['GET', 'POST'])
 def server_update():
-    serupdate = ServerUpdate()
-    return serupdate.update
+    sud = ServerUpdate()
+    return sud.update
 
 
 @app.route('/server/host_del', methods=['GET', 'POST'])
 def server_del():
-    serdel = ServerDel()
-    return serdel.host_del
+    sl = ServerDel()
+    return sl.host_del
 
 
 @app.route('/server/host_cmd', methods=['GET', 'POST'])
 def server_cmd():
-    # sercmd = ServerCmd()
-    # return sercmd.sh_cmd
-    sercmd = ServerCmd2()
-    return sercmd.sh_cmd
+    scm = ServerCmd2()
+    return scm.sh_cmd
 
 
 @app.route('/server/group_cmd', methods=['GET', 'POST'])
@@ -146,20 +145,20 @@ def group_cmd():
 
 @app.route('/server/sys_user_list_all', methods=['GET', 'POST'] )
 def sys_user_list_all():
-    sl = SysUserList
+    sl = SysUserList()
     return sl.sys_user_list_all
 
 
 @app.route('/server/host_list_all', methods=['GET', 'POST'] )
 def host_list_all():
-    serlit = ServerList()
-    return serlit.server_list_all
+    sl = ServerList()
+    return sl.server_list_all
 
 
 @app.route('/server/host_list', methods=['GET', 'POST'] )
 def host_list():
-    serlit = ServerList()
-    return serlit.server_list
+    sl = ServerList()
+    return sl.server_list
 
 
 @app.route('/server/group_list', methods=['GET', 'POST'] )
