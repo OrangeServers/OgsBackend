@@ -52,20 +52,6 @@ class User_List:
             return jsonify({"host_list_msg": 'select list msg error',
                             "host_len_msg": 0})
 
-    @property
-    def group_list_all(self):
-        try:
-            query_msg = t_group.query.all()
-            list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
-            len_msg = t_group.query.count()
-            return jsonify({"host_status": 0,
-                            "group_list_msg": list_msg,
-                            "msg": "",
-                            "group_len_msg": len_msg})
-        except IOError:
-            return jsonify({"host_list_msg": 'select list msg error',
-                            "host_len_msg": 0})
-
 
 class CheckMail:
     def __init__(self):

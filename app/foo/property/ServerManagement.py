@@ -39,32 +39,6 @@ class ServerList:
             return jsonify({'code': 1})
 
     @property
-    def server_user(self):
-        query_msg = Host.query.with_entities(Host.host_ip).all()
-        msg = self.ls_tool.list_gather(query_msg)
-        return msg
-
-    @property
-    def server_group(self):
-        query_msg = Host.query.with_entities(Host.group).all()
-        msg = self.ls_tool.list_rep_gather(query_msg)
-        return msg
-
-    @property
-    def sys_user_list_all(self):
-        try:
-            query_msg = t_sys_user.query.all()
-            list_msg = self.ls_tool.dict_ls_reset_dict_auto(query_msg, 'host_password')
-            len_msg = t_sys_user.query.count()
-            return jsonify({"host_status": 0,
-                            "sys_user_list_msg": list_msg,
-                            "msg": "",
-                            "sys_user_len_msg": len_msg})
-        except IOError:
-            return jsonify({"host_list_msg": 'select list msg error',
-                            "host_len_msg": 0})
-
-    @property
     def server_list(self):
         try:
             host_id = request.values.get("id")
@@ -164,7 +138,7 @@ class ServerAdd:
 class ServerUpdate(ServerAdd):
     def __init__(self):
         super(ServerUpdate, self).__init__()
-        self.basesec = BaseSec()
+        self.id = request.values.get('id')
 
     @property
     def update(self):
@@ -173,10 +147,10 @@ class ServerUpdate(ServerAdd):
             conn.ssh_cmd('hostname')
             try:
                 password_en = self.basesec.base_en(self.host_password)
-                Host.query.filter_by(host_ip=self.host_ip).update({'alias': self.alias, 'host_ip': self.host_ip,
-                                                                   'host_port': self.host_port,
-                                                                   'host_user': self.host_user,
-                                                                   'host_password': password_en, 'group': self.group})
+                Host.query.filter_by(id=self.id).update({'alias': self.alias, 'host_ip': self.host_ip,
+                                                         'host_port': self.host_port,
+                                                         'host_user': self.host_user,
+                                                         'host_password': password_en, 'group': self.group})
                 db.session.commit()
                 return jsonify({'server_ping_status': 'true',
                                 'server_into_update': 'true'})

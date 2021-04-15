@@ -1,15 +1,17 @@
 # -*- coding=utf8 -*-
-from flask import render_template, request
+from flask import render_template
 from Flask_App_Settings import *
 from datetime import timedelta
 import argparse
-from app.foo.decorator import wrapper
-from app.foo.ServerManagement import ServerAdd, ServerCmd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, GroupList, ServerUpdate
-from app.foo.user import UserLogin, CheckUser, CheckMail, UserRegister, User_List
+from app.foo.user.decorator import wrapper
+from app.foo.local.Basics import CountList
+from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, GroupList, ServerUpdate
+from app.foo.user.AccUser import UserLogin, CheckUser, CheckMail, UserRegister, User_List
+from app.foo.property.SysUser import SysUserList, SysUserAdd, SysUserUpdate, SysUserDel
 from app.conf.conf_test import *
-from app.foo.LocalShell import LocalDirList
+from app.foo.local.LocalShell import LocalDirList
 from app.sqldb.SqlAlchemyDB import User2, Host
-from app.foo.MailApi import OrangeMailApi
+from app.foo.mail.MailApi import OrangeMailApi
 from app.tools.SqlListTool import ListTool
 
 # from gevent import monkey
@@ -144,8 +146,8 @@ def group_cmd():
 
 @app.route('/server/sys_user_list_all', methods=['GET', 'POST'] )
 def sys_user_list_all():
-    serlit = ServerList()
-    return serlit.sys_user_list_all
+    sl = SysUserList
+    return sl.sys_user_list_all
 
 
 @app.route('/server/host_list_all', methods=['GET', 'POST'] )
@@ -162,14 +164,14 @@ def host_list():
 
 @app.route('/server/group_list', methods=['GET', 'POST'] )
 def group_list():
-    goplist = GroupList()
-    return goplist.server_list
+    gl = GroupList()
+    return gl.server_list
 
 
 @app.route('/server/count_list_all', methods=['GET', 'POST'] )
 def count_list():
-    serlit = ServerList()
-    return serlit.server_count_all
+    sl = CountList()
+    return sl.server_count_all
 
 
 @app.route('/server/host_list_cmd', methods=['GET', 'POST'] )

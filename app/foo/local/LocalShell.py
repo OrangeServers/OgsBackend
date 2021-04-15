@@ -1,7 +1,7 @@
 from flask import request, jsonify
 import os, sys
 
-sys.path.append('..')
+sys.path.append('../..')
 
 
 class LocalShell:
