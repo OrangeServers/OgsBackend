@@ -59,7 +59,7 @@ class SysUserAdd:
         self.host_user = request.values.get('host_user')
         self.host_password = request.values.get('host_password')
         self.agreement = request.values.get('agreement')
-        self.nums = request.values.get('nums')
+        self.nums = request.values.get('nums', default=0)
         self.remarks = request.values.get('remarks', type=str, default=None)
         self.host_sqlalh = SysUserSqlalh()
         self.basesec = BaseSec()
