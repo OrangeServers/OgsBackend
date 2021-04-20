@@ -16,9 +16,19 @@ class GroupSqlalh:
         db.session.commit()
 
 
-class GroupList:
+class AccGroupList:
     def __init__(self):
         self.lt = ListTool()
+
+    @property
+    def group_list(self):
+        try:
+            group_id = request.values.get("id")
+            query_msg = t_group.query.filter_by(id=group_id).first()
+            list_msg = self.lt.dict_reset_pop_auto(query_msg)
+            return jsonify(list_msg)
+        except IOError:
+            return jsonify({"acc_group_list_msg": 'select list msg error'})
 
     @property
     def group_list_all(self):
@@ -35,7 +45,7 @@ class GroupList:
                             "host_len_msg": 0})
 
 
-class GroupDel:
+class AccGroupDel:
     def __init__(self):
         self.id = request.values.get('id')
 
@@ -50,7 +60,7 @@ class GroupDel:
             return jsonify({'group_del_status': 'fail'})
 
 
-class GroupAdd:
+class AccGroupAdd:
     def __init__(self):
         self.name = request.values.get('name')
         self.nums = request.values.get('nums')
@@ -64,18 +74,18 @@ class GroupAdd:
             user_chk = t_group.query.filter_by(name=self.name).first()
             if user_chk is None:
                 self.host_sqlalh.ins_sql(self.name, self.nums, self.remarks)
-                return jsonify({'group_add_status': 'true'})
+                return jsonify({'acc_group_add_status': 'true'})
             else:
-                return jsonify({'group_add_status': 'sel_fail'})
+                return jsonify({'acc_group_add_status': 'sel_fail'})
         except IOError:
-            return jsonify({'group_add_status': 'con_fail'})
+            return jsonify({'acc_group_add_status': 'con_fail'})
         except Exception:
-            return jsonify({'group_add_status': 'fail'})
+            return jsonify({'acc_group_add_status': 'fail'})
 
 
-class GroupUpdate(GroupAdd):
+class AccGroupUpdate(AccGroupAdd):
     def __init__(self):
-        super(GroupUpdate, self).__init__()
+        super(AccGroupUpdate, self).__init__()
         self.id = request.values.get('id')
 
     @property
@@ -83,7 +93,7 @@ class GroupUpdate(GroupAdd):
         try:
             t_group.query.filter_by(id=self.id).update({'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
-            return jsonify({'group_ping_status': 'true',
-                            'group_into_update': 'true'})
+            return jsonify({'acc_group_ping_status': 'true',
+                            'acc_group_into_update': 'true'})
         except Exception:
-            return jsonify({'group_into_update': 'fail'})
+            return jsonify({'acc_group_into_update': 'fail'})

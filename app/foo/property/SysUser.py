@@ -22,6 +22,16 @@ class SysUserList:
         self.ls_tool = ListTool()
 
     @property
+    def sys_user_list(self):
+        try:
+            sys_user_id = request.values.get("id")
+            query_msg = t_sys_user.query.filter_by(id=sys_user_id).first()
+            list_msg = self.ls_tool.dict_reset_pop(query_msg)
+            return jsonify(list_msg)
+        except IOError:
+            return jsonify({"sys_user_list_msg": 'select list msg error'})
+
+    @property
     def sys_user_list_all(self):
         try:
             query_msg = t_sys_user.query.all()
@@ -32,8 +42,8 @@ class SysUserList:
                             "msg": "",
                             "sys_user_len_msg": len_msg})
         except IOError:
-            return jsonify({"host_list_msg": 'select list msg error',
-                            "host_len_msg": 0})
+            return jsonify({"sys_user_list_msg": 'select list msg error',
+                            "sys_user_len_msg": 0})
 
 
 class SysUserDel:

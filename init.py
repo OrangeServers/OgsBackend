@@ -1,20 +1,25 @@
 # -*- coding=utf8 -*-
-from flask import render_template
 from Flask_App_Settings import *
 from datetime import timedelta
 import argparse
-from app.foo.user.decorator import wrapper
-from app.foo.local.Basics import CountList
+from app.foo.local.Basics import CountList, DataList
 from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, GroupList, ServerUpdate
 from app.foo.user.AccUser import UserLogin, CheckUser, CheckMail, UserRegister, User_List
+from app.foo.user.user import AccUserList, AccUserAdd, AccUserUpdate, AccUserDel
 from app.foo.property.SysUser import SysUserList, SysUserAdd, SysUserUpdate, SysUserDel
-from app.foo.user.group import GroupList as UserGroupList
+from app.foo.user.group import AccGroupList, AccGroupAdd, AccGroupUpdate, AccGroupDel
 from app.conf.conf_test import *
 from app.foo.local.LocalShell import LocalDirList
-from app.sqldb.SqlAlchemyDB import User2, Host
 from app.foo.mail.MailApi import OrangeMailApi
-from app.tools.SqlListTool import ListTool
 
+
+# 原有导入模块 --------------------------------------------------------------------------------------
+# from flask import render_template, make_response
+# from app.foo.user.decorator import wrapper
+# from app.tools.SqlListTool import ListTool
+# from app.sqldb.SqlAlchemyDB import User2, Host
+
+# 异步导入相关模块 ------------------------------------------------------------------------------------
 # from gevent import monkey
 # from gevent.pywsgi import WSGIServer
 # from geventwebsocket.handler import WebSocketHandler
@@ -47,148 +52,231 @@ def sta_cs():
 
 
 @app.route('/')
-@wrapper
+# @wrapper
 def index():
-
-    query_msg = Host.query.all()
-    # list_msg = ListTool().dict_ls_reset_list(query_msg)
-    list_msg = ListTool().dict_ls_reset_dict(query_msg)
-    # host_title = ['id', '端口', 'ip地址', '密码', '名称', '登录用户', '组名']
-    host_title = ['id', '名称', 'ip地址', '端口', '登录用户', '组名', '操作']
-
-    user_count = User2.query.count()
-    server_count = Host.query.count()
-    host_group = Host.query.with_entities(Host.group).all()
-    group_count = len(ListTool().list_rep_gather(host_group))
-    data = {
-        'user_count': user_count,
-        'server_count': server_count,
-        'group_count': group_count
-    }
-    dir1 = LocalDirList().cmdlist_shell(DEFAULT_DIR1_PATH)
-    server_ip = ServerList().server_user
-    server_group = ServerList().server_group
-    return render_template('static/index.html', dir1=dir1, server_ip=server_ip, server_group=server_group, **data, hostls=list_msg, host_title=host_title)
-
-
-@app.route('/account/acc_user_list_all', methods=['GET', 'POST'])
-def acc_user_list_all():
-    ul = User_List()
-    return ul.acc_user_list_all
+    return 'hello from OrangeServer api server', 200
+    # query_msg = Host.query.all()
+    # # list_msg = ListTool().dict_ls_reset_list(query_msg)
+    # list_msg = ListTool().dict_ls_reset_dict(query_msg)
+    # # host_title = ['id', '端口', 'ip地址', '密码', '名称', '登录用户', '组名']
+    # host_title = ['id', '名称', 'ip地址', '端口', '登录用户', '组名', '操作']
+    #
+    # user_count = User2.query.count()
+    # server_count = Host.query.count()
+    # host_group = Host.query.with_entities(Host.group).all()
+    # group_count = len(ListTool().list_rep_gather(host_group))
+    # data = {
+    #     'user_count': user_count,
+    #     'server_count': server_count,
+    #     'group_count': group_count
+    # }
+    # dir1 = LocalDirList().cmdlist_shell(DEFAULT_DIR1_PATH)
+    # server_ip = ServerList().server_user
+    # server_group = ServerList().server_group
+    # return render_template('static/index.html', dir1=dir1, server_ip=server_ip, server_group=server_group, **data, hostls=list_msg, host_title=host_title)
 
 
-@app.route('/account/group_list_all', methods=['GET', 'POST'])
-def group_list_all():
-    ul = UserGroupList()
-    return ul.group_list_all
-
-
+# 这里是登录用户接口分割线 --------------------------------------------------------------------------------------------
 @app.route('/account/login_dl', methods=['GET', 'POST'])
 def login_dl():
-    login = UserLogin()
-    return login.login_dl()
+    orange = UserLogin()
+    return orange.login_dl()
 
 
 @app.route('/account/chk_username', methods=['GET', 'POST'])
 def chk_username():
-    cu = CheckUser()
-    return cu.check()
+    orange = CheckUser()
+    return orange.check()
 
 
 @app.route('/mail/send_user_mail', methods=['GET', 'POST'])
 def send_user_mail():
-    email = CheckMail()
-    return email.send()
+    orange = CheckMail()
+    return orange.send()
 
 
 @app.route('/mail/send_mail', methods=['GET', 'POST'])
 def send_mail():
-    send = OrangeMailApi()
-    return send.send()
+    orange = OrangeMailApi()
+    return orange.send()
 
 
 @app.route('/account/com_register', methods=['GET', 'POST'])
 def com_register():
-    zc = UserRegister()
-    return zc.register()
+    orange = UserRegister()
+    return orange.register()
 
 
-@app.route('/server/host_add', methods=['GET', 'POST'])
-def server_add():
-    sd = ServerAdd()
-    return sd.host_add
-
-
-@app.route('/server/host_update', methods=['GET', 'POST'])
-def server_update():
-    sud = ServerUpdate()
-    return sud.update
-
-
-@app.route('/server/host_del', methods=['GET', 'POST'])
-def server_del():
-    sl = ServerDel()
-    return sl.host_del
-
-
-@app.route('/server/host_cmd', methods=['GET', 'POST'])
-def server_cmd():
-    scm = ServerCmd2()
-    return scm.sh_cmd
-
-
-@app.route('/server/group_cmd', methods=['GET', 'POST'])
+@app.route('/server/group/cmd', methods=['GET', 'POST'])
 def group_cmd():
-    gopcmd = GroupCmd()
-    return gopcmd.sh_cmd
+    orange = GroupCmd()
+    return orange.sh_cmd
 
 
-@app.route('/server/sys_user_list_all', methods=['GET', 'POST'] )
+# 这里是页面用户接口分割线 --------------------------------------------------------------------------------------------
+@app.route('/server/acc/user/list', methods=['GET', 'POST'] )
+def acc_user_list():
+    orange = AccUserList()
+    return orange.sys_user_list
+
+
+@app.route('/server/acc/user/list_all', methods=['GET', 'POST'] )
+def acc_user_list_all():
+    orange = AccUserList()
+    return orange.sys_user_list_all
+
+
+@app.route('/server/acc/user/add', methods=['GET', 'POST'] )
+def acc_user_add():
+    orange = AccUserAdd()
+    return orange.host_add
+
+
+@app.route('/server/acc/user/update', methods=['GET', 'POST'] )
+def acc_user_update():
+    orange = AccUserUpdate()
+    return orange.update
+
+
+@app.route('/server/acc/user/del', methods=['GET', 'POST'] )
+def acc_user_del():
+    orange = AccUserDel()
+    return orange.host_del
+
+
+# 这里是系统用户接口分割线 --------------------------------------------------------------------------------------------
+@app.route('/server/acc/group/list', methods=['GET', 'POST'] )
+def acc_group_list():
+    orange = AccGroupList()
+    return orange.group_list
+
+
+@app.route('/server/acc/group/list_all', methods=['GET', 'POST'] )
+def acc_group_list_all():
+    orange = AccGroupList()
+    return orange.group_list_all
+
+
+@app.route('/server/acc/group/add', methods=['GET', 'POST'] )
+def acc_group_add():
+    orange = AccGroupAdd()
+    return orange.host_add
+
+
+@app.route('/server/acc/group/update', methods=['GET', 'POST'] )
+def acc_group_update():
+    orange = AccGroupUpdate()
+    return orange.update
+
+
+@app.route('/server/acc/group/del', methods=['GET', 'POST'] )
+def acc_group_del():
+    orange = AccGroupDel()
+    return orange.host_del
+
+
+# 这里是系统用户接口分割线 --------------------------------------------------------------------------------------------
+@app.route('/server/sys/user/list', methods=['GET', 'POST'] )
+def sys_user_list():
+    orange = SysUserList()
+    return orange.sys_user_list
+
+
+@app.route('/server/sys/user/list_all', methods=['GET', 'POST'] )
 def sys_user_list_all():
-    sl = SysUserList()
-    return sl.sys_user_list_all
+    orange = SysUserList()
+    return orange.sys_user_list_all
 
 
-@app.route('/server/host_list_all', methods=['GET', 'POST'] )
+@app.route('/server/sys/user/add', methods=['GET', 'POST'] )
+def sys_user_add():
+    orange = SysUserAdd()
+    return orange.host_add
+
+
+@app.route('/server/sys/user/update', methods=['GET', 'POST'] )
+def sys_user_update():
+    orange = SysUserUpdate()
+    return orange.update
+
+
+@app.route('/server/sys/user/del', methods=['GET', 'POST'] )
+def sys_user_del():
+    orange = SysUserDel()
+    return orange.host_del
+
+
+# 这里是资产主机接口分割线 --------------------------------------------------------------------------------------------
+@app.route('/server/host/add', methods=['GET', 'POST'])
+def server_add():
+    orange = ServerAdd()
+    return orange.host_add
+
+
+@app.route('/server/host/update', methods=['GET', 'POST'])
+def server_update():
+    orange = ServerUpdate()
+    return orange.update
+
+
+@app.route('/server/host/del', methods=['GET', 'POST'])
+def server_del():
+    orange = ServerDel()
+    return orange.host_del
+
+
+@app.route('/server/host/cmd', methods=['GET', 'POST'])
+def server_cmd():
+    orange = ServerCmd2()
+    return orange.sh_cmd
+
+
+@app.route('/server/host/list_all', methods=['GET', 'POST'] )
 def host_list_all():
-    sl = ServerList()
-    return sl.server_list_all
+    orange = ServerList()
+    return orange.server_list_all
 
 
-@app.route('/server/host_list', methods=['GET', 'POST'] )
+@app.route('/server/host/list', methods=['GET', 'POST'] )
 def host_list():
-    sl = ServerList()
-    return sl.server_list
+    orange = ServerList()
+    return orange.server_list
 
 
 @app.route('/server/group_list', methods=['GET', 'POST'] )
 def group_list():
-    gl = GroupList()
-    return gl.server_list
+    orange = GroupList()
+    return orange.server_list
 
 
 @app.route('/server/count_list_all', methods=['GET', 'POST'] )
 def count_list():
-    sl = CountList()
-    return sl.server_count_all
+    orange = CountList()
+    return orange.server_count_all
 
 
 @app.route('/server/host_list_cmd', methods=['GET', 'POST'] )
 def server_list_cmd():
-    sercmd = ServerListCmd()
-    return sercmd.sh_list_cmd
+    orange = ServerListCmd()
+    return orange.sh_list_cmd
 
 
 @app.route('/local/getdir', methods=['GET', 'POST'])
 def getdir():
-    dir = LocalDirList(DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH)
-    return dir.getdir1()
+    orange = LocalDirList(DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH)
+    return orange.getdir1()
 
 
 @app.route('/local/rsync', methods=['GET', 'POST'])
 def rcs():
-    dir = LocalDirList(DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH, RSYNC_SHELL_CMD)
-    return dir.getdir2()
+    orange = LocalDirList(DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH, RSYNC_SHELL_CMD)
+    return orange.getdir2()
+
+
+@app.route('/local/data', methods=['GET', 'POST'])
+def data_list():
+    orange = DataList()
+    return orange.get_list()
 
 
 if __name__ == "__main__":

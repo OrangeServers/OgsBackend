@@ -32,6 +32,14 @@ class ListTool:
         msg.pop('host_password')
         return msg
 
+    @staticmethod
+    def dict_reset_pop_auto(one_dict, pop=None):
+        msg = one_dict.__dict__
+        msg.pop('_sa_instance_state')
+        if pop:
+            msg.pop(pop)
+        return msg
+
     # 查询的dict组传list组
     @staticmethod
     def dict_ls_reset_list(ls_dict):
