@@ -1,4 +1,5 @@
 # -*- coding=utf8 -*-
+from flask import jsonify
 from Flask_App_Settings import *
 from datetime import timedelta
 import argparse
@@ -261,8 +262,14 @@ def server_list_cmd():
     return orange.sh_list_cmd
 
 
-@app.route('/local/getdir', methods=['GET', 'POST'])
-def getdir():
+@app.route('/local/dir/group', methods=['GET', 'POST'])
+def local_dir_group():
+    orange = LocalDirList()
+    return jsonify({'group_dir_msg': orange.cmdlist_shell(DEFAULT_DIR1_PATH)})
+
+
+@app.route('/local/dir/project', methods=['GET', 'POST'])
+def local_dir_project():
     orange = LocalDirList(DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH)
     return orange.getdir1()
 

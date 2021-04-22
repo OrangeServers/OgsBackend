@@ -76,3 +76,5 @@ class LocalDirList(LocalShell):
                 'status': 'error',
                 'msg': ("server is not group_dir %s !" % self.group_dir)
             })
+
+
