@@ -31,17 +31,18 @@ class DataList:
     def get_list(self):
         que_group = Host.query.with_entities(Host.group).all()
         host_group = self.lt.list_rep_gather(que_group)
-        group_count = 10
-        host_count = 100
+        group_count = 1000
+        # host_count = 100
         msg_list = []
         for i in host_group:
             body_list = []
             group_count += 1
             dic = Host.query.filter_by(group=i).all()
             for y in dic:
-                host_count += 1
+                # host_count += 1
+                host_id = y.id
                 host_name = y.alias
-                body_list.append({'title': host_name, 'id': host_count})
+                body_list.append({'title': host_name, 'id': host_id})
             dic = {'title': i, 'id': group_count, 'children': body_list}
             msg_list.append(dic)
         return jsonify({"host": [{'title': '所有资产组', 'id': 0, 'spread': 'true', 'children': msg_list}]})

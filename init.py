@@ -5,10 +5,10 @@ from datetime import timedelta
 import argparse
 from app.foo.local.Basics import CountList, DataList
 from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, GroupList, ServerUpdate
-from app.foo.user.AccUser import UserLogin, CheckUser, CheckMail, UserRegister, User_List
+from app.foo.user.AccUser import UserLogin, CheckUser, CheckMail, UserRegister
 from app.foo.user.user import AccUserList, AccUserAdd, AccUserUpdate, AccUserDel
 from app.foo.property.SysUser import SysUserList, SysUserAdd, SysUserUpdate, SysUserDel
-from app.foo.user.group import AccGroupList, AccGroupAdd, AccGroupUpdate, AccGroupDel
+from app.foo.property.ServerGroup import AccGroupList, AccGroupAdd, AccGroupUpdate, AccGroupDel
 from app.conf.conf_test import *
 from app.foo.local.LocalShell import LocalDirList
 from app.foo.mail.MailApi import OrangeMailApi
@@ -146,37 +146,6 @@ def acc_user_del():
 
 
 # 这里是系统用户接口分割线 --------------------------------------------------------------------------------------------
-@app.route('/server/acc/group/list', methods=['GET', 'POST'] )
-def acc_group_list():
-    orange = AccGroupList()
-    return orange.group_list
-
-
-@app.route('/server/acc/group/list_all', methods=['GET', 'POST'] )
-def acc_group_list_all():
-    orange = AccGroupList()
-    return orange.group_list_all
-
-
-@app.route('/server/acc/group/add', methods=['GET', 'POST'] )
-def acc_group_add():
-    orange = AccGroupAdd()
-    return orange.host_add
-
-
-@app.route('/server/acc/group/update', methods=['GET', 'POST'] )
-def acc_group_update():
-    orange = AccGroupUpdate()
-    return orange.update
-
-
-@app.route('/server/acc/group/del', methods=['GET', 'POST'] )
-def acc_group_del():
-    orange = AccGroupDel()
-    return orange.host_del
-
-
-# 这里是系统用户接口分割线 --------------------------------------------------------------------------------------------
 @app.route('/server/sys/user/list', methods=['GET', 'POST'] )
 def sys_user_list():
     orange = SysUserList()
@@ -262,6 +231,38 @@ def server_list_cmd():
     return orange.sh_list_cmd
 
 
+# 这里是资产组接口分割线 --------------------------------------------------------------------------------------------
+@app.route('/server/host/group/list', methods=['GET', 'POST'] )
+def acc_group_list():
+    orange = AccGroupList()
+    return orange.group_list
+
+
+@app.route('/server/host/group/list_all', methods=['GET', 'POST'] )
+def acc_group_list_all():
+    orange = AccGroupList()
+    return orange.group_list_all
+
+
+@app.route('/server/host/group/add', methods=['GET', 'POST'] )
+def acc_group_add():
+    orange = AccGroupAdd()
+    return orange.host_add
+
+
+@app.route('/server/host/group/update', methods=['GET', 'POST'] )
+def acc_group_update():
+    orange = AccGroupUpdate()
+    return orange.update
+
+
+@app.route('/server/host/group/del', methods=['GET', 'POST'] )
+def acc_group_del():
+    orange = AccGroupDel()
+    return orange.host_del
+
+
+# 这里是本地执行接口分割线 -------------------------------------------------------------------------------------
 @app.route('/local/dir/group', methods=['GET', 'POST'])
 def local_dir_group():
     orange = LocalDirList()

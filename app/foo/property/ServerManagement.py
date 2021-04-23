@@ -178,21 +178,22 @@ class ServerCmd(ServerAdd):
 
 class ServerCmd2:
     def __init__(self):
-        self.host_ip = request.values.get('host_ip')
+        # self.host_ip = request.values.get('host_ip')
+        self.host_id = request.values.get('host_id')
         self.command = request.values.get('command')
         self.basesec = BaseSec()
 
     @property
     def sh_cmd(self):
         try:
-            host = Host.query.filter_by(host_ip=self.host_ip).first()
+            host = Host.query.filter_by(id=self.host_id).first()
             host_dict = host.__dict__
             password_de = self.basesec.base_de(host_dict['host_password'])
             conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'], password_de)
             msg = conn.ssh_cmd(self.command)
             return jsonify({'server_ping_status': 'true',
                             'command_msg': msg,
-                            'hostname_list': self.host_ip})
+                            'hostname_list': self.host_id})
         except IOError:
             return jsonify({'server_ping_status': 'fail'})
 
@@ -200,23 +201,26 @@ class ServerCmd2:
 class ServerListCmd(ServerCmd2):
     def __init__(self):
         super(ServerListCmd, self).__init__()
-        self.host_ip = request.values.getlist('host_ip')
+        # self.host_ip = request.values.getlist('host_ip')
+        self.host_id = request.values.getlist('host_id')
 
     @property
     def sh_list_cmd(self):
         try:
             msg_list = []
-            for ip in self.host_ip:
-                host = Host.query.filter_by(host_ip=ip).first()
+            alias_list = []
+            for hid in self.host_id:
+                host = Host.query.filter_by(id=hid).first()
                 host_dict = host.__dict__
                 password_de = self.basesec.base_de(host_dict['host_password'])
                 conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'],
                                         password_de)
                 msg = conn.ssh_cmd(self.command)
                 msg_list.append(msg)
+                alias_list.append(host_dict['alias'])
             return jsonify({'server_ping_status': 'true',
                             'command_msg': msg_list,
-                            'hostname_list': self.host_ip})
+                            'hostname_list': alias_list})
         except IOError:
             return jsonify({'server_ping_status': 'fail'})
 
