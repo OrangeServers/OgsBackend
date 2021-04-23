@@ -1,20 +1,8 @@
 from flask import request, jsonify
-from app.sqldb.SqlAlchemySettings import db
-from app.sqldb.SqlAlchemyDB import t_sys_user
+from app.sqldb.SqlAlchemyDB import t_sys_user, db
+from app.sqldb.SqlAlchemyInsert import SysUserSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
-
-
-class SysUserSqlalh:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def ins_sql(alias, host_user, host_password, agreement, nums, remarks):
-        sql = t_sys_user(alias=alias, host_user=host_user, host_password=host_password, agreement=agreement, nums=nums,
-                         remarks=remarks)
-        db.session.add(sql)
-        db.session.commit()
 
 
 class SysUserList:
@@ -69,7 +57,6 @@ class SysUserAdd:
         self.host_user = request.values.get('host_user')
         self.host_password = request.values.get('host_password')
         self.agreement = request.values.get('agreement')
-        self.nums = request.values.get('nums', default=0)
         self.remarks = request.values.get('remarks', type=str, default=None)
         self.host_sqlalh = SysUserSqlalh()
         self.basesec = BaseSec()
@@ -80,8 +67,7 @@ class SysUserAdd:
             user_chk = t_sys_user.query.filter_by(alias=self.alias).first()
             if user_chk is None:
                 password_en = self.basesec.base_en(self.host_password)
-                self.host_sqlalh.ins_sql(self.alias, self.host_user, password_en, self.agreement, self.nums,
-                                         self.remarks)
+                self.host_sqlalh.ins_sql(self.alias, self.host_user, password_en, self.agreement, self.remarks)
                 return jsonify({'sys_user_add_status': 'true'})
             else:
                 return jsonify({'sys_user_add_status': 'sel_fail'})

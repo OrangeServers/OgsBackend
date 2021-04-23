@@ -5,12 +5,9 @@ from app.tools.sendmail import SendMail
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyConf import DBSession, User
-from app.sqldb.SqlAlchemySettings import db
-from app.sqldb.SqlAlchemyDB import User2, t_acc_user, t_group
+from app.sqldb.SqlAlchemyDB import User2, t_acc_user, db
 from app.conf.conf_test import MAIL_CONF, REDIS_CONF
 
-
-# mail_verification = ''
 
 class User_Sqlalh:
     def __init__(self):

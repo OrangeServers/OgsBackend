@@ -3,7 +3,7 @@ from flask import jsonify
 from Flask_App_Settings import *
 from datetime import timedelta
 import argparse
-from app.foo.local.Basics import CountList, DataList
+from app.foo.local.Basics import CountList, DataList, DataSumAll
 from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, GroupList, ServerUpdate
 from app.foo.user.AccUser import UserLogin, CheckUser, CheckMail, UserRegister
 from app.foo.user.user import AccUserList, AccUserAdd, AccUserUpdate, AccUserDel
@@ -233,31 +233,37 @@ def server_list_cmd():
 
 # 这里是资产组接口分割线 --------------------------------------------------------------------------------------------
 @app.route('/server/host/group/list', methods=['GET', 'POST'] )
-def acc_group_list():
+def host_group_list():
     orange = AccGroupList()
     return orange.group_list
 
 
+@app.route('/server/host/group/name_list', methods=['GET', 'POST'] )
+def host_group_name_list():
+    orange = AccGroupList()
+    return orange.group_name_list
+
+
 @app.route('/server/host/group/list_all', methods=['GET', 'POST'] )
-def acc_group_list_all():
+def host_group_list_all():
     orange = AccGroupList()
     return orange.group_list_all
 
 
 @app.route('/server/host/group/add', methods=['GET', 'POST'] )
-def acc_group_add():
+def host_group_add():
     orange = AccGroupAdd()
     return orange.host_add
 
 
 @app.route('/server/host/group/update', methods=['GET', 'POST'] )
-def acc_group_update():
+def host_group_update():
     orange = AccGroupUpdate()
     return orange.update
 
 
 @app.route('/server/host/group/del', methods=['GET', 'POST'] )
-def acc_group_del():
+def host_group_del():
     orange = AccGroupDel()
     return orange.host_del
 
@@ -279,6 +285,12 @@ def local_dir_project():
 def rcs():
     orange = LocalDirList(DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH, RSYNC_SHELL_CMD)
     return orange.getdir2()
+
+
+@app.route('/local/sum', methods=['GET', 'POST'])
+def data_sum():
+    orange = DataSumAll()
+    return orange.get_sum()
 
 
 @app.route('/local/data', methods=['GET', 'POST'])

@@ -1,20 +1,8 @@
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemySettings import db
-from app.sqldb.SqlAlchemyDB import t_acc_user
-
-
-class AccUserSqlalh:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def ins_sql(alias, name, password, usrole, mail, remarks):
-        sql = t_acc_user(alias=alias, name=name, password=password, usrole=usrole, mail=mail,
-                         remarks=remarks)
-        db.session.add(sql)
-        db.session.commit()
+from app.sqldb.SqlAlchemyDB import t_acc_user, db
+from app.sqldb.SqlAlchemyInsert import AccUserSqlalh
 
 
 class AccUserList:

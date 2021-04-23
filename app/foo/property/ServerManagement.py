@@ -1,21 +1,9 @@
 from flask import request, jsonify
 from app.tools.shellcmd import RemoteConnection
 from app.sqldb.SqlAlchemyDB import Host, db, t_group, t_sys_user, User2
+from app.sqldb.SqlAlchemyInsert import HostSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
-
-
-class HostSqlalh:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    # def ins_sql(alias, host_ip, host_port, host_user, host_password, group=None):
-    def ins_sql(alias, host_ip, host_port, host_user, host_password, group):
-        sql = Host(alias=alias, host_ip=host_ip, host_port=host_port, host_user=host_user, host_password=host_password,
-                   group=group)
-        db.session.add(sql)
-        db.session.commit()
 
 
 class ServerList:

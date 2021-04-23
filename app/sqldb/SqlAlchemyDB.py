@@ -85,9 +85,10 @@ if __name__ == '__main__':
     for host_ls in res_host:
         print(host_ls.id)
 
-    print('-----------------')
+    print('需要的-----------------')
     group_count = Host.query.with_entities(Host.group).all()
-    print(len(list_tool.list_rep_gather(group_count)))
+    print(t_group.query.with_entities(t_group.name).all())
+    print(list_tool.list_rep_gather(group_count))
 
     print('-----------------')
     group_select = []

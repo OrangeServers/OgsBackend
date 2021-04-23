@@ -1,19 +1,8 @@
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemySettings import db
-from app.sqldb.SqlAlchemyDB import t_group
-
-
-class GroupSqlalh:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def ins_sql(name, nums, remarks):
-        sql = t_group(name=name, nums=nums, remarks=remarks)
-        db.session.add(sql)
-        db.session.commit()
+from app.sqldb.SqlAlchemyDB import t_group, db
+from app.sqldb.SqlAlchemyInsert import GroupSqlalh
 
 
 class AccGroupList:
@@ -29,6 +18,15 @@ class AccGroupList:
             return jsonify(list_msg)
         except IOError:
             return jsonify({"acc_group_list_msg": 'select list msg error'})
+
+    @property
+    def group_name_list(self):
+        try:
+            query_group = t_group.query.with_entities(t_group.name).all()
+            group_list = self.lt.list_rep_gather(query_group)
+            return jsonify({'group_name_list_msg': group_list})
+        except IOError:
+            return jsonify({'get_name_list': 'fail'})
 
     @property
     def group_list_all(self):
@@ -63,7 +61,6 @@ class AccGroupDel:
 class AccGroupAdd:
     def __init__(self):
         self.name = request.values.get('name')
-        self.nums = request.values.get('nums')
         self.remarks = request.values.get('remarks', type=str, default=None)
         self.host_sqlalh = GroupSqlalh()
         self.basesec = BaseSec()
@@ -73,7 +70,7 @@ class AccGroupAdd:
         try:
             user_chk = t_group.query.filter_by(name=self.name).first()
             if user_chk is None:
-                self.host_sqlalh.ins_sql(self.name, self.nums, self.remarks)
+                self.host_sqlalh.ins_sql(self.name, self.remarks)
                 return jsonify({'acc_group_add_status': 'true'})
             else:
                 return jsonify({'acc_group_add_status': 'sel_fail'})

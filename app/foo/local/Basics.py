@@ -29,7 +29,8 @@ class DataList:
         self.lt = ListTool()
 
     def get_list(self):
-        que_group = Host.query.with_entities(Host.group).all()
+        # que_group = Host.query.with_entities(Host.group).all()
+        que_group = t_group.query.with_entities(t_group.name).all()
         host_group = self.lt.list_rep_gather(que_group)
         group_count = 1000
         # host_count = 100
@@ -46,3 +47,34 @@ class DataList:
             dic = {'title': i, 'id': group_count, 'children': body_list}
             msg_list.append(dic)
         return jsonify({"host": [{'title': '所有资产组', 'id': 0, 'spread': 'true', 'children': msg_list}]})
+
+
+class DataSumAll:
+    def __init__(self):
+        self.lt = ListTool()
+        self.sum_name = request.values.get('sum_name')
+
+    def get_sum(self):
+        if self.sum_name == 'group':
+            try:
+                query_group = t_group.query.with_entities(t_group.name).all()
+                group_list = self.lt.list_rep_gather(query_group)
+                for i in group_list:
+                    group_count = Host.query.filter_by(group=i).count()
+                    t_group.query.filter_by(name=i).update({'nums': group_count})
+                    db.session.commit()
+                    return jsonify({'update_table_sum': 'true'})
+            except IOError:
+                return jsonify({'update_table_sum': 'fail'})
+
+        elif self.sum_name == 'sys_user':
+            try:
+                query_sys_user = t_sys_user.query.with_entities(t_sys_user.host_user).all()
+                sys_user_list = self.lt.list_rep_gather(query_sys_user)
+                for i in sys_user_list:
+                    sys_user_count = Host.query.filter_by(host_user=i).count()
+                    t_sys_user.query.filter_by(host_user=i).update({'host_user': sys_user_count})
+                    db.session.commit()
+                    return jsonify({'update_table_sum': 'true'})
+            except IOError:
+                return jsonify({'update_table_sum': 'fail'})
