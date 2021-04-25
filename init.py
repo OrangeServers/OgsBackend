@@ -115,62 +115,62 @@ def group_cmd():
 
 
 # 这里是页面用户接口分割线 --------------------------------------------------------------------------------------------
-@app.route('/server/acc/user/list', methods=['GET', 'POST'] )
+@app.route('/server/acc/user/list', methods=['GET', 'POST'])
 def acc_user_list():
     orange = AccUserList()
     return orange.sys_user_list
 
 
-@app.route('/server/acc/user/list_all', methods=['GET', 'POST'] )
+@app.route('/server/acc/user/list_all', methods=['GET', 'POST'])
 def acc_user_list_all():
     orange = AccUserList()
     return orange.sys_user_list_all
 
 
-@app.route('/server/acc/user/add', methods=['GET', 'POST'] )
+@app.route('/server/acc/user/add', methods=['GET', 'POST'])
 def acc_user_add():
     orange = AccUserAdd()
     return orange.host_add
 
 
-@app.route('/server/acc/user/update', methods=['GET', 'POST'] )
+@app.route('/server/acc/user/update', methods=['GET', 'POST'])
 def acc_user_update():
     orange = AccUserUpdate()
     return orange.update
 
 
-@app.route('/server/acc/user/del', methods=['GET', 'POST'] )
+@app.route('/server/acc/user/del', methods=['GET', 'POST'])
 def acc_user_del():
     orange = AccUserDel()
     return orange.host_del
 
 
 # 这里是系统用户接口分割线 --------------------------------------------------------------------------------------------
-@app.route('/server/sys/user/list', methods=['GET', 'POST'] )
+@app.route('/server/sys/user/list', methods=['GET', 'POST'])
 def sys_user_list():
     orange = SysUserList()
     return orange.sys_user_list
 
 
-@app.route('/server/sys/user/list_all', methods=['GET', 'POST'] )
+@app.route('/server/sys/user/list_all', methods=['GET', 'POST'])
 def sys_user_list_all():
     orange = SysUserList()
     return orange.sys_user_list_all
 
 
-@app.route('/server/sys/user/add', methods=['GET', 'POST'] )
+@app.route('/server/sys/user/add', methods=['GET', 'POST'])
 def sys_user_add():
     orange = SysUserAdd()
     return orange.host_add
 
 
-@app.route('/server/sys/user/update', methods=['GET', 'POST'] )
+@app.route('/server/sys/user/update', methods=['GET', 'POST'])
 def sys_user_update():
     orange = SysUserUpdate()
     return orange.update
 
 
-@app.route('/server/sys/user/del', methods=['GET', 'POST'] )
+@app.route('/server/sys/user/del', methods=['GET', 'POST'])
 def sys_user_del():
     orange = SysUserDel()
     return orange.host_del
@@ -201,68 +201,74 @@ def server_cmd():
     return orange.sh_cmd
 
 
-@app.route('/server/host/list_all', methods=['GET', 'POST'] )
+@app.route('/server/host/list_all', methods=['GET', 'POST'])
 def host_list_all():
     orange = ServerList()
     return orange.server_list_all
 
 
-@app.route('/server/host/list', methods=['GET', 'POST'] )
+@app.route('/server/host/list', methods=['GET', 'POST'])
 def host_list():
     orange = ServerList()
     return orange.server_list
 
 
-@app.route('/server/group_list', methods=['GET', 'POST'] )
+@app.route('/server/host/list_page', methods=['GET', 'POST'])
+def host_list_page():
+    orange = ServerList()
+    return orange.server_list_page
+
+
+@app.route('/server/group_list', methods=['GET', 'POST'])
 def group_list():
     orange = GroupList()
     return orange.server_list
 
 
-@app.route('/server/count_list_all', methods=['GET', 'POST'] )
+@app.route('/server/count_list_all', methods=['GET', 'POST'])
 def count_list():
     orange = CountList()
     return orange.server_count_all
 
 
-@app.route('/server/host_list_cmd', methods=['GET', 'POST'] )
+@app.route('/server/host_list_cmd', methods=['GET', 'POST'])
 def server_list_cmd():
     orange = ServerListCmd()
     return orange.sh_list_cmd
 
 
 # 这里是资产组接口分割线 --------------------------------------------------------------------------------------------
-@app.route('/server/host/group/list', methods=['GET', 'POST'] )
+@app.route('/server/host/group/list', methods=['GET', 'POST'])
 def host_group_list():
     orange = AccGroupList()
     return orange.group_list
 
 
-@app.route('/server/host/group/name_list', methods=['GET', 'POST'] )
+@app.route('/server/host/group/name_list', methods=['GET', 'POST'])
 def host_group_name_list():
     orange = AccGroupList()
     return orange.group_name_list
 
 
-@app.route('/server/host/group/list_all', methods=['GET', 'POST'] )
+@app.route('/server/host/group/list_all', methods=['GET', 'POST'])
 def host_group_list_all():
     orange = AccGroupList()
     return orange.group_list_all
 
 
-@app.route('/server/host/group/add', methods=['GET', 'POST'] )
+@app.route('/server/host/group/add', methods=['GET', 'POST'])
 def host_group_add():
     orange = AccGroupAdd()
     return orange.host_add
 
 
-@app.route('/server/host/group/update', methods=['GET', 'POST'] )
+@app.route('/server/host/group/update', methods=['GET', 'POST'])
 def host_group_update():
     orange = AccGroupUpdate()
     return orange.update
 
 
-@app.route('/server/host/group/del', methods=['GET', 'POST'] )
+@app.route('/server/host/group/del', methods=['GET', 'POST'])
 def host_group_del():
     orange = AccGroupDel()
     return orange.host_del

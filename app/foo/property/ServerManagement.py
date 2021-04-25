@@ -37,6 +37,24 @@ class ServerList:
             return jsonify({"host_list_msg": 'select list msg error'})
 
     @property
+    def server_list_page(self):
+        group_name = request.values.get('group_name')
+        try:
+            if group_name == '所有资产':
+                return self.server_list_all
+            else:
+                query_msg = Host.query.filter_by(group=group_name).all()
+                list_msg = self.ls_tool.dict_ls_reset_dict(query_msg)
+                len_msg = Host.query.filter_by(group=group_name).count()
+                return jsonify({"host_status": 0,
+                                "host_list_msg": list_msg,
+                                "msg": "",
+                                "host_len_msg": len_msg})
+        except IOError:
+            return jsonify({"host_list_msg": 'select list msg error',
+                            "host_len_msg": 0})
+
+    @property
     def server_list_all(self):
         try:
             query_msg = Host.query.all()
@@ -50,8 +68,6 @@ class ServerList:
             #                 "count": len_msg,
             #                 "msg": "",
             #                 "data": list_msg})
-
-
         except IOError:
             return jsonify({"host_list_msg": 'select list msg error',
                             "host_len_msg": 0})

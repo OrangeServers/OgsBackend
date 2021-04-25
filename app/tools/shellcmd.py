@@ -21,11 +21,16 @@ class RemoteConnection:
         """
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.host,port=self.port, username=self.username, password=self.password, timeout=3)
+        ssh.connect(self.host, port=self.port, username=self.username, password=self.password, timeout=3)
         stdin, stdout, stderr = ssh.exec_command(command)
-        msg = stdout.read()
+        # stdin_msg = stdin.read()
+        stdout_msg = stdout.read()
+        stderr_msg = stderr.read()
         ssh.close()
-        return msg.decode()
+        if stdout_msg.decode() == '':
+            return stderr_msg.decode()
+        elif stderr_msg.decode() == '':
+            return stdout_msg.decode()
 
     def ssh_cmd_list(self, command_list):
         """

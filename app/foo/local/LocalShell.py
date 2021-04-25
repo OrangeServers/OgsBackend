@@ -56,10 +56,12 @@ class LocalDirList(LocalShell):
             if project_dir in dir2:
                 rsync_dir = (self.rscmd % (self.group_dir, project_dir))
                 try:
-                    LocalShell().cmd_shell(rsync_dir)
+                    msg_out = LocalShell().cmdlist_shell(rsync_dir)
+                    print(msg_out)
                     return jsonify({
                         'status': 'sucessfuly',
-                        'msg': ("rsync %s %s is ok!" % (self.group_dir, project_dir))
+                        # 'msg': ("rsync %s %s is ok!" % (self.group_dir, project_dir))
+                        'msg': msg_out
                     })
                 except Exception:
                     return jsonify({
