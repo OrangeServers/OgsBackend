@@ -81,7 +81,7 @@ if __name__ == '__main__':
     results3 = list_tool.list_gather(results2)
     print(results3)
 
-    res_host = Host.query.all()
+    res_host = Host.query.offset(5).limit(5).all()
     for host_ls in res_host:
         print(host_ls.id)
 

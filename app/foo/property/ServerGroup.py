@@ -31,7 +31,10 @@ class AccGroupList:
     @property
     def group_list_all(self):
         try:
-            query_msg = t_group.query.all()
+            table_page = request.values.get('page')
+            table_limit = request.values.get('limit')
+            table_offset = (int(table_page) - 1) * 10
+            query_msg = t_group.query.offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
             len_msg = t_group.query.count()
             return jsonify({"host_status": 0,
