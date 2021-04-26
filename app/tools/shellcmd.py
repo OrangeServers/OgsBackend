@@ -52,6 +52,14 @@ class RemoteConnection:
         sftp_cilent.put(form_path, to_path)
         sftp_cilent.close()
 
+    def put_file_list(self, form_path_list, to_path):
+        """
+        form_path_list-->从本地上传的文件路径;list类型
+        to_path-->上传到对方服务器的文件路径;str类型
+        """
+        for i in form_path_list:
+            self.put_file(i, to_path)
+
 
 if __name__ == '__main__':
     test_yw200 = RemoteConnection('10.0.1.200',22,'root','jlb123')

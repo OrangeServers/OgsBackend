@@ -1,4 +1,5 @@
 from flask import request, jsonify
+from app.tools.shellcmd import RemoteConnection
 import os, sys
 
 sys.path.append('../..')
@@ -80,3 +81,17 @@ class LocalDirList(LocalShell):
             })
 
 
+# 图片上传接口
+class Test_Getfile:
+    def __init__(self):
+        self.file = request.files.get('file')
+        # self.rem = RemoteConnection('10.0.1.199', 22, 'root', 'jlb123')
+
+    def get_file(self):
+        print("files", self.file.filename)
+        dest = open('/data/putfile/' + self.file.filename, 'wb+')
+        for i in self.file:
+            dest.write(i)
+        dest.close()
+        # self.rem.put_file('/data/putfile/' + self.file.filename, '/data/tmp/' + self.file.filename)
+        return jsonify({"code": 0, "msg": "", "data": "success"})

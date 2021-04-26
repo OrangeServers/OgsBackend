@@ -10,7 +10,7 @@ from app.foo.user.user import AccUserList, AccUserAdd, AccUserUpdate, AccUserDel
 from app.foo.property.SysUser import SysUserList, SysUserAdd, SysUserUpdate, SysUserDel
 from app.foo.property.ServerGroup import AccGroupList, AccGroupAdd, AccGroupUpdate, AccGroupDel
 from app.conf.conf_test import *
-from app.foo.local.LocalShell import LocalDirList
+from app.foo.local.LocalShell import LocalDirList, Test_Getfile
 from app.foo.mail.MailApi import OrangeMailApi
 
 
@@ -303,6 +303,12 @@ def data_sum():
 def data_list():
     orange = DataList()
     return orange.get_list()
+
+
+@app.route('/local/file', methods=['GET', 'POST'])
+def data_file():
+    orange = Test_Getfile()
+    return orange.get_file()
 
 
 if __name__ == "__main__":
