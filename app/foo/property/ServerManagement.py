@@ -287,24 +287,43 @@ class GroupListCmd(GroupCmd):
             return jsonify({'server_ping_status': 'fail'})
 
 
-# 修改主机值初版，待优化
-# class UpdateHost:
-#     def __init__(self):
-#         self.host_ip = request.values.get("host_ip")
-#         self.setval = request.values.get('setval')
-#         self.basesec = BaseSec()
-#
-#     def set_host(self):
-#         for i in self.setval.keys():
-#             try:
-#                 if i == 'host_password':
-#                     password_en = self.basesec.base_en(self.setval[i])
-#                     Host.query.filter_by(host_ip=self.host_ip).update({i: password_en})
-#                 else:
-#                     Host.query.filter_by(host_ip=self.host_ip).update({i: self.setval[i]})
-#                 return jsonify({'server_ping_status': 'true'})
-#             except IOError:
-#                 return jsonify({'server_ping_status': 'fail'})
+# 图片上传接口
+class ServerScript:
+    def __init__(self):
+        self.file = request.files.get('file')
+        # self.rem = RemoteConnection('10.0.1.199', 22, 'root', 'jlb123')
+        self.id_list = request.values.getlist('id_list')
+        self.basesec = BaseSec()
+        self.on_file = '/data/putfile/' + self.file.filename
+        self.to_file = '/tmp/' + self.file.filename
+
+    def sh_script(self):
+        print("files", self.file.filename, self.id_list)
+        dest = open(self.on_file, 'wb+')
+        for i in self.file:
+            dest.write(i)
+        dest.close()
+        # self.rem.put_file('/data/putfile/' + self.file.filename, '/data/tmp/' + self.file.filename)
+        # return jsonify({"code": 0, "msg": "", "data": "success"})
+        try:
+            msg_list = []
+            alias_list = []
+            for hid in self.id_list:
+                host = Host.query.filter_by(id=hid).first()
+                host_dict = host.__dict__
+                password_de = self.basesec.base_de(host_dict['host_password'])
+                conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'],
+                                        password_de)
+                conn.put_file(self.on_file, self.to_file)
+                msg = conn.ssh_cmd("chmod +x %s && %s" % (self.to_file, self.to_file))
+                msg_list.append(msg)
+                alias_list.append(host_dict['alias'])
+                conn.ssh_cmd("rm -f %s" % self.to_file)
+            return jsonify({'server_ping_status': 'true',
+                            'command_msg': msg_list,
+                            'hostname_list': alias_list})
+        except IOError:
+            return jsonify({'server_ping_status': 'fail'})
 
 
 if __name__ == "__main__":

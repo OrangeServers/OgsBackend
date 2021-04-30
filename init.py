@@ -4,13 +4,13 @@ from Flask_App_Settings import *
 from datetime import timedelta
 import argparse
 from app.foo.local.Basics import CountList, DataList, DataSumAll
-from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, GroupList, ServerUpdate
+from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, GroupList, ServerUpdate, ServerScript
 from app.foo.user.AccUser import UserLogin, CheckUser, CheckMail, UserRegister
 from app.foo.user.user import AccUserList, AccUserAdd, AccUserUpdate, AccUserDel
 from app.foo.property.SysUser import SysUserList, SysUserAdd, SysUserUpdate, SysUserDel
 from app.foo.property.ServerGroup import AccGroupList, AccGroupAdd, AccGroupUpdate, AccGroupDel
 from app.conf.conf_test import *
-from app.foo.local.LocalShell import LocalDirList, Test_Getfile
+from app.foo.local.LocalShell import LocalDirList
 from app.foo.mail.MailApi import OrangeMailApi
 
 
@@ -274,6 +274,12 @@ def host_group_del():
     return orange.host_del
 
 
+@app.route('/server/file/put', methods=['GET', 'POST'])
+def server_file():
+    orange = ServerScript()
+    return orange.sh_script()
+
+
 # 这里是本地执行接口分割线 -------------------------------------------------------------------------------------
 @app.route('/local/dir/group', methods=['GET', 'POST'])
 def local_dir_group():
@@ -303,12 +309,6 @@ def data_sum():
 def data_list():
     orange = DataList()
     return orange.get_list()
-
-
-@app.route('/local/file', methods=['GET', 'POST'])
-def data_file():
-    orange = Test_Getfile()
-    return orange.get_file()
 
 
 if __name__ == "__main__":
