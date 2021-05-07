@@ -100,7 +100,7 @@ class UserLogin(CheckUser):
             password_de = self.base.base_de(user_info.password)
             if self.username == user_info.name and self.password == password_de:
                 # 每个用户登录生成一个session
-                session["user"] = self.username
+                # session["user"] = self.username
                 return jsonify({'chk_status': 'true'})
             else:
                 return jsonify({'password_status': 'fail'})
