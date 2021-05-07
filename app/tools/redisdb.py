@@ -13,7 +13,7 @@ class ConnRedis:
         self.host = host
         self.port = port
         self.max_connections = max_connections
-        self.Pool = redis.ConnectionPool(host=self.host, port=self.port, max_connections=self.max_connections)
+        self.Pool = redis.ConnectionPool(host=self.host, port=self.port, db=10, max_connections=self.max_connections)
         self.redis_conn = redis.Redis(connection_pool=self.Pool, decode_responses=True)
 
     def get_red(self, key):
