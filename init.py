@@ -31,7 +31,7 @@ from app.foo.mail.MailApi import OrangeMailApi
 app.config.update(DEBUG=True)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 
-# 赋予session值的密钥
+# 赋予session值的密钥,前后端分离后已经不用
 app.secret_key = "!@#$%^&*()"
 
 
