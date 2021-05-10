@@ -1,4 +1,4 @@
-from app.sqldb.SqlAlchemyDB import Host, t_group, t_acc_user, t_sys_user, db
+from app.sqldb.SqlAlchemyDB import Host, t_group, t_acc_user, t_sys_user, t_login_date, db
 
 
 class HostSqlalh:
@@ -45,5 +45,16 @@ class AccUserSqlalh:
     def ins_sql(alias, name, password, usrole, mail, remarks):
         sql = t_acc_user(alias=alias, name=name, password=password, usrole=usrole, mail=mail,
                          remarks=remarks)
+        db.session.add(sql)
+        db.session.commit()
+
+
+class LoginDateSqlalh:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def ins_sql(logintime, loginname, loginsum):
+        sql = t_login_date(logintime=logintime, loginname=loginname, loginsum=loginsum)
         db.session.add(sql)
         db.session.commit()

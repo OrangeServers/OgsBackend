@@ -70,6 +70,17 @@ class t_group(db.Model):
     remarks = db.Column(db.String(30), nullable=True)
 
 
+class t_login_date(db.Model):
+    __tablename__ = 't_login_date'  # 指定表名字为 user
+    # 主键id, 自增, Integer类型
+    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
+    logintime = db.Column(db.Date, nullable=False)
+    # userName字段 varchar类型 限制45 不为空
+    loginname = db.Column(db.String(25), nullable=False)
+    # passWord字段, varchar类型 限制45 不为空
+    loginsum = db.Column(db.INT, nullable=False)
+
+
 if __name__ == '__main__':
     list_tool = ListTool()
     results = User2.query.all()

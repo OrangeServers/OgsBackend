@@ -5,7 +5,8 @@ from app.tools.sendmail import SendMail
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyConf import DBSession, User
-from app.sqldb.SqlAlchemyDB import User2, t_acc_user, db
+from app.sqldb.SqlAlchemyDB import User2, t_acc_user, t_login_date, db
+from app.sqldb.SqlAlchemyInsert import LoginDateSqlalh
 from app.conf.conf_test import MAIL_CONF, REDIS_CONF
 
 
@@ -92,6 +93,7 @@ class UserLogin(CheckUser):
         super(UserLogin, self).__init__()
         self.password = request.values.get('password')
         self.base = BaseSec()
+        self.login_ins = LoginDateSqlalh
 
     def login_dl(self):
         # user_info = self.session.query(User).filter_by(name=self.username).first()
@@ -101,6 +103,18 @@ class UserLogin(CheckUser):
             if self.username == user_info.name and self.password == password_de:
                 # 每个用户登录生成一个session
                 # session["user"] = self.username
+                login_time = request.values.get('login_time')
+                login_sum = int(request.values.get('login_sum'))
+                # 多条件查询
+                login_query = t_login_date.query.filter_by(logintime=login_time, loginname=self.username).first()
+                if login_query is None:
+                    self.login_ins.ins_sql(login_time, self.username, login_sum)
+                else:
+                    if str(login_time) != str(login_query.logintime):
+                        self.login_ins.ins_sql(login_time, self.username, login_sum)
+                    elif str(login_time) == str(login_query.logintime):
+                        out_sum = login_query.loginsum + login_sum
+                        t_login_date.query.filter_by(logintime=login_time, loginname=self.username).update({'loginsum': out_sum})
                 return jsonify({'chk_status': 'true'})
             else:
                 return jsonify({'password_status': 'fail'})
