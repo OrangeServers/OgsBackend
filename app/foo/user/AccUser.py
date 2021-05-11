@@ -1,4 +1,4 @@
-import random, string
+import random, string, time
 from flask import request, jsonify, session
 from app.tools.redisdb import ConnRedis
 from app.tools.sendmail import SendMail
@@ -92,33 +92,32 @@ class UserLogin(CheckUser):
     def __init__(self):
         super(UserLogin, self).__init__()
         self.password = request.values.get('password')
+        self.user_nw_ip = request.headers.get('X-Real-IP')
+        self.user_agent = request.headers.get('User-Agent')
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.base = BaseSec()
         self.login_ins = LoginDateSqlalh
 
     def login_dl(self):
         # user_info = self.session.query(User).filter_by(name=self.username).first()
+        print(self.new_date, self.user_nw_ip, self.user_agent)
         user_info = User2.query.filter_by(name=self.username).first()
+        user_gw_ip = request.values.get('user_gw_ip')
+        user_gw_cs = request.values.get('user_gw_cs')
         if not user_info is None:
             password_de = self.base.base_de(user_info.password)
             if self.username == user_info.name and self.password == password_de:
                 # 每个用户登录生成一个session
                 # session["user"] = self.username
-                login_time = request.values.get('login_time')
-                login_sum = int(request.values.get('login_sum'))
-                # 多条件查询
-                login_query = t_login_date.query.filter_by(logintime=login_time, loginname=self.username).first()
-                if login_query is None:
-                    self.login_ins.ins_sql(login_time, self.username, login_sum)
-                else:
-                    if str(login_time) != str(login_query.logintime):
-                        self.login_ins.ins_sql(login_time, self.username, login_sum)
-                    elif str(login_time) == str(login_query.logintime):
-                        out_sum = login_query.loginsum + login_sum
-                        t_login_date.query.filter_by(logintime=login_time, loginname=self.username).update({'loginsum': out_sum})
+                self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功', None, self.new_date)
                 return jsonify({'chk_status': 'true'})
             else:
+                self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
+                                       '密码错误', self.new_date)
                 return jsonify({'password_status': 'fail'})
         else:
+            self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
+                                   '用户名无效', self.new_date)
             return jsonify({'user_status': 'fail'})
 
 

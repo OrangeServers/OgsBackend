@@ -74,11 +74,18 @@ class t_login_date(db.Model):
     __tablename__ = 't_login_date'  # 指定表名字为 user
     # 主键id, 自增, Integer类型
     id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
-    logintime = db.Column(db.Date, nullable=False)
+    login_name = db.Column(db.String(30), nullable=False)
     # userName字段 varchar类型 限制45 不为空
-    loginname = db.Column(db.String(25), nullable=False)
+    login_nw_ip = db.Column(db.String(20), nullable=False)
     # passWord字段, varchar类型 限制45 不为空
-    loginsum = db.Column(db.INT, nullable=False)
+    login_gw_ip = db.Column(db.String(20), nullable=True)
+    login_gw_cs = db.Column(db.String(20), nullable=True)
+    login_agent = db.Column(db.String(20), nullable=False)
+    login_status = db.Column(db.String(255), nullable=False)
+    login_reason = db.Column(db.String(30), nullable=True)
+    login_time = db.Column(db.Date, nullable=False)
+
+
 
 
 if __name__ == '__main__':
@@ -114,3 +121,5 @@ if __name__ == '__main__':
     print(Host.query.filter_by(group='default').count())
     print(ListTool.dict_ls_reset_list(group_list))
     print(host_ip_list)
+    # 多条件查询
+    login_query = t_login_date.query.filter_by(logintime='login_time', loginname='username').first()

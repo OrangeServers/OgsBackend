@@ -54,7 +54,8 @@ class LoginDateSqlalh:
         pass
 
     @staticmethod
-    def ins_sql(logintime, loginname, loginsum):
-        sql = t_login_date(logintime=logintime, loginname=loginname, loginsum=loginsum)
+    def ins_sql(login_name, login_nw_ip, login_gw_ip, login_gw_cs, login_agent, login_status, login_reason, login_time):
+        sql = t_login_date(login_name=login_name, login_nw_ip=login_nw_ip, login_gw_ip=login_gw_ip, login_gw_cs=login_gw_cs,
+                           login_agent=login_agent, login_status=login_status, login_reason=login_reason, login_time=login_time)
         db.session.add(sql)
         db.session.commit()
