@@ -71,3 +71,15 @@ class ListTool:
                 ds_ls.pop(pop)
             msg.append(ds_ls)
         return msg
+
+    @staticmethod
+    def time_ls_dict_que(ls_dict, pop=None, log_time=None):
+        msg = []
+        for ds in ls_dict:
+            ds_ls = ds.__dict__
+            ds_ls[log_time] = str(ds_ls[log_time])
+            ds_ls.pop('_sa_instance_state')
+            if pop:
+                ds_ls.pop(pop)
+            msg.append(ds_ls)
+        return msg

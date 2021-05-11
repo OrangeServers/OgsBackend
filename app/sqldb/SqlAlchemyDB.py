@@ -83,9 +83,7 @@ class t_login_date(db.Model):
     login_agent = db.Column(db.String(20), nullable=False)
     login_status = db.Column(db.String(255), nullable=False)
     login_reason = db.Column(db.String(30), nullable=True)
-    login_time = db.Column(db.Date, nullable=False)
-
-
+    login_time = db.Column(db.TIMESTAMP, nullable=False)
 
 
 if __name__ == '__main__':
@@ -123,3 +121,5 @@ if __name__ == '__main__':
     print(host_ip_list)
     # 多条件查询
     login_query = t_login_date.query.filter_by(logintime='login_time', loginname='username').first()
+    query_msg = t_login_date.query.filter(t_login_date.login_time.like("%2021-05-11%"),
+                                          db.cast(t_login_date.login_time, db.DATE)).all()

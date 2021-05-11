@@ -51,6 +51,27 @@ class User_List:
                             "host_len_msg": 0})
 
 
+class LoginLogs:
+    def __init__(self):
+        self.lt = ListTool()
+
+    def get_login_logs(self):
+        try:
+            table_page = request.values.get('page')
+            table_limit = request.values.get('limit')
+            table_offset = (int(table_page) - 1) * 10
+            query_msg = t_login_date.query.offset(table_offset).limit(table_limit).all()
+            list_msg = self.lt.time_ls_dict_que(query_msg, 'id','login_time')
+            len_msg = t_login_date.query.count()
+            return jsonify({"host_status": 0,
+                            "login_list_msg": list_msg,
+                            "msg": "",
+                            "login_len_msg": len_msg})
+        except IOError:
+            return jsonify({"login_list_msg": 'select list msg error',
+                            "login_len_msg": 0})
+
+
 class CheckMail:
     def __init__(self):
         self.session = DBSession()

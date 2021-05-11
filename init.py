@@ -5,7 +5,7 @@ from datetime import timedelta
 import argparse
 from app.foo.local.Basics import CountList, DataList, DataSumAll
 from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, GroupList, ServerUpdate, ServerScript
-from app.foo.user.AccUser import UserLogin, CheckUser, CheckMail, UserRegister
+from app.foo.user.AccUser import UserLogin, CheckUser, CheckMail, UserRegister, LoginLogs
 from app.foo.user.user import AccUserList, AccUserAdd, AccUserUpdate, AccUserDel
 from app.foo.property.SysUser import SysUserList, SysUserAdd, SysUserUpdate, SysUserDel
 from app.foo.property.ServerGroup import AccGroupList, AccGroupAdd, AccGroupUpdate, AccGroupDel
@@ -106,6 +106,13 @@ def send_mail():
 def com_register():
     orange = UserRegister()
     return orange.register()
+
+
+# 用户登录日志
+@app.route('/account/login/logs', methods=['GET', 'POST'])
+def acc_login_logs():
+    orange = LoginLogs()
+    return orange.get_login_logs()
 
 
 @app.route('/server/group/cmd', methods=['GET', 'POST'])
