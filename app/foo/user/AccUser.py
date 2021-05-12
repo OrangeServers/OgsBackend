@@ -54,15 +54,29 @@ class User_List:
 class LoginLogs:
     def __init__(self):
         self.lt = ListTool()
+        self.table_page = request.values.get('page')
+        self.table_limit = request.values.get('limit')
+        self.table_offset = (int(self.table_page) - 1) * 10
 
     def get_login_logs(self):
         try:
-            table_page = request.values.get('page')
-            table_limit = request.values.get('limit')
-            table_offset = (int(table_page) - 1) * 10
-            query_msg = t_login_date.query.offset(table_offset).limit(table_limit).all()
+            query_msg = t_login_date.query.offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
             len_msg = t_login_date.query.count()
+            return jsonify({"host_status": 0,
+                            "login_list_msg": list_msg,
+                            "msg": "",
+                            "login_len_msg": len_msg})
+        except IOError:
+            return jsonify({"login_list_msg": 'select list msg error',
+                            "login_len_msg": 0})
+
+    def get_select_logs(self):
+        login_jg_date = request.values.get('login_jg_date')
+        try:
+            query_msg = t_login_date.query.filter(t_login_date.login_name.like("%{}%".format(login_jg_date))).offset(self.table_offset).limit(self.table_limit).all()
+            list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
+            len_msg = t_login_date.query.filter(t_login_date.login_name.like("%{}%".format(login_jg_date))).count()
             return jsonify({"host_status": 0,
                             "login_list_msg": list_msg,
                             "msg": "",
@@ -76,12 +90,9 @@ class LoginLogs:
         type(login_jg_date)
         msg = login_jg_date.split(' - ')
         try:
-            table_page = request.values.get('page')
-            table_limit = request.values.get('limit')
-            table_offset = (int(table_page) - 1) * 10
             query_msg = t_login_date.query.filter(t_login_date.login_time >= msg[0]).filter(
                 t_login_date.login_time <= msg[1]).order_by(t_login_date.login_time.desc()).offset(
-                table_offset).limit(table_limit).all()
+                self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
             len_msg = t_login_date.query.filter(t_login_date.login_time >= msg[0]).filter(
                 t_login_date.login_time <= msg[1]).order_by(t_login_date.login_time.desc()).count()
