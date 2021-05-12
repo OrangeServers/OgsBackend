@@ -115,6 +115,12 @@ def acc_login_logs():
     return orange.get_login_logs()
 
 
+@app.route('/account/login/date', methods=['GET', 'POST'])
+def acc_login_date():
+    orange = LoginLogs()
+    return orange.get_date_logs()
+
+
 @app.route('/server/group/cmd', methods=['GET', 'POST'])
 def group_cmd():
     orange = GroupCmd()

@@ -61,8 +61,30 @@ class LoginLogs:
             table_limit = request.values.get('limit')
             table_offset = (int(table_page) - 1) * 10
             query_msg = t_login_date.query.offset(table_offset).limit(table_limit).all()
-            list_msg = self.lt.time_ls_dict_que(query_msg, 'id','login_time')
+            list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
             len_msg = t_login_date.query.count()
+            return jsonify({"host_status": 0,
+                            "login_list_msg": list_msg,
+                            "msg": "",
+                            "login_len_msg": len_msg})
+        except IOError:
+            return jsonify({"login_list_msg": 'select list msg error',
+                            "login_len_msg": 0})
+
+    def get_date_logs(self):
+        login_jg_date = request.values.get('login_jg_date')
+        type(login_jg_date)
+        msg = login_jg_date.split(' - ')
+        try:
+            table_page = request.values.get('page')
+            table_limit = request.values.get('limit')
+            table_offset = (int(table_page) - 1) * 10
+            query_msg = t_login_date.query.filter(t_login_date.login_time >= msg[0]).filter(
+                t_login_date.login_time <= msg[1]).order_by(t_login_date.login_time.desc()).offset(
+                table_offset).limit(table_limit).all()
+            list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
+            len_msg = t_login_date.query.filter(t_login_date.login_time >= msg[0]).filter(
+                t_login_date.login_time <= msg[1]).order_by(t_login_date.login_time.desc()).count()
             return jsonify({"host_status": 0,
                             "login_list_msg": list_msg,
                             "msg": "",
@@ -130,7 +152,8 @@ class UserLogin(CheckUser):
             if self.username == user_info.name and self.password == password_de:
                 # 每个用户登录生成一个session
                 # session["user"] = self.username
-                self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功', None, self.new_date)
+                self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功',
+                                       None, self.new_date)
                 return jsonify({'chk_status': 'true'})
             else:
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',

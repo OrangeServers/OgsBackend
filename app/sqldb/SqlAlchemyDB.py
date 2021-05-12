@@ -123,3 +123,6 @@ if __name__ == '__main__':
     login_query = t_login_date.query.filter_by(logintime='login_time', loginname='username').first()
     query_msg = t_login_date.query.filter(t_login_date.login_time.like("%2021-05-11%"),
                                           db.cast(t_login_date.login_time, db.DATE)).all()
+    # 时间段查询
+    query_msg = t_login_date.query.filter(t_login_date.login_time >= '2021-05-11 00:00:00').filter(
+        t_login_date.login_time <= '2021-05-12 00:00:00').order_by(t_login_date.login_time.desc()).all()
