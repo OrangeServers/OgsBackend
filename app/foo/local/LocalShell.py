@@ -1,4 +1,5 @@
 from flask import request, jsonify
+from werkzeug.utils import secure_filename
 from app.tools.shellcmd import RemoteConnection
 import os, sys
 
@@ -80,3 +81,19 @@ class LocalDirList(LocalShell):
                 'msg': ("server is not group_dir %s !" % self.group_dir)
             })
 
+
+class LocalFilePut:
+    def __init__(self):
+        self.file = request.files.get('file')
+        self.file_name = secure_filename(self.file.filename)
+        self.file_route = '/data/putfile/'
+
+    def put_file(self):
+        if self.file is not None:
+            try:
+                self.file.save(self.file_route + self.file_name)
+                return jsonify({'status': 'true'})
+            except Exception:
+                return jsonify({'status': 'fail'})
+        else:
+            return jsonify({'status': 'null'})
