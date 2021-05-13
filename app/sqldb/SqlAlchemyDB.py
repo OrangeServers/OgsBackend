@@ -86,6 +86,19 @@ class t_login_date(db.Model):
     login_time = db.Column(db.TIMESTAMP, nullable=False)
 
 
+class t_auth_host(db.Model):
+    __tablename__ = 't_auth_host'  # 指定表名字为 user
+    # 主键id, 自增, Integer类型
+    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
+    # userName字段 varchar类型 限制45 不为空
+    name = db.Column(db.String(25), nullable=False)
+    # passWord字段, varchar类型 限制45 不为空
+    user = db.Column(db.String(255), nullable=True)
+    user_group = db.Column(db.String(255), nullable=True)
+    host_group = db.Column(db.String(255), nullable=True)
+    remarks = db.Column(db.String(255), nullable=True)
+
+
 if __name__ == '__main__':
     list_tool = ListTool()
     results = User2.query.all()

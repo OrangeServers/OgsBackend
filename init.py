@@ -9,6 +9,7 @@ from app.foo.user.AccUser import UserLogin, CheckUser, CheckMail, UserRegister, 
 from app.foo.user.user import AccUserList, AccUserAdd, AccUserUpdate, AccUserDel
 from app.foo.property.SysUser import SysUserList, SysUserAdd, SysUserUpdate, SysUserDel
 from app.foo.property.ServerGroup import AccGroupList, AccGroupAdd, AccGroupUpdate, AccGroupDel
+from app.foo.auth.AuthHost import AuthHostList
 from app.conf.conf_test import *
 from app.foo.local.LocalShell import LocalDirList
 from app.foo.mail.MailApi import OrangeMailApi
@@ -297,6 +298,13 @@ def host_group_del():
 def server_file():
     orange = ServerScript()
     return orange.sh_script()
+
+
+# 这里是权限管理接口分割线 -------------------------------------------------------------------------------------
+@app.route('/auth/host/list_all', methods=['GET', 'POST'])
+def auth_host_list_all():
+    orange = AuthHostList()
+    return orange.auth_host_list_all
 
 
 # 这里是本地执行接口分割线 -------------------------------------------------------------------------------------
