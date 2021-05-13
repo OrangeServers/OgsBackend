@@ -1,10 +1,12 @@
 # -*- coding=utf8 -*-
 from flask import jsonify
+from flask.views import View
 from Flask_App_Settings import *
 from datetime import timedelta
 import argparse
 from app.foo.local.Basics import CountList, DataList, DataSumAll
-from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, GroupList, ServerUpdate, ServerScript
+from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, \
+    GroupList, ServerUpdate, ServerScript
 from app.foo.user.AccUser import UserLogin, CheckUser, CheckMail, UserRegister, LoginLogs
 from app.foo.user.user import AccUserList, AccUserAdd, AccUserUpdate, AccUserDel
 from app.foo.property.SysUser import SysUserList, SysUserAdd, SysUserUpdate, SysUserDel
@@ -13,7 +15,6 @@ from app.foo.auth.AuthHost import AuthHostList
 from app.conf.conf_test import *
 from app.foo.local.LocalShell import LocalDirList, LocalFilePut
 from app.foo.mail.MailApi import OrangeMailApi
-
 
 # 原有导入模块 --------------------------------------------------------------------------------------
 # from flask import render_template, make_response
@@ -31,6 +32,9 @@ from app.foo.mail.MailApi import OrangeMailApi
 # app = Flask(__name__, static_folder='./static', template_folder='')
 app.config.update(DEBUG=True)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
+app.logger.info('info log')
+app.logger.warning('warning log')
+app.logger.error('error log')
 
 # 赋予session值的密钥,前后端分离后已经不用
 app.secret_key = "!@#$%^&*()"
@@ -343,6 +347,15 @@ def data_file_put():
     orange = LocalFilePut()
     return orange.put_file()
 
+
+# @app.route('/local/data', methods=['GET', 'POST'])
+
+def test_data_list():
+        orange = DataList()
+        return orange.get_list()
+
+
+app.add_url_rule('/local/data/test', view_func=test_data_list, methods=['POST','get'])
 
 if __name__ == "__main__":
     # app.run(host='0.0.0.0',port=28000)
