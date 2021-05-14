@@ -10,7 +10,7 @@ from app.service.server_group_api import *
 from app.service.server_mag_api import *
 from app.service.ser_acc_user_api import *
 from app.service.server_sysuser_api import *
-from app.service.auth_api import auth_host_list_all
+from app.service.auth_api import *
 
 # 原有导入模块 --------------------------------------------------------------------------------------
 # from flask import render_template, make_response
@@ -109,6 +109,8 @@ def orange_init_api():
 
     # 这里是权限管理接口
     app.add_url_rule('/auth/host/list_all', view_func=auth_host_list_all, methods=['POST', 'get'])
+    app.add_url_rule('/auth/host/del', view_func=auth_host_del, methods=['POST', 'get'])
+    app.add_url_rule('/auth/host/test', view_func=test_get_auth_group, methods=['POST', 'get'])
 
     # 这里是本地执行接口
     app.add_url_rule('/server/count_list_all', view_func=count_list, methods=['POST', 'get'])

@@ -1,12 +1,33 @@
 from flask import request, jsonify
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_auth_host, db
+from app.sqldb.SqlAlchemyDB import t_auth_host, t_group, db
 from app.sqldb.SqlAlchemyInsert import AuthHostSqlalh
 
 
 class AuthHostList:
     def __init__(self):
         self.lt = ListTool()
+
+    @property
+    def test_auth_group(self):
+        auth_name = request.values.get('name')
+        auth_list = []
+        try:
+            query_group_name = t_group.query.with_entities(t_group.name).all()
+            group_name = self.lt.list_gather(query_group_name)
+            print(group_name)
+            query_auth_msg = t_auth_host.query.filter_by(name=auth_name).first()
+            auth_msg = query_auth_msg.host_group
+            auth_msg_list = auth_msg.split(',')
+            print(auth_msg_list)
+            for i in group_name:
+                if i in auth_msg_list:
+                    auth_list.append({'name': i, 'value': i, 'selected': 'selected'})
+                else:
+                    auth_list.append({'name': i, 'value': i})
+            return jsonify({'msg': auth_list})
+        except IOError:
+            return jsonify({'msg': 'fail'})
 
     @property
     def auth_host_list(self):
@@ -36,12 +57,12 @@ class AuthHostList:
 class AuthHostDel:
     def __init__(self):
         # self.host_ip = request.values.get('host_ip')
-        self.id = request.values.get('id')
+        self.name = request.values.get('name')
 
     @property
     def auth_host_del(self):
         # user_chk = Host.query.filter_by(host_ip=self.host_ip).first()
-        auth_chk = t_auth_host.query.filter_by(id=self.id).first()
+        auth_chk = t_auth_host.query.filter_by(id=self.name).first()
         if not auth_chk is None:
             db.session.delete(auth_chk)
             db.session.commit()
