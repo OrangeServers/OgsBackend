@@ -149,15 +149,15 @@ class AuthHostAdd:
 class AuthHostUpdate(AuthHostAdd):
     def __init__(self):
         super(AuthHostUpdate, self).__init__()
-        self.id = request.values.get('id')
+        self.id = request.values.get('name')
 
     @property
     def auth_host_update(self):
         try:
-            t_auth_host.query.filter_by(id=self.id).update({'name': self.name, 'user': self.user,
-                                                            'user_group': self.user_group,
-                                                            'host_group': self.host_group,
-                                                            'remarks': self.remarks})
+            t_auth_host.query.filter_by(name=self.name).update({'name': self.name, 'user': self.user,
+                                                                'user_group': self.user_group,
+                                                                'host_group': self.host_group,
+                                                                'remarks': self.remarks})
             db.session.commit()
             return jsonify({'auth_host_ping_status': 'true',
                             'auth_host_into_update': 'true'})

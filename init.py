@@ -111,7 +111,8 @@ def orange_init_api():
     app.add_url_rule('/auth/host/list_all', view_func=auth_host_list_all, methods=['POST', 'get'])
     app.add_url_rule('/auth/host/add', view_func=auth_host_add, methods=['POST', 'get'])
     app.add_url_rule('/auth/host/del', view_func=auth_host_del, methods=['POST', 'get'])
-    app.add_url_rule('/auth/host/test', view_func=test_get_auth_group, methods=['POST', 'get'])
+    app.add_url_rule('/auth/host/update', view_func=auth_host_update, methods=['POST', 'get'])
+    app.add_url_rule('/auth/host/uplist', view_func=auth_group_uplist, methods=['POST', 'get'])
     app.add_url_rule('/auth/host/list', view_func=auth_create_get_list, methods=['POST', 'get'])
 
     # 这里是本地执行接口
