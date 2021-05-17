@@ -109,8 +109,10 @@ def orange_init_api():
 
     # 这里是权限管理接口
     app.add_url_rule('/auth/host/list_all', view_func=auth_host_list_all, methods=['POST', 'get'])
+    app.add_url_rule('/auth/host/add', view_func=auth_host_add, methods=['POST', 'get'])
     app.add_url_rule('/auth/host/del', view_func=auth_host_del, methods=['POST', 'get'])
     app.add_url_rule('/auth/host/test', view_func=test_get_auth_group, methods=['POST', 'get'])
+    app.add_url_rule('/auth/host/list', view_func=auth_create_get_list, methods=['POST', 'get'])
 
     # 这里是本地执行接口
     app.add_url_rule('/server/count_list_all', view_func=count_list, methods=['POST', 'get'])
@@ -122,11 +124,8 @@ def orange_init_api():
     app.add_url_rule('/local/file', view_func=local_data_file_put, methods=['POST', 'get'])
 
 
-# 启动接口
-orange_init_api()
-
-
 if __name__ == "__main__":
+    orange_init_api()
     # app.run(host='0.0.0.0',port=28000)
     args = sta_cs()
     host = args.host
