@@ -139,3 +139,6 @@ if __name__ == '__main__':
     # 时间段查询
     query_msg = t_login_date.query.filter(t_login_date.login_time >= '2021-05-11 00:00:00').filter(
         t_login_date.login_time <= '2021-05-12 00:00:00').order_by(t_login_date.login_time.desc()).all()
+
+    # 一个字段多值查询
+    test = Host.query.filter(Host.group.in_([1,2,3])).all()

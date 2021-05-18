@@ -2,7 +2,7 @@ from flask import request, jsonify
 from werkzeug.utils import secure_filename
 from app.tools.shellcmd import RemoteConnection
 from app.foo.local.LocalShell import LocalShell
-from app.sqldb.SqlAlchemyDB import Host, db, t_group, t_sys_user, User2
+from app.sqldb.SqlAlchemyDB import Host, db, t_group, t_auth_host, User2
 from app.sqldb.SqlAlchemyInsert import HostSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
@@ -65,9 +65,12 @@ class ServerList:
             table_page = request.values.get('page')
             table_limit = request.values.get('limit')
             table_offset = (int(table_page) - 1) * 10
-            query_msg = Host.query.offset(table_offset).limit(table_limit).all()
+            name = request.values.get('name')
+            que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
+            auth_group = self.ls_tool.auth_ls_list_que(que_auth_group)
+            query_msg = Host.query.filter(Host.group.in_(auth_group)).offset(table_offset).limit(table_limit).all()
             list_msg = self.ls_tool.dict_ls_reset_dict(query_msg)
-            len_msg = Host.query.count()
+            len_msg = Host.query.filter(Host.group.in_(auth_group)).offset(table_offset).limit(table_limit).count()
             return jsonify({"host_status": 0,
                             "host_list_msg": list_msg,
                             "msg": "",

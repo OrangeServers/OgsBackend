@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from app.sqldb.SqlAlchemyDB import Host, db, t_group, t_sys_user, User2
+from app.sqldb.SqlAlchemyDB import Host, db, t_group, t_sys_user, User2, t_auth_host
 from app.tools.SqlListTool import ListTool
 
 
@@ -32,10 +32,14 @@ class DataList:
         # que_group = Host.query.with_entities(Host.group).all()
         que_group = t_group.query.with_entities(t_group.name).all()
         host_group = self.lt.list_rep_gather(que_group)
+        name = request.values.get('name')
+        que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
+        res_group = set(self.lt.auth_ls_list_que(que_auth_group))
+        print(res_group)
         group_count = 1000
         # host_count = 100
         msg_list = []
-        for i in host_group:
+        for i in res_group:
             body_list = []
             group_count += 1
             dic = Host.query.filter_by(group=i).all()

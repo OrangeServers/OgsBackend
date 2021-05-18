@@ -83,3 +83,11 @@ class ListTool:
                 ds_ls.pop(pop)
             msg.append(ds_ls)
         return msg
+
+    def auth_ls_list_que(self, auth_ls):
+        res_list = []
+        for x in auth_ls:
+            auth_group = x.host_group.split(',')
+            res_list.append(auth_group)
+        msg = set(self.list_gather(res_list))
+        return msg
