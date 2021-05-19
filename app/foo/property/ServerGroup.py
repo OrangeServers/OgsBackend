@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_group, db
+from app.sqldb.SqlAlchemyDB import t_group, t_auth_host, db
 from app.sqldb.SqlAlchemyInsert import GroupSqlalh
 
 
@@ -21,9 +21,11 @@ class AccGroupList:
 
     @property
     def group_name_list(self):
+        name = request.values.get('name')
         try:
-            query_group = t_group.query.with_entities(t_group.name).all()
-            group_list = self.lt.list_rep_gather(query_group)
+            que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
+            auth_group = self.lt.auth_ls_list_que(que_auth_group)
+            group_list = list(auth_group)
             return jsonify({'group_name_list_msg': group_list})
         except IOError:
             return jsonify({'get_name_list': 'fail'})

@@ -10,7 +10,7 @@ from app.tools.basesec import BaseSec
 
 class ServerList:
     def __init__(self):
-        self.ls_tool = ListTool()
+        self.lt = ListTool()
 
     @property
     def server_count_all(self):
@@ -33,7 +33,7 @@ class ServerList:
         try:
             host_id = request.values.get("id")
             query_msg = Host.query.filter_by(id=host_id).first()
-            list_msg = self.ls_tool.dict_reset_pop(query_msg)
+            list_msg = self.lt.dict_reset_pop(query_msg)
             return jsonify(list_msg)
         except IOError:
             return jsonify({"host_list_msg": 'select list msg error'})
@@ -49,7 +49,7 @@ class ServerList:
                 return self.server_list_all
             else:
                 query_msg = Host.query.filter_by(group=group_name).offset(table_offset).limit(table_limit).all()
-                list_msg = self.ls_tool.dict_ls_reset_dict(query_msg)
+                list_msg = self.lt.dict_ls_reset_dict(query_msg)
                 len_msg = Host.query.filter_by(group=group_name).count()
                 return jsonify({"host_status": 0,
                                 "host_list_msg": list_msg,
@@ -67,9 +67,9 @@ class ServerList:
             table_offset = (int(table_page) - 1) * 10
             name = request.values.get('name')
             que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
-            auth_group = self.ls_tool.auth_ls_list_que(que_auth_group)
+            auth_group = self.lt.auth_ls_list_que(que_auth_group)
             query_msg = Host.query.filter(Host.group.in_(auth_group)).offset(table_offset).limit(table_limit).all()
-            list_msg = self.ls_tool.dict_ls_reset_dict(query_msg)
+            list_msg = self.lt.dict_ls_reset_dict(query_msg)
             len_msg = Host.query.filter(Host.group.in_(auth_group)).offset(table_offset).limit(table_limit).count()
             return jsonify({"host_status": 0,
                             "host_list_msg": list_msg,
@@ -83,14 +83,14 @@ class ServerList:
 class GroupList:
     def __init__(self):
         self.group = request.values.get('group')
-        self.ls_tool = ListTool()
+        self.lt = ListTool()
 
     @property
     def server_list(self):
         try:
             group_list = Host.query.filter_by(group=self.group).all()
             len_msg = Host.query.filter_by(group=self.group).count()
-            group_select = self.ls_tool.dict_ls_reset_list(group_list)
+            group_select = self.lt.dict_ls_reset_list(group_list)
             return jsonify({"group_list_msg": group_select,
                             "group_len_msg": len_msg})
 
