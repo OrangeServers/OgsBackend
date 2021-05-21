@@ -12,6 +12,7 @@ from app.service.ser_acc_user_api import *
 from app.service.server_sysuser_api import *
 from app.service.auth_api import *
 
+# from skywalking import agent, config
 # 原有导入模块 --------------------------------------------------------------------------------------
 # from flask import render_template, make_response
 # from app.foo.user.decorator import wrapper
@@ -32,6 +33,9 @@ app.logger.error('error log')
 
 # 赋予session值的密钥,前后端分离后已经不用
 app.secret_key = "!@#$%^&*()"
+
+# config.init(collector='10.0.1.238:11800', service='your awesome service')
+# agent.start()
 
 
 # 执行脚本时指定启动参数的函数
