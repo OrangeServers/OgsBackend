@@ -12,7 +12,12 @@ from app.service.ser_acc_user_api import *
 from app.service.server_sysuser_api import *
 from app.service.auth_api import *
 
-# from skywalking import agent, config
+# 导入skywalking链路追踪
+import asyncio
+from skywalking import agent, config
+config.init(collector='10.0.1.198:11800', service='orangeserver') #采集服务的地址，给自己的服务起个名称
+agent.start()
+
 # 原有导入模块 --------------------------------------------------------------------------------------
 # from flask import render_template, make_response
 # from app.foo.user.decorator import wrapper
@@ -33,9 +38,6 @@ app.logger.error('error log')
 
 # 赋予session值的密钥,前后端分离后已经不用
 app.secret_key = "!@#$%^&*()"
-
-# config.init(collector='10.0.1.238:11800', service='your awesome service')
-# agent.start()
 
 
 # 执行脚本时指定启动参数的函数
@@ -138,3 +140,12 @@ if __name__ == "__main__":
     app.run(host=host, port=port)
     # http_server = WSGIServer((host,port),app,handler_class=WebSocketHandler)
     # http_server.serve_forever()
+    # 使用 asyncio
+    AsyncIOMainLoop().install()
+    app_server = Application().listen(options.port)
+    try:
+        asyncio.get_event_loop().run_forever()
+    except KeyboardInterrupt:
+        print()
+        print("stopping...")
+        print()
