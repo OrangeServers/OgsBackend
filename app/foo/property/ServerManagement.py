@@ -1,9 +1,10 @@
+import time
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
 from app.tools.shellcmd import RemoteConnection
 from app.foo.local.LocalShell import LocalShell
-from app.sqldb.SqlAlchemyDB import Host, db, t_group, t_auth_host, User2
-from app.sqldb.SqlAlchemyInsert import HostSqlalh
+from app.sqldb.SqlAlchemyDB import Host, db, t_group, t_auth_host, t_command_log, User2
+from app.sqldb.SqlAlchemyInsert import HostSqlalh, CommandLogSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
 
@@ -97,6 +98,60 @@ class GroupList:
         except IOError:
             return jsonify({"group_list_msg": 'select group list msg error',
                             "group_len_msg": 0})
+
+
+class CommandLogs:
+    def __init__(self):
+        self.lt = ListTool()
+        self.table_page = request.values.get('page')
+        self.table_limit = request.values.get('limit')
+        self.table_offset = (int(self.table_page) - 1) * 10
+
+    def get_com_logs(self):
+        try:
+            query_msg = t_command_log.query.offset(self.table_offset).limit(self.table_limit).all()
+            list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
+            len_msg = t_command_log.query.count()
+            return jsonify({"host_status": 0,
+                            "command_list_msg": list_msg,
+                            "msg": "",
+                            "command_len_msg": len_msg})
+        except IOError:
+            return jsonify({"command_list_msg": 'select list msg error',
+                            "command_len_msg": 0})
+
+    def get_select_logs(self):
+        com_jg_date = request.values.get('com_jg_date')
+        try:
+            query_msg = t_command_log.query.filter(t_command_log.com_name.like("%{}%".format(com_jg_date))).offset(self.table_offset).limit(self.table_limit).all()
+            list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
+            len_msg = t_command_log.query.filter(t_command_log.com_name.like("%{}%".format(com_jg_date))).count()
+            return jsonify({"host_status": 0,
+                            "command_list_msg": list_msg,
+                            "msg": "",
+                            "command_len_msg": len_msg})
+        except IOError:
+            return jsonify({"command_list_msg": 'select list msg error',
+                            "command_len_msg": 0})
+
+    def get_date_logs(self):
+        com_jg_date = request.values.get('com_jg_date')
+        type(com_jg_date)
+        msg = com_jg_date.split(' - ')
+        try:
+            query_msg = t_command_log.query.filter(t_command_log.com_time >= msg[0]).filter(
+                t_command_log.com_time <= msg[1]).order_by(t_command_log.com_time.desc()).offset(
+                self.table_offset).limit(self.table_limit).all()
+            list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
+            len_msg = t_command_log.query.filter(t_command_log.com_time >= msg[0]).filter(
+                t_command_log.com_time <= msg[1]).order_by(t_command_log.com_time.desc()).count()
+            return jsonify({"host_status": 0,
+                            "command_list_msg": list_msg,
+                            "msg": "",
+                            "command_len_msg": len_msg})
+        except IOError:
+            return jsonify({"command_list_msg": 'select list msg error',
+                            "command_len_msg": 0})
 
 
 class ServerDel:
@@ -215,6 +270,11 @@ class ServerListCmd(ServerCmd2):
         # self.host_ip = request.values.getlist('host_ip')
         self.host_id = request.values.getlist('host_id')
 
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.com_name = request.values.get('com_name')
+        self.com_ins = CommandLogSqlalh
+        self.com_host = ','.join(self.host_id)
+
     @property
     def sh_list_cmd(self):
         try:
@@ -229,10 +289,12 @@ class ServerListCmd(ServerCmd2):
                 msg = conn.ssh_cmd(self.command)
                 msg_list.append(msg)
                 alias_list.append(host_dict['alias'])
+            self.com_ins.ins_sql(self.com_name, '批量命令', self.command, self.com_host, '成功', None, self.new_date)
             return jsonify({'server_ping_status': 'true',
                             'command_msg': msg_list,
                             'hostname_list': alias_list})
         except IOError:
+            self.com_ins.ins_sql(self.com_name, '批量命令', self.command, self.com_host, '失败', '连接主机失败', self.new_date)
             return jsonify({'server_ping_status': 'fail'})
 
 
@@ -304,6 +366,11 @@ class ServerScript:
         self.on_file = '/data/putfile/' + self.filename
         self.to_file = '/tmp/' + self.filename
 
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.com_name = request.values.get('com_name')
+        self.com_ins = CommandLogSqlalh
+        self.com_host = ','.join(self.id_list)
+
     def sh_script(self):
         print("files", self.file.filename, self.id_list)
         # dest = open(self.on_file, 'wb+')
@@ -325,11 +392,13 @@ class ServerScript:
                 msg_list.append(msg)
                 alias_list.append(host_dict['alias'])
                 conn.ssh_cmd("rm -f %s" % self.to_file)
+            self.com_ins.ins_sql(self.com_name, '批量脚本', self.filename, self.com_host, '成功', None, self.new_date)
             self.local_cmd.cmd_shell("rm -f %s" % self.on_file)
             return jsonify({'server_ping_status': 'true',
                             'command_msg': msg_list,
                             'hostname_list': alias_list})
         except IOError:
+            self.com_ins.ins_sql(self.com_name, '批量脚本', self.filename, self.com_host, '失败', '连接主机失败', self.new_date)
             return jsonify({'server_ping_status': 'fail'})
 
 

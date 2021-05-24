@@ -5,8 +5,8 @@ from app.tools.sendmail import SendMail
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyConf import DBSession, User
-from app.sqldb.SqlAlchemyDB import User2, t_acc_user, t_login_date, db
-from app.sqldb.SqlAlchemyInsert import LoginDateSqlalh
+from app.sqldb.SqlAlchemyDB import User2, t_acc_user, t_login_log, db
+from app.sqldb.SqlAlchemyInsert import LoginLogSqlalh
 from app.conf.conf_test import MAIL_CONF, REDIS_CONF
 
 
@@ -60,9 +60,9 @@ class LoginLogs:
 
     def get_login_logs(self):
         try:
-            query_msg = t_login_date.query.offset(self.table_offset).limit(self.table_limit).all()
+            query_msg = t_login_log.query.offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
-            len_msg = t_login_date.query.count()
+            len_msg = t_login_log.query.count()
             return jsonify({"host_status": 0,
                             "login_list_msg": list_msg,
                             "msg": "",
@@ -74,9 +74,9 @@ class LoginLogs:
     def get_select_logs(self):
         login_jg_date = request.values.get('login_jg_date')
         try:
-            query_msg = t_login_date.query.filter(t_login_date.login_name.like("%{}%".format(login_jg_date))).offset(self.table_offset).limit(self.table_limit).all()
+            query_msg = t_login_log.query.filter(t_login_log.login_name.like("%{}%".format(login_jg_date))).offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
-            len_msg = t_login_date.query.filter(t_login_date.login_name.like("%{}%".format(login_jg_date))).count()
+            len_msg = t_login_log.query.filter(t_login_log.login_name.like("%{}%".format(login_jg_date))).count()
             return jsonify({"host_status": 0,
                             "login_list_msg": list_msg,
                             "msg": "",
@@ -90,12 +90,12 @@ class LoginLogs:
         type(login_jg_date)
         msg = login_jg_date.split(' - ')
         try:
-            query_msg = t_login_date.query.filter(t_login_date.login_time >= msg[0]).filter(
-                t_login_date.login_time <= msg[1]).order_by(t_login_date.login_time.desc()).offset(
+            query_msg = t_login_log.query.filter(t_login_log.login_time >= msg[0]).filter(
+                t_login_log.login_time <= msg[1]).order_by(t_login_log.login_time.desc()).offset(
                 self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
-            len_msg = t_login_date.query.filter(t_login_date.login_time >= msg[0]).filter(
-                t_login_date.login_time <= msg[1]).order_by(t_login_date.login_time.desc()).count()
+            len_msg = t_login_log.query.filter(t_login_log.login_time >= msg[0]).filter(
+                t_login_log.login_time <= msg[1]).order_by(t_login_log.login_time.desc()).count()
             return jsonify({"host_status": 0,
                             "login_list_msg": list_msg,
                             "msg": "",
@@ -150,7 +150,7 @@ class UserLogin(CheckUser):
         self.user_agent = request.headers.get('User-Agent')
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.base = BaseSec()
-        self.login_ins = LoginDateSqlalh
+        self.login_ins = LoginLogSqlalh
 
     def login_dl(self):
         # user_info = self.session.query(User).filter_by(name=self.username).first()

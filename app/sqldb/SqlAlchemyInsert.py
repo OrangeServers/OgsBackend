@@ -1,4 +1,5 @@
-from app.sqldb.SqlAlchemyDB import Host, t_group, t_acc_user, t_sys_user, t_login_date, t_auth_host, db
+from app.sqldb.SqlAlchemyDB import Host, t_group, t_acc_user, t_sys_user, t_acc_group, t_login_log, t_auth_host, \
+    t_command_log, db
 
 
 class HostSqlalh:
@@ -21,6 +22,17 @@ class GroupSqlalh:
     @staticmethod
     def ins_sql(name, remarks):
         sql = t_group(name=name, nums=0, remarks=remarks)
+        db.session.add(sql)
+        db.session.commit()
+
+
+class AccGroupSqlalh:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def ins_sql(name, remarks):
+        sql = t_acc_group(name=name, nums=0, remarks=remarks)
         db.session.add(sql)
         db.session.commit()
 
@@ -49,14 +61,28 @@ class AccUserSqlalh:
         db.session.commit()
 
 
-class LoginDateSqlalh:
+class LoginLogSqlalh:
     def __init__(self):
         pass
 
     @staticmethod
     def ins_sql(login_name, login_nw_ip, login_gw_ip, login_gw_cs, login_agent, login_status, login_reason, login_time):
-        sql = t_login_date(login_name=login_name, login_nw_ip=login_nw_ip, login_gw_ip=login_gw_ip, login_gw_cs=login_gw_cs,
-                           login_agent=login_agent, login_status=login_status, login_reason=login_reason, login_time=login_time)
+        sql = t_login_log(login_name=login_name, login_nw_ip=login_nw_ip, login_gw_ip=login_gw_ip,
+                          login_gw_cs=login_gw_cs,
+                          login_agent=login_agent, login_status=login_status, login_reason=login_reason,
+                          login_time=login_time)
+        db.session.add(sql)
+        db.session.commit()
+
+
+class CommandLogSqlalh:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def ins_sql(com_name, com_type, com_info, com_host, com_status, com_reason, com_time):
+        sql = t_command_log(com_name=com_name, com_type=com_type, com_info=com_info, com_host=com_host,com_status=com_status,
+                            com_reason=com_reason, com_time=com_time)
         db.session.add(sql)
         db.session.commit()
 

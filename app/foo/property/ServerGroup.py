@@ -5,7 +5,7 @@ from app.sqldb.SqlAlchemyDB import t_group, t_auth_host, db
 from app.sqldb.SqlAlchemyInsert import GroupSqlalh
 
 
-class AccGroupList:
+class ServerGroupList:
     def __init__(self):
         self.lt = ListTool()
 
@@ -17,7 +17,7 @@ class AccGroupList:
             list_msg = self.lt.dict_reset_pop_auto(query_msg)
             return jsonify(list_msg)
         except IOError:
-            return jsonify({"acc_group_list_msg": 'select list msg error'})
+            return jsonify({"server_group_list_msg": 'select list msg error'})
 
     @property
     def group_name_list(self):
@@ -48,7 +48,7 @@ class AccGroupList:
                             "host_len_msg": 0})
 
 
-class AccGroupDel:
+class ServerGroupDel:
     def __init__(self):
         self.id = request.values.get('id')
 
@@ -58,12 +58,12 @@ class AccGroupDel:
         if not user_chk is None:
             db.session.delete(user_chk)
             db.session.commit()
-            return jsonify({'group_del_status': 'true'})
+            return jsonify({'server_group_del_status': 'true'})
         else:
-            return jsonify({'group_del_status': 'fail'})
+            return jsonify({'server_group_del_status': 'fail'})
 
 
-class AccGroupAdd:
+class ServerGroupAdd:
     def __init__(self):
         self.name = request.values.get('name')
         self.remarks = request.values.get('remarks', type=str, default=None)
@@ -76,18 +76,18 @@ class AccGroupAdd:
             user_chk = t_group.query.filter_by(name=self.name).first()
             if user_chk is None:
                 self.host_sqlalh.ins_sql(self.name, self.remarks)
-                return jsonify({'acc_group_add_status': 'true'})
+                return jsonify({'server_group_add_status': 'true'})
             else:
-                return jsonify({'acc_group_add_status': 'sel_fail'})
+                return jsonify({'server_group_add_status': 'sel_fail'})
         except IOError:
-            return jsonify({'acc_group_add_status': 'con_fail'})
+            return jsonify({'server_group_add_status': 'con_fail'})
         except Exception:
-            return jsonify({'acc_group_add_status': 'fail'})
+            return jsonify({'server_group_add_status': 'fail'})
 
 
-class AccGroupUpdate(AccGroupAdd):
+class ServerGroupUpdate(ServerGroupAdd):
     def __init__(self):
-        super(AccGroupUpdate, self).__init__()
+        super(ServerGroupUpdate, self).__init__()
         self.id = request.values.get('id')
 
     @property
@@ -95,7 +95,7 @@ class AccGroupUpdate(AccGroupAdd):
         try:
             t_group.query.filter_by(id=self.id).update({'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
-            return jsonify({'acc_group_ping_status': 'true',
-                            'acc_group_into_update': 'true'})
+            return jsonify({'server_group_ping_status': 'true',
+                            'server_group_into_update': 'true'})
         except Exception:
-            return jsonify({'acc_group_into_update': 'fail'})
+            return jsonify({'server_group_into_update': 'fail'})

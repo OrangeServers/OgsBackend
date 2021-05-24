@@ -70,8 +70,19 @@ class t_group(db.Model):
     remarks = db.Column(db.String(30), nullable=True)
 
 
-class t_login_date(db.Model):
-    __tablename__ = 't_login_date'  # 指定表名字为 user
+class t_acc_group(db.Model):
+    __tablename__ = 't_acc_group'  # 指定表名字为 user
+    # 主键id, 自增, Integer类型
+    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
+    # userName字段 varchar类型 限制45 不为空
+    name = db.Column(db.String(25), nullable=False)
+    # passWord字段, varchar类型 限制45 不为空
+    nums = db.Column(db.INT, nullable=False)
+    remarks = db.Column(db.String(30), nullable=True)
+
+
+class t_login_log(db.Model):
+    __tablename__ = 't_login_log'  # 指定表名字为 user
     # 主键id, 自增, Integer类型
     id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
     login_name = db.Column(db.String(30), nullable=False)
@@ -84,6 +95,21 @@ class t_login_date(db.Model):
     login_status = db.Column(db.String(255), nullable=False)
     login_reason = db.Column(db.String(30), nullable=True)
     login_time = db.Column(db.TIMESTAMP, nullable=False)
+
+
+class t_command_log(db.Model):
+    __tablename__ = 't_command_log'  # 指定表名字为 user
+    # 主键id, 自增, Integer类型
+    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
+    com_name = db.Column(db.String(30), nullable=False)
+    # userName字段 varchar类型 限制45 不为空
+    com_type = db.Column(db.String(30), nullable=False)
+    # passWord字段, varchar类型 限制45 不为空
+    com_info = db.Column(db.String(255), nullable=False)
+    com_host = db.Column(db.String(255), nullable=False)
+    com_status = db.Column(db.String(10), nullable=False)
+    com_reason = db.Column(db.String(255), nullable=True)
+    com_time = db.Column(db.TIMESTAMP, nullable=False)
 
 
 class t_auth_host(db.Model):
@@ -133,12 +159,12 @@ if __name__ == '__main__':
     print(ListTool.dict_ls_reset_list(group_list))
     print(host_ip_list)
     # 多条件查询
-    login_query = t_login_date.query.filter_by(logintime='login_time', loginname='username').first()
-    query_msg = t_login_date.query.filter(t_login_date.login_time.like("%2021-05-11%"),
-                                          db.cast(t_login_date.login_time, db.DATE)).all()
+    login_query = t_login_log.query.filter_by(logintime='login_time', loginname='username').first()
+    query_msg = t_login_log.query.filter(t_login_log.login_time.like("%2021-05-11%"),
+                                          db.cast(t_login_log.login_time, db.DATE)).all()
     # 时间段查询
-    query_msg = t_login_date.query.filter(t_login_date.login_time >= '2021-05-11 00:00:00').filter(
-        t_login_date.login_time <= '2021-05-12 00:00:00').order_by(t_login_date.login_time.desc()).all()
+    query_msg = t_login_log.query.filter(t_login_log.login_time >= '2021-05-11 00:00:00').filter(
+        t_login_log.login_time <= '2021-05-12 00:00:00').order_by(t_login_log.login_time.desc()).all()
 
     # 一个字段多值查询
     test = Host.query.filter(Host.group.in_([1,2,3])).all()

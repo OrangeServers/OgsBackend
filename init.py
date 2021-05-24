@@ -4,7 +4,9 @@ from Flask_App_Settings import *
 from datetime import timedelta
 from app.service.local_api import *
 from app.service.user_api import *
+from app.service.acc_group import *
 from app.service.user_logs_api import *
+from app.service.server_logs_api import *
 from app.service.mail_api import *
 from app.service.server_group_api import *
 from app.service.server_mag_api import *
@@ -77,6 +79,18 @@ def orange_init_api():
     app.add_url_rule('/account/login/logs', view_func=acc_login_logs, methods=['POST', 'get'])
     app.add_url_rule('/account/login/date', view_func=acc_login_date, methods=['POST', 'get'])
     app.add_url_rule('/account/login/select', view_func=acc_login_select, methods=['POST', 'get'])
+
+    # 用户操作日志
+    app.add_url_rule('/server/command/logs', view_func=server_com_logs, methods=['POST', 'get'])
+    app.add_url_rule('/server/command/date', view_func=server_com_date, methods=['POST', 'get'])
+    app.add_url_rule('/server/command/select', view_func=server_com_select, methods=['POST', 'get'])
+
+    # 用户组接口
+    app.add_url_rule('/account/group/list', view_func=acc_group_list, methods=['POST', 'get'])
+    app.add_url_rule('/account/group/list_all', view_func=acc_group_list_all, methods=['POST', 'get'])
+    app.add_url_rule('/account/group/add', view_func=acc_group_add, methods=['POST', 'get'])
+    app.add_url_rule('/account/group/update', view_func=acc_group_update, methods=['POST', 'get'])
+    app.add_url_rule('/account/group/del', view_func=acc_group_del, methods=['POST', 'get'])
 
     # 这里是页面用户接口
     app.add_url_rule('/server/acc/user/list', view_func=acc_user_list, methods=['POST', 'get'])
