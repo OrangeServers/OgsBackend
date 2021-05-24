@@ -325,7 +325,7 @@ class ServerScript:
                 msg_list.append(msg)
                 alias_list.append(host_dict['alias'])
                 conn.ssh_cmd("rm -f %s" % self.to_file)
-                self.local_cmd.cmd_shell("rm -f %s" % self.on_file)
+            self.local_cmd.cmd_shell("rm -f %s" % self.on_file)
             return jsonify({'server_ping_status': 'true',
                             'command_msg': msg_list,
                             'hostname_list': alias_list})
