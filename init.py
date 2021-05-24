@@ -32,7 +32,7 @@ agent.start()
 # monkey.patch_all()
 # 初始化flask实例
 # app = Flask(__name__, static_folder='./static', template_folder='')
-app.config.update(DEBUG=True)
+app.config.update(DEBUG=False)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 app.logger.info('info log')
 app.logger.warning('warning log')
