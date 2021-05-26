@@ -1,13 +1,16 @@
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
+from app.tools.redisdb import ConnRedis
 from app.sqldb.SqlAlchemyDB import t_acc_user, db
 from app.sqldb.SqlAlchemyInsert import AccUserSqlalh
+from app.conf.conf_test import REDIS_CONF
 
 
 class AccUserList:
     def __init__(self):
         self.lt = ListTool()
+        self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
 
     @property
     def sys_user_list(self):
@@ -16,6 +19,16 @@ class AccUserList:
             query_msg = t_acc_user.query.filter_by(id=acc_user_id).first()
             list_msg = self.lt.dict_reset_pop_auto(query_msg, 'password')
             return jsonify(list_msg)
+        except IOError:
+            return jsonify({"acc_user_list_msg": 'select list msg error'})
+
+    @property
+    def sys_user_auth_list(self):
+        try:
+            acc_user_name = request.values.get("name")
+            user_role = acc_user_name + '_role'
+            role = self.cnres.get_red(user_role)
+            return jsonify({'usrole': role})
         except IOError:
             return jsonify({"acc_user_list_msg": 'select list msg error'})
 
@@ -83,6 +96,7 @@ class AccUserUpdate(AccUserAdd):
     def __init__(self):
         super(AccUserUpdate, self).__init__()
         self.id = request.values.get('id')
+        self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
 
     @property
     def update(self):
@@ -93,6 +107,8 @@ class AccUserUpdate(AccUserAdd):
                                                            'usrole': self.usrole,
                                                            'mail': self.mail, 'remarks': self.remarks})
             db.session.commit()
+            role_name = self.name + '_role'
+            self.cnres.set_red(role_name, self.usrole)
             return jsonify({'acc_user_ping_status': 'true',
                             'acc_user_into_update': 'true'})
         except Exception:

@@ -6,6 +6,11 @@ def acc_user_list():
     return orange.sys_user_list
 
 
+def acc_user_auth_list():
+    orange = AccUserList()
+    return orange.sys_user_auth_list
+
+
 def acc_user_list_all():
     orange = AccUserList()
     return orange.sys_user_list_all

@@ -5,7 +5,7 @@ from app.tools.sendmail import SendMail
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyConf import DBSession, User
-from app.sqldb.SqlAlchemyDB import User2, t_acc_user, t_login_log, db
+from app.sqldb.SqlAlchemyDB import User2, t_acc_user, t_login_log, db, t_acc_group
 from app.sqldb.SqlAlchemyInsert import LoginLogSqlalh
 from app.conf.conf_test import MAIL_CONF, REDIS_CONF
 
@@ -152,9 +152,9 @@ class UserLogin(CheckUser):
         self.base = BaseSec()
         self.login_ins = LoginLogSqlalh
 
+        self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+
     def login_dl(self):
-        # user_info = self.session.query(User).filter_by(name=self.username).first()
-        print(self.new_date, self.user_nw_ip, self.user_agent)
         user_info = User2.query.filter_by(name=self.username).first()
         user_gw_ip = request.values.get('user_gw_ip')
         user_gw_cs = request.values.get('user_gw_cs')
@@ -163,6 +163,10 @@ class UserLogin(CheckUser):
             if self.username == user_info.name and self.password == password_de:
                 # 每个用户登录生成一个session
                 # session["user"] = self.username
+                query_user_role = t_acc_user.query.filter_by(name=self.username).first()
+                user_role = query_user_role.__dict__
+                role_name = self.username + '_role'
+                self.cnres.set_red(role_name, user_role['usrole'])
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功',
                                        None, self.new_date)
                 return jsonify({'chk_status': 'true'})
