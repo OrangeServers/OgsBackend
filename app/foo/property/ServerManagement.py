@@ -3,7 +3,7 @@ from flask import request, jsonify
 from werkzeug.utils import secure_filename
 from app.tools.shellcmd import RemoteConnection
 from app.foo.local.LocalShell import LocalShell
-from app.sqldb.SqlAlchemyDB import Host, db, t_group, t_auth_host, t_command_log, User2
+from app.sqldb.SqlAlchemyDB import t_host, db, t_group, t_auth_host, t_command_log, t_acc_user
 from app.sqldb.SqlAlchemyInsert import HostSqlalh, CommandLogSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
@@ -16,8 +16,8 @@ class ServerList:
     @property
     def server_count_all(self):
         try:
-            host_len_msg = Host.query.count()
-            user_len_msg = User2.query.count()
+            host_len_msg = t_host.query.count()
+            user_len_msg = t_acc_user.query.count()
             group_len_msg = t_group.query.count()
             return jsonify({
                 'code': 0,
@@ -33,7 +33,7 @@ class ServerList:
     def server_list(self):
         try:
             host_id = request.values.get("id")
-            query_msg = Host.query.filter_by(id=host_id).first()
+            query_msg = t_host.query.filter_by(id=host_id).first()
             list_msg = self.lt.dict_reset_pop(query_msg)
             return jsonify(list_msg)
         except IOError:
@@ -49,9 +49,9 @@ class ServerList:
             if group_name == '所有资产':
                 return self.server_list_all
             else:
-                query_msg = Host.query.filter_by(group=group_name).offset(table_offset).limit(table_limit).all()
+                query_msg = t_host.query.filter_by(group=group_name).offset(table_offset).limit(table_limit).all()
                 list_msg = self.lt.dict_ls_reset_dict(query_msg)
-                len_msg = Host.query.filter_by(group=group_name).count()
+                len_msg = t_host.query.filter_by(group=group_name).count()
                 return jsonify({"host_status": 0,
                                 "host_list_msg": list_msg,
                                 "msg": "",
@@ -69,9 +69,9 @@ class ServerList:
             name = request.values.get('name')
             que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
             auth_group = self.lt.auth_ls_list_que(que_auth_group)
-            query_msg = Host.query.filter(Host.group.in_(auth_group)).offset(table_offset).limit(table_limit).all()
+            query_msg = t_host.query.filter(t_host.group.in_(auth_group)).offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict(query_msg)
-            len_msg = Host.query.filter(Host.group.in_(auth_group)).offset(table_offset).limit(table_limit).count()
+            len_msg = t_host.query.filter(t_host.group.in_(auth_group)).offset(table_offset).limit(table_limit).count()
             return jsonify({"host_status": 0,
                             "host_list_msg": list_msg,
                             "msg": "",
@@ -89,8 +89,8 @@ class GroupList:
     @property
     def server_list(self):
         try:
-            group_list = Host.query.filter_by(group=self.group).all()
-            len_msg = Host.query.filter_by(group=self.group).count()
+            group_list = t_host.query.filter_by(group=self.group).all()
+            len_msg = t_host.query.filter_by(group=self.group).count()
             group_select = self.lt.dict_ls_reset_list(group_list)
             return jsonify({"group_list_msg": group_select,
                             "group_len_msg": len_msg})
@@ -162,7 +162,7 @@ class ServerDel:
     @property
     def host_del(self):
         # user_chk = Host.query.filter_by(host_ip=self.host_ip).first()
-        user_chk = Host.query.filter_by(id=self.id).first()
+        user_chk = t_host.query.filter_by(id=self.id).first()
         if not user_chk is None:
             db.session.delete(user_chk)
             db.session.commit()
@@ -185,7 +185,7 @@ class ServerAdd:
     @property
     def host_add(self):
         try:
-            user_chk = Host.query.filter_by(host_ip=self.host_ip).first()
+            user_chk = t_host.query.filter_by(host_ip=self.host_ip).first()
             if user_chk is None:
                 password_en = self.basesec.base_en(self.host_password)
                 conn = RemoteConnection(self.host_ip, int(self.host_port), self.host_user, self.host_password)
@@ -213,7 +213,7 @@ class ServerUpdate(ServerAdd):
             conn.ssh_cmd('hostname')
             try:
                 password_en = self.basesec.base_en(self.host_password)
-                Host.query.filter_by(id=self.id).update({'alias': self.alias, 'host_ip': self.host_ip,
+                t_host.query.filter_by(id=self.id).update({'alias': self.alias, 'host_ip': self.host_ip,
                                                          'host_port': self.host_port,
                                                          'host_user': self.host_user,
                                                          'host_password': password_en, 'group': self.group})
@@ -252,7 +252,7 @@ class ServerCmd2:
     @property
     def sh_cmd(self):
         try:
-            host = Host.query.filter_by(id=self.host_id).first()
+            host = t_host.query.filter_by(id=self.host_id).first()
             host_dict = host.__dict__
             password_de = self.basesec.base_de(host_dict['host_password'])
             conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'], password_de)
@@ -281,7 +281,7 @@ class ServerListCmd(ServerCmd2):
             msg_list = []
             alias_list = []
             for hid in self.host_id:
-                host = Host.query.filter_by(id=hid).first()
+                host = t_host.query.filter_by(id=hid).first()
                 host_dict = host.__dict__
                 password_de = self.basesec.base_de(host_dict['host_password'])
                 conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'],
@@ -308,7 +308,7 @@ class GroupCmd:
     def sh_cmd(self):
         try:
             msg_list = []
-            group_list = Host.query.filter_by(group=self.group).all()
+            group_list = t_host.query.filter_by(group=self.group).all()
             group_in_host_list = []
             for groups in group_list:
                 group_dict = groups.__dict__
@@ -338,7 +338,7 @@ class GroupListCmd(GroupCmd):
             gop_list_msg = []
             for group in self.group_ls:
                 msg_list = []
-                group_list = Host.query.filter_by(group=group).all()
+                group_list = t_host.query.filter_by(group=group).all()
                 for groups in group_list:
                     group_dict = groups.__dict__
                     password_de = self.basesec.base_de(group_dict['host_password'])
@@ -382,7 +382,7 @@ class ServerScript:
             msg_list = []
             alias_list = []
             for hid in self.id_list:
-                host = Host.query.filter_by(id=hid).first()
+                host = t_host.query.filter_by(id=hid).first()
                 host_dict = host.__dict__
                 password_de = self.basesec.base_de(host_dict['host_password'])
                 conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'],

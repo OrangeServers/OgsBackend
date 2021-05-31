@@ -1,4 +1,4 @@
-from app.foo.user.AccUser import LoginLogs
+from app.foo.user.user import LoginLogs
 
 
 def acc_login_logs():

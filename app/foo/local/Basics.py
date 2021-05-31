@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from app.sqldb.SqlAlchemyDB import Host, db, t_group, t_sys_user, User2, t_auth_host
+from app.sqldb.SqlAlchemyDB import t_host, db, t_group, t_sys_user, t_acc_user, t_auth_host
 from app.tools.SqlListTool import ListTool
 
 
@@ -10,8 +10,8 @@ class CountList:
     @property
     def server_count_all(self):
         try:
-            host_len_msg = Host.query.count()
-            user_len_msg = User2.query.count()
+            host_len_msg = t_host.query.count()
+            user_len_msg = t_acc_user.query.count()
             group_len_msg = t_group.query.count()
             return jsonify({
                 'code': 0,
@@ -42,7 +42,7 @@ class DataList:
         for i in res_group:
             body_list = []
             group_count += 1
-            dic = Host.query.filter_by(group=i).all()
+            dic = t_host.query.filter_by(group=i).all()
             for y in dic:
                 # host_count += 1
                 host_id = y.id
@@ -64,7 +64,7 @@ class DataSumAll:
                 query_group = t_group.query.with_entities(t_group.name).all()
                 group_list = self.lt.list_rep_gather(query_group)
                 for i in group_list:
-                    group_count = Host.query.filter_by(group=i).count()
+                    group_count = t_host.query.filter_by(group=i).count()
                     t_group.query.filter_by(name=i).update({'nums': group_count})
                     db.session.commit()
                     return jsonify({'update_table_sum': 'true'})
@@ -76,7 +76,7 @@ class DataSumAll:
                 query_sys_user = t_sys_user.query.with_entities(t_sys_user.host_user).all()
                 sys_user_list = self.lt.list_rep_gather(query_sys_user)
                 for i in sys_user_list:
-                    sys_user_count = Host.query.filter_by(host_user=i).count()
+                    sys_user_count = t_host.query.filter_by(host_user=i).count()
                     t_sys_user.query.filter_by(host_user=i).update({'host_user': sys_user_count})
                     db.session.commit()
                     return jsonify({'update_table_sum': 'true'})

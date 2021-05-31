@@ -6,3 +6,7 @@ pymysql
 redis
 paramiko
 sqlalchemy
+flask-sqlalchemy
+elastic-apm[flask]
+apache-skywalking
+asyncio

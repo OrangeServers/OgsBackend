@@ -3,17 +3,17 @@ from app.foo.user.user import AccUserList, AccUserAdd, AccUserUpdate, AccUserDel
 
 def acc_user_list():
     orange = AccUserList()
-    return orange.sys_user_list
+    return orange.acc_user_list
 
 
 def acc_user_auth_list():
     orange = AccUserList()
-    return orange.sys_user_auth_list
+    return orange.acc_user_auth_list
 
 
 def acc_user_list_all():
     orange = AccUserList()
-    return orange.sys_user_list_all
+    return orange.acc_user_list_all
 
 
 def acc_user_add():

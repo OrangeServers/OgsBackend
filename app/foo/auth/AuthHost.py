@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_auth_host, t_group, User2, db
+from app.sqldb.SqlAlchemyDB import t_auth_host, t_group, t_acc_user, db
 from app.sqldb.SqlAlchemyInsert import AuthHostSqlalh
 
 
@@ -13,7 +13,7 @@ class AuthHostList:
         req_type = request.values.get("req_type")
         auth_list = []
         if req_type == 'user':
-            query_user_name = User2.query.with_entities(User2.name).all()
+            query_user_name = t_acc_user.query.with_entities(t_acc_user.name).all()
             user_name = self.lt.list_gather(query_user_name)
             for i in user_name:
                 auth_list.append({'name': i, 'value': i})
@@ -43,7 +43,7 @@ class AuthHostList:
 
         elif req_type == 'user':
             try:
-                query_user_name = User2.query.with_entities(User2.name).all()
+                query_user_name = t_acc_user.query.with_entities(t_acc_user.name).all()
                 user_name = self.lt.list_gather(query_user_name)
                 print(user_name)
                 query_auth_msg = t_auth_host.query.filter_by(name=auth_name).first()

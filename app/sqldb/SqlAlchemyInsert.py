@@ -1,4 +1,4 @@
-from app.sqldb.SqlAlchemyDB import Host, t_group, t_acc_user, t_sys_user, t_acc_group, t_login_log, t_auth_host, \
+from app.sqldb.SqlAlchemyDB import t_host, t_group, t_acc_user, t_sys_user, t_acc_group, t_login_log, t_auth_host, \
     t_command_log, db
 
 
@@ -9,7 +9,7 @@ class HostSqlalh:
     @staticmethod
     # def ins_sql(alias, host_ip, host_port, host_user, host_password, group=None):
     def ins_sql(alias, host_ip, host_port, host_user, host_password, group):
-        sql = Host(alias=alias, host_ip=host_ip, host_port=host_port, host_user=host_user, host_password=host_password,
+        sql = t_host(alias=alias, host_ip=host_ip, host_port=host_port, host_user=host_user, host_password=host_password,
                    group=group)
         db.session.add(sql)
         db.session.commit()

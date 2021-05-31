@@ -1,4 +1,4 @@
-from app.foo.user.AccUser import UserLogin, CheckUser, UserRegister
+from app.foo.user.user import UserLogin, CheckUser, UserRegister
 
 
 def acc_login_dl():

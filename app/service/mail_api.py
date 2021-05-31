@@ -1,4 +1,4 @@
-from app.foo.user.AccUser import CheckMail
+from app.foo.user.user import CheckMail
 from app.foo.mail.MailApi import OrangeMailApi
 
 

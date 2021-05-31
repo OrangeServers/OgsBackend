@@ -3,7 +3,7 @@ import argparse
 from Flask_App_Settings import *
 from datetime import timedelta
 from app.service.local_api import *
-from app.service.user_api import *
+from app.service.user_login_api import *
 from app.service.acc_group import *
 from app.service.user_logs_api import *
 from app.service.server_logs_api import *
@@ -85,7 +85,7 @@ def orange_init_api():
     app.add_url_rule('/mail/send_user_mail', view_func=mail_send_user, methods=['POST', 'get'])
     app.add_url_rule('/mail/send_mail', view_func=mail_send, methods=['POST', 'get'])
 
-    # 用户登录
+    # 用户注册登录
     app.add_url_rule('/account/login_dl', view_func=acc_login_dl, methods=['POST', 'get'])
     app.add_url_rule('/account/chk_username', view_func=acc_chk_username, methods=['POST', 'get'])
     app.add_url_rule('/account/com_register', view_func=acc_com_register, methods=['POST', 'get'])
@@ -108,11 +108,11 @@ def orange_init_api():
     app.add_url_rule('/account/group/del', view_func=acc_group_del, methods=['POST', 'get'])
 
     # 这里是页面用户接口
-    app.add_url_rule('/server/acc/user/list', view_func=acc_user_list, methods=['POST', 'get'])
-    app.add_url_rule('/server/acc/user/auth_list', view_func=acc_user_auth_list, methods=['POST', 'get'])
-    app.add_url_rule('/server/acc/user/list_all', view_func=acc_user_list_all, methods=['POST', 'get'])
-    app.add_url_rule('/server/acc/user/add', view_func=acc_user_add, methods=['POST', 'get'])
-    app.add_url_rule('/server/acc/user/update', view_func=acc_user_update, methods=['POST', 'get'])
+    app.add_url_rule('/account/user/list', view_func=acc_user_list, methods=['POST', 'get'])
+    app.add_url_rule('/account/user/auth_list', view_func=acc_user_auth_list, methods=['POST', 'get'])
+    app.add_url_rule('/account/user/list_all', view_func=acc_user_list_all, methods=['POST', 'get'])
+    app.add_url_rule('/account/user/add', view_func=acc_user_add, methods=['POST', 'get'])
+    app.add_url_rule('/account/user/update', view_func=acc_user_update, methods=['POST', 'get'])
     app.add_url_rule('/server/acc/user/del', view_func=acc_user_del, methods=['POST', 'get'])
 
     # 这里是系统用户接口

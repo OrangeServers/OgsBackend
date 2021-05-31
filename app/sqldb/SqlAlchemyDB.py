@@ -2,18 +2,7 @@ from app.sqldb.SqlAlchemySettings import db
 from app.tools.SqlListTool import ListTool
 
 
-class User2(db.Model):
-    __tablename__ = 't_user'  # 指定表名字为 user
-    # 主键id, 自增, Integer类型
-    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
-    # userName字段 varchar类型 限制45 不为空
-    name = db.Column(db.String(10), nullable=False)
-    # passWord字段, varchar类型 限制45 不为空
-    password = db.Column(db.String(45), nullable=False)
-    mail = db.Column(db.String(45), nullable=False)
-
-
-class Host(db.Model):
+class t_host(db.Model):
     __tablename__ = 't_host'  # 指定表名字为 user
     # 主键id, 自增, Integer类型
     id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
