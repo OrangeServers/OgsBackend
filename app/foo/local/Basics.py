@@ -57,8 +57,8 @@ class CountList:
                 t_line_chart.chart_date >= old_date).all()
             for i in query_msg_all:
                 query_msg = i.__dict__
-                login_list.append({'date': query_msg['chart_date'], 'value': query_msg['login_count']})
-                user_list.append({'date': query_msg['chart_date'], 'value': query_msg['user_count']})
+                login_list.append({'date': str(query_msg['chart_date']), 'value': query_msg['login_count']})
+                user_list.append({'date': str(query_msg['chart_date']), 'value': query_msg['user_count']})
             return jsonify({'login_msg': login_list, 'user_msg': user_list})
         except IOError:
             jsonify({'status': 'fail'})
