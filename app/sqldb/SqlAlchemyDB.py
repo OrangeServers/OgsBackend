@@ -114,6 +114,15 @@ class t_auth_host(db.Model):
     remarks = db.Column(db.String(255), nullable=True)
 
 
+class t_line_chart(db.Model):
+    __tablename__ = 't_line_chart'  # 指定表名字为 user
+    # 主键id, 自增, Integer类型
+    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
+    chart_date = db.Column(db.Date, nullable=False)
+    login_count = db.Column(db.INT, nullable=False, default=0)
+    user_count = db.Column(db.INT, nullable=False, default=0)
+
+
 if __name__ == '__main__':
     list_tool = ListTool()
     results = User2.query.all()
@@ -150,10 +159,10 @@ if __name__ == '__main__':
     # 多条件查询
     login_query = t_login_log.query.filter_by(logintime='login_time', loginname='username').first()
     query_msg = t_login_log.query.filter(t_login_log.login_time.like("%2021-05-11%"),
-                                          db.cast(t_login_log.login_time, db.DATE)).all()
+                                         db.cast(t_login_log.login_time, db.DATE)).all()
     # 时间段查询
     query_msg = t_login_log.query.filter(t_login_log.login_time >= '2021-05-11 00:00:00').filter(
         t_login_log.login_time <= '2021-05-12 00:00:00').order_by(t_login_log.login_time.desc()).all()
 
     # 一个字段多值查询
-    test = Host.query.filter(Host.group.in_([1,2,3])).all()
+    test = Host.query.filter(Host.group.in_([1, 2, 3])).all()

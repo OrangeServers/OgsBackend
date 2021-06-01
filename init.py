@@ -159,6 +159,7 @@ def orange_init_api():
     app.add_url_rule('/local/sum', view_func=local_data_sum, methods=['POST', 'get'])
     app.add_url_rule('/local/data', view_func=local_data_list, methods=['POST', 'get'])
     app.add_url_rule('/local/file', view_func=local_data_file_put, methods=['POST', 'get'])
+    app.add_url_rule('/local/count_chart', view_func=local_chart_count_all, methods=['POST', 'get'])
 
 
 if __name__ == "__main__":

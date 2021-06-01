@@ -1,11 +1,34 @@
+import time, datetime
 from flask import request, jsonify
-from app.sqldb.SqlAlchemyDB import t_host, db, t_group, t_sys_user, t_acc_user, t_auth_host
+from app.sqldb.SqlAlchemyDB import t_host, db, t_group, t_sys_user, t_acc_user, t_auth_host, t_login_log, t_line_chart
 from app.tools.SqlListTool import ListTool
+from app.sqldb.SqlAlchemyInsert import LineChartSqlalh
+
+
+class Count_update:
+    def __init__(self):
+        self.ls_tool = ListTool()
+        self.line_ins = LineChartSqlalh
+        self.now_date = time.strftime("%Y-%m-%d", time.localtime())
+
+    @property
+    def count_update_all(self):
+        try:
+            query_user_count = t_login_log.query.filter(
+                t_login_log.login_time.like("%{}%".format(self.now_date))).filter_by(login_status='成功').with_entities(
+                t_login_log.login_name).distinct().count()
+            query_login_count = t_login_log.query.filter(
+                t_login_log.login_time.like("%{}%".format(self.now_date))).count()
+            self.line_ins.ins_sql(self.now_date, query_login_count, query_user_count)
+            print(query_user_count, query_login_count)
+            return jsonify({'status': 'true'})
+        except IOError:
+            return jsonify({'status': 'fail'})
 
 
 class CountList:
     def __init__(self):
-        self.ls_tool = ListTool()
+        self.lt = ListTool()
 
     @property
     def server_count_all(self):
@@ -22,6 +45,23 @@ class CountList:
             })
         except IOError:
             return jsonify({'code': 1})
+
+    @property
+    def server_chart_count_all(self):
+        try:
+            login_list = []
+            user_list = []
+            new_date = (datetime.date.today() - datetime.timedelta(days=-5)).strftime("%Y-%m-%d")
+            old_date = (datetime.date.today() - datetime.timedelta(days=+5)).strftime("%Y-%m-%d")
+            query_msg_all = t_line_chart.query.filter(t_line_chart.chart_date <= new_date).filter(
+                t_line_chart.chart_date >= old_date).all()
+            for i in query_msg_all:
+                query_msg = i.__dict__
+                login_list.append({'date': query_msg['chart_date'], 'value': query_msg['login_count']})
+                user_list.append({'date': query_msg['chart_date'], 'value': query_msg['user_count']})
+            return jsonify({'login_msg': login_list, 'user_msg': user_list})
+        except IOError:
+            jsonify({'status': 'fail'})
 
 
 class DataList:

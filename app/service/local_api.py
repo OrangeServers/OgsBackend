@@ -9,6 +9,11 @@ def count_list():
     return orange.server_count_all
 
 
+def local_chart_count_all():
+    orange = CountList()
+    return orange.server_chart_count_all
+
+
 def local_dir_group():
     orange = LocalDirList()
     return jsonify({'group_dir_msg': orange.cmdlist_shell(DEFAULT_DIR1_PATH)})

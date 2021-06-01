@@ -1,5 +1,5 @@
 from app.sqldb.SqlAlchemyDB import t_host, t_group, t_acc_user, t_sys_user, t_acc_group, t_login_log, t_auth_host, \
-    t_command_log, db
+    t_command_log, t_line_chart, db
 
 
 class HostSqlalh:
@@ -94,5 +94,16 @@ class AuthHostSqlalh:
     @staticmethod
     def ins_sql(name, user, user_group, host_group, remarks):
         sql = t_auth_host(name=name, user=user, user_group=user_group, host_group=host_group, remarks=remarks)
+        db.session.add(sql)
+        db.session.commit()
+
+
+class LineChartSqlalh:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def ins_sql(chart_date, login_count, user_count):
+        sql = t_auth_host(chart_date=chart_date, login_count=login_count, user_count=user_count)
         db.session.add(sql)
         db.session.commit()
