@@ -1,5 +1,5 @@
 from flask import jsonify
-from app.foo.local.Basics import DataList, DataSumAll, CountList
+from app.foo.local.Basics import DataList, DataSumAll, CountList, CountUpdate
 from app.foo.local.LocalShell import LocalDirList, LocalFilePut
 from app.conf.conf_test import DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH, RSYNC_SHELL_CMD
 
@@ -12,6 +12,16 @@ def count_list():
 def local_chart_count_all():
     orange = CountList()
     return orange.server_chart_count_all
+
+
+def local_chart_into():
+    orange = CountUpdate()
+    return orange.count_into_all
+
+
+def local_chart_update():
+    orange = CountUpdate()
+    return orange.count_update_all
 
 
 def local_dir_group():

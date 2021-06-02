@@ -1,3 +1,4 @@
+import datetime
 from app.sqldb.SqlAlchemySettings import db
 from app.tools.SqlListTool import ListTool
 
@@ -118,9 +119,9 @@ class t_line_chart(db.Model):
     __tablename__ = 't_line_chart'  # 指定表名字为 user
     # 主键id, 自增, Integer类型
     id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
-    chart_date = db.Column(db.Date, nullable=False)
     login_count = db.Column(db.INT, nullable=False, default=0)
     user_count = db.Column(db.INT, nullable=False, default=0)
+    chart_date = db.Column(db.DATE, nullable=False)
 
 
 if __name__ == '__main__':

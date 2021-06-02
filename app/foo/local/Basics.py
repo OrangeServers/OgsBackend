@@ -5,22 +5,38 @@ from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyInsert import LineChartSqlalh
 
 
-class Count_update:
+class CountUpdate:
     def __init__(self):
         self.ls_tool = ListTool()
         self.line_ins = LineChartSqlalh
-        self.now_date = time.strftime("%Y-%m-%d", time.localtime())
+        self.now_date = datetime.date.today()
+        self.query_user_count = t_login_log.query.filter(
+            t_login_log.login_time.like("%{}%".format(self.now_date))).filter_by(login_status='成功').with_entities(
+            t_login_log.login_name).distinct().count()
+        self.query_login_count = t_login_log.query.filter(
+            t_login_log.login_time.like("%{}%".format(self.now_date))).count()
+        self.query_msg = t_line_chart.query.filter_by(chart_date=self.now_date).first()
+        print(self.query_msg)
+
+    @property
+    def count_into_all(self):
+        try:
+            if self.query_msg is None:
+                self.line_ins.ins_sql(self.query_login_count, self.query_user_count, self.now_date)
+            return jsonify({'status': 'true'})
+        except IOError:
+            return jsonify({'status': 'fail'})
 
     @property
     def count_update_all(self):
         try:
-            query_user_count = t_login_log.query.filter(
-                t_login_log.login_time.like("%{}%".format(self.now_date))).filter_by(login_status='成功').with_entities(
-                t_login_log.login_name).distinct().count()
-            query_login_count = t_login_log.query.filter(
-                t_login_log.login_time.like("%{}%".format(self.now_date))).count()
-            self.line_ins.ins_sql(self.now_date, query_login_count, query_user_count)
-            print(query_user_count, query_login_count)
+            if self.query_msg is None:
+                self.count_into_all()
+            elif self.query_msg is not None:
+                t_line_chart.query.filter_by(chart_date=self.now_date).update(
+                    {'login_count': self.query_login_count, 'user_count': self.query_user_count,
+                     'chart_date': self.now_date})
+                db.session.commit()
             return jsonify({'status': 'true'})
         except IOError:
             return jsonify({'status': 'fail'})
@@ -52,8 +68,10 @@ class CountList:
             login_list = []
             user_list = []
             new_date = (datetime.date.today() - datetime.timedelta(days=-5)).strftime("%Y-%m-%d")
-            old_date = (datetime.date.today() - datetime.timedelta(days=+5)).strftime("%Y-%m-%d")
-            query_msg_all = t_line_chart.query.filter(t_line_chart.chart_date <= new_date).filter(
+            old_date = (datetime.date.today() - datetime.timedelta(days=+15)).strftime("%Y-%m-%d")
+            now_date = datetime.date.today()
+            print(new_date, old_date, datetime.date.today())
+            query_msg_all = t_line_chart.query.filter(t_line_chart.chart_date <= now_date).filter(
                 t_line_chart.chart_date >= old_date).all()
             for i in query_msg_all:
                 query_msg = i.__dict__

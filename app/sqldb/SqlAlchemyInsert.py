@@ -103,7 +103,7 @@ class LineChartSqlalh:
         pass
 
     @staticmethod
-    def ins_sql(chart_date, login_count, user_count):
-        sql = t_auth_host(chart_date=chart_date, login_count=login_count, user_count=user_count)
+    def ins_sql(login_count, user_count, chart_date):
+        sql = t_line_chart(login_count=login_count, user_count=user_count, chart_date=chart_date)
         db.session.add(sql)
         db.session.commit()

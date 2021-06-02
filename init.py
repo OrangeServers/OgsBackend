@@ -152,14 +152,19 @@ def orange_init_api():
     app.add_url_rule('/auth/host/list', view_func=auth_create_get_list, methods=['POST', 'get'])
 
     # 这里是本地执行接口
-    app.add_url_rule('/server/count_list_all', view_func=count_list, methods=['POST', 'get'])
     app.add_url_rule('/local/dir/group', view_func=local_dir_group, methods=['POST', 'get'])
     app.add_url_rule('/local/dir/project', view_func=local_dir_project, methods=['POST', 'get'])
     app.add_url_rule('/local/rsync', view_func=local_rsync_code, methods=['POST', 'get'])
     app.add_url_rule('/local/sum', view_func=local_data_sum, methods=['POST', 'get'])
     app.add_url_rule('/local/data', view_func=local_data_list, methods=['POST', 'get'])
     app.add_url_rule('/local/file', view_func=local_data_file_put, methods=['POST', 'get'])
-    app.add_url_rule('/local/count_chart', view_func=local_chart_count_all, methods=['POST', 'get'])
+
+    # 这里是主页图标数据接口
+    app.add_url_rule('/server/count_list_all', view_func=count_list, methods=['POST', 'get'])
+    app.add_url_rule('/local/chart/count', view_func=local_chart_count_all, methods=['POST', 'get'])
+    app.add_url_rule('/local/chart/update', view_func=local_chart_update, methods=['POST', 'get'])
+    with app.app_context():
+        local_chart_into()
 
 
 if __name__ == "__main__":
