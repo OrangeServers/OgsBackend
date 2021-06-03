@@ -1,4 +1,4 @@
-import time, datetime
+import datetime
 from flask import request, jsonify
 from app.sqldb.SqlAlchemyDB import t_host, db, t_group, t_sys_user, t_acc_user, t_auth_host, t_login_log, t_line_chart
 from app.tools.SqlListTool import ListTool

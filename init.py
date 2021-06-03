@@ -176,12 +176,12 @@ if __name__ == "__main__":
     app.run(host=host, port=port)
     # http_server = WSGIServer((host,port),app,handler_class=WebSocketHandler)
     # http_server.serve_forever()
-    # 使用 asyncio
-    AsyncIOMainLoop().install()
-    app_server = Application().listen(options.port)
-    try:
-        asyncio.get_event_loop().run_forever()
-    except KeyboardInterrupt:
-        print()
-        print("stopping...")
-        print()
+    # 使用 asyncio, 也可以不用，不影响链路追踪
+    # AsyncIOMainLoop().install()
+    # app_server = Application().listen(options.port)
+    # try:
+    #     asyncio.get_event_loop().run_forever()
+    # except KeyboardInterrupt:
+    #     print()
+    #     print("stopping...")
+    #     print()
