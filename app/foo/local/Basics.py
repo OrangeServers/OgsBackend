@@ -1,5 +1,5 @@
 import datetime
-from flask import request, jsonify
+from flask import request, jsonify, make_response
 from app.sqldb.SqlAlchemyDB import t_host, db, t_group, t_sys_user, t_acc_user, t_auth_host, t_login_log, t_line_chart
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyInsert import LineChartSqlalh
@@ -140,3 +140,21 @@ class DataSumAll:
                     return jsonify({'update_table_sum': 'true'})
             except IOError:
                 return jsonify({'update_table_sum': 'fail'})
+
+
+class UserImage:
+    def __init__(self):
+        self.path = '/data/putfile/'
+        self.name = 'QQ截图20210426180236.png'
+
+    def get_img(self, img_name):
+        request_begin_time = datetime.date.today()
+        print("request_begin_time", request_begin_time)
+        try:
+            # 根据图片名显示对应路径图片
+            image_data = open(self.path + img_name, "rb").read()
+            response = make_response(image_data)
+            response.headers['Content-Type'] = 'image/jpg'
+            return response
+        except FileNotFoundError:
+            return jsonify({'image': 'error not file'})

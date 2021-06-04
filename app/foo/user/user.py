@@ -17,10 +17,17 @@ class AccUserList:
     @property
     def acc_user_list(self):
         try:
-            acc_user_id = request.values.get("id")
-            query_msg = t_acc_user.query.filter_by(id=acc_user_id).first()
-            list_msg = self.lt.dict_reset_pop_auto(query_msg, 'password')
-            return jsonify(list_msg)
+            acc_user_type = request.values.get('user_type')
+            if acc_user_type == 'user_list':
+                acc_user_id = request.values.get("id")
+                query_msg = t_acc_user.query.filter_by(id=acc_user_id).first()
+                list_msg = self.lt.dict_reset_pop_auto(query_msg, 'password')
+                return jsonify(list_msg)
+            elif acc_user_type == 'user_info':
+                acc_user_name = request.values.get("name")
+                query_msg = t_acc_user.query.filter_by(name=acc_user_name).first()
+                list_msg = self.lt.dict_reset_pop_auto(query_msg, 'password')
+                return jsonify(list_msg)
         except IOError:
             return jsonify({"acc_user_list_msg": 'select list msg error'})
 
