@@ -1,4 +1,5 @@
-import datetime
+import datetime, os
+from PIL import Image
 from flask import request, jsonify, make_response
 from app.sqldb.SqlAlchemyDB import t_host, db, t_group, t_sys_user, t_acc_user, t_auth_host, t_login_log, t_line_chart
 from app.tools.SqlListTool import ListTool
@@ -142,19 +143,37 @@ class DataSumAll:
                 return jsonify({'update_table_sum': 'fail'})
 
 
-class UserImage:
+class GetUserImage:
     def __init__(self):
         self.path = '/data/putfile/'
-        self.name = 'QQ截图20210426180236.png'
+        self.default_img = 'juzi11.png'
 
     def get_img(self, img_name):
         request_begin_time = datetime.date.today()
-        print("request_begin_time", request_begin_time)
-        try:
-            # 根据图片名显示对应路径图片
-            image_data = open(self.path + img_name, "rb").read()
+        if os.path.isfile(self.path + img_name + '.png'):
+            print("request_begin_time", request_begin_time)
+            try:
+                # 根据图片名显示对应路径图片
+                image_data = open(self.path + img_name + '.png', "rb").read()
+                response = make_response(image_data)
+                response.headers['Content-Type'] = 'image/png'
+                return response
+            except FileNotFoundError:
+                return jsonify({'image': 'error not file'})
+        else:
+            image_data = open(self.path + self.default_img, "rb").read()
             response = make_response(image_data)
-            response.headers['Content-Type'] = 'image/jpg'
+            response.headers['Content-Type'] = 'image/png'
             return response
-        except FileNotFoundError:
-            return jsonify({'image': 'error not file'})
+
+
+class PutUserImage:
+    def __init__(self):
+        self.path = '/data/putfile/'
+        self.img_file = request.files.get('file')
+        self.img_user = request.values.get('user')
+
+    def put_img(self):
+        im = Image.open(self.img_file)
+        im.save(self.path + self.img_user + '.png')
+        return jsonify({'status': 'true'})

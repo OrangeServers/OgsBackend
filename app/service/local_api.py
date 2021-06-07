@@ -1,5 +1,5 @@
 from flask import jsonify
-from app.foo.local.Basics import DataList, DataSumAll, CountList, CountUpdate, UserImage
+from app.foo.local.Basics import DataList, DataSumAll, CountList, CountUpdate, GetUserImage, PutUserImage
 from app.foo.local.LocalShell import LocalDirList, LocalFilePut
 from app.conf.conf_test import DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH, RSYNC_SHELL_CMD
 
@@ -55,5 +55,10 @@ def local_data_file_put():
 
 
 def local_image_get(img_name):
-    orange = UserImage()
+    orange = GetUserImage()
     return orange.get_img(img_name)
+
+
+def local_image_put():
+    orange = PutUserImage()
+    return orange.put_img()
