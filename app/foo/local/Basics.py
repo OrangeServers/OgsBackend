@@ -150,21 +150,18 @@ class GetUserImage:
 
     def get_img(self, img_name):
         request_begin_time = datetime.date.today()
-        if os.path.isfile(self.path + img_name + '.png'):
-            print("request_begin_time", request_begin_time)
-            try:
-                # 根据图片名显示对应路径图片
+        print("request_begin_time", request_begin_time)
+        try:
+            # 根据图片名显示对应路径图片
+            if os.path.isfile(self.path + img_name + '.png'):
                 image_data = open(self.path + img_name + '.png', "rb").read()
-                response = make_response(image_data)
-                response.headers['Content-Type'] = 'image/png'
-                return response
-            except FileNotFoundError:
-                return jsonify({'image': 'error not file'})
-        else:
-            image_data = open(self.path + self.default_img, "rb").read()
+            else:
+                image_data = open(self.path + self.default_img, "rb").read()
             response = make_response(image_data)
             response.headers['Content-Type'] = 'image/png'
             return response
+        except FileNotFoundError:
+            return jsonify({'image': 'error not file'})
 
 
 class PutUserImage:
