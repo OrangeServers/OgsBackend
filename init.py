@@ -81,6 +81,9 @@ def index():
 
 
 def orange_init_api():
+    # 服务状态
+    app.add_url_rule('/local/init', view_func=local_app_status, methods=['POST', 'get'])
+
     # 发送邮件
     app.add_url_rule('/mail/send_user_mail', view_func=mail_send_user, methods=['POST', 'get'])
     app.add_url_rule('/mail/send_mail', view_func=mail_send, methods=['POST', 'get'])
@@ -166,6 +169,7 @@ def orange_init_api():
     app.add_url_rule('/local/image/test_get/<img_name>', view_func=local_image_get, methods=['POST', 'get'])
     app.add_url_rule('/local/image/test_put', view_func=local_image_put, methods=['POST', 'get'])
     with app.app_context():
+        local_app_init()
         local_chart_into()
 
 

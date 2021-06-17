@@ -16,6 +16,9 @@ class ConnRedis:
         self.Pool = redis.ConnectionPool(host=self.host, port=self.port, db=10, max_connections=self.max_connections)
         self.redis_conn = redis.Redis(connection_pool=self.Pool, decode_responses=True)
 
+    def status_red(self):
+        return self.redis_conn.ping()
+
     def get_red(self, key):
         """
         key-->需要查询的key,str类型

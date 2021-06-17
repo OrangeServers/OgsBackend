@@ -2,6 +2,18 @@ from flask import jsonify
 from app.foo.local.Basics import DataList, DataSumAll, CountList, CountUpdate, GetUserImage, PutUserImage
 from app.foo.local.LocalShell import LocalDirList, LocalFilePut
 from app.conf.conf_test import DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH, RSYNC_SHELL_CMD
+from app.foo.local.LocalInit import AppInit
+
+
+# 初始化：
+def local_app_init():
+    orange = AppInit()
+    orange.con_init()
+
+
+def local_app_status():
+    orange = AppInit()
+    return orange.app_status()
 
 
 def count_list():
