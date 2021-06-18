@@ -3,6 +3,7 @@ from app.foo.local.Basics import DataList, DataSumAll, CountList, CountUpdate, G
 from app.foo.local.LocalShell import LocalDirList, LocalFilePut
 from app.conf.conf_test import DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH, RSYNC_SHELL_CMD
 from app.foo.local.LocalInit import AppInit
+from app.foo.ssh.webssh import websocket
 
 
 # 初始化：
@@ -74,3 +75,8 @@ def local_image_get(img_name):
 def local_image_put():
     orange = PutUserImage()
     return orange.put_img()
+
+
+def local_web_ssh():
+    orange = websocket()
+    return orange

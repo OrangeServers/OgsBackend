@@ -1,6 +1,8 @@
 # -*- coding=utf8 -*-
 import argparse
 from Flask_App_Settings import *
+from geventwebsocket.handler import WebSocketHandler  # 提供WS（websocket）协议处理
+from geventwebsocket.server import WSGIServer  # websocket服务承载
 from datetime import timedelta
 from app.service.local_api import *
 from app.service.user_login_api import *
@@ -168,6 +170,7 @@ def orange_init_api():
     app.add_url_rule('/local/chart/update', view_func=local_chart_update, methods=['POST', 'get'])
     app.add_url_rule('/local/image/test_get/<img_name>', view_func=local_image_get, methods=['POST', 'get'])
     app.add_url_rule('/local/image/test_put', view_func=local_image_put, methods=['POST', 'get'])
+    app.add_url_rule('/local/websocket', view_func=local_web_ssh)
     with app.app_context():
         local_app_init()
         local_chart_into()
@@ -176,10 +179,12 @@ def orange_init_api():
 if __name__ == "__main__":
     orange_init_api()
     # app.run(host='0.0.0.0',port=28000)
-    args = sta_cs()
-    host = args.host
-    port = args.port
-    app.run(host=host, port=port)
+    http_server = WSGIServer(('0.0.0.0', 28000), application=app, handler_class=WebSocketHandler)
+    http_server.serve_forever()
+    # args = sta_cs()
+    # host = args.host
+    # port = args.port
+    # app.run(host=host, port=port)
     # http_server = WSGIServer((host,port),app,handler_class=WebSocketHandler)
     # http_server.serve_forever()
     # 使用 asyncio, 也可以不用，不影响链路追踪
