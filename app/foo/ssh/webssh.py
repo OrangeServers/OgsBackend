@@ -10,7 +10,7 @@ from geventwebsocket.websocket import WebSocket  # websocket语法提示
 
 import paramiko
 import time
-
+import json
 
 hostname = '10.0.1.199'
 port = 22
@@ -65,7 +65,14 @@ def websocket():
     try:
         client_socket = request.environ.get('wsgi.websocket')  # type:WebSocket
         client_list.append(client_socket)
+        # 第一次接收数据转dict，新建ssh连接并核对用户名密码
+        msg_one_cli = client_socket.receive()
+        # json转dict
+        test1 = json.loads(msg_one_cli)
+        print(type(test1), test1['host'])
         conn = ParSsh(hostname, port, username, password)
+        # 根据客户端发送的用户名密码连接
+        # conn = ParSsh(test1['host'], test1['port'], test1['user'], test1['psw'])
         # print(len(client_list), client_list)
         while 1:
             msg_from_cli = client_socket.receive()
