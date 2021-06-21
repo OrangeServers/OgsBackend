@@ -1,5 +1,7 @@
 from flask import request
 from Flask_App_Settings import app
+from app.sqldb.SqlAlchemyDB import t_host
+from app.tools.basesec import BaseSec
 # pip install gevent-websocket导入IO多路复用模块
 from geventwebsocket.handler import WebSocketHandler  # 提供WS（websocket）协议处理
 from geventwebsocket.server import WSGIServer  # websocket服务承载
@@ -42,19 +44,19 @@ class ParSsh:
         self.channel.send(cmd)  # 【坑2】 如果你使用 sh ./study_shell.sh\r 可能会出现 [: 11: y: unexpected operator 错误
         # 回显很长的命令可能执行较久，通过循环分批次取回回显
         while True:
+            # time.sleep(0.2)
+            # msg = self.channel.recv(1024)
+            # return msg.decode()
             time.sleep(0.2)
             msg = self.channel.recv(1024)
-            return msg.decode()
-        #     time.sleep(0.2)
-        #     msg = self.channel.recv(1024)
-        #     if len(msg) >= 1024:
-        #         # print(len(msg))
-        #         lt_msg += msg.decode('utf-8')
-        #         # print(lt_msg)
-        #     elif len(msg) < 1024:
-        #         lt_msg += msg.decode('utf-8')
-        #         break
-        # return lt_msg
+            if len(msg) >= 1024:
+                # print(len(msg))
+                lt_msg += msg.decode('utf-8')
+                # print(lt_msg)
+            elif len(msg) < 1024:
+                lt_msg += msg.decode('utf-8')
+                break
+        return lt_msg
 
 
 client_list = []
@@ -63,16 +65,20 @@ client_list = []
 # @app.route('/websocket')
 def websocket():
     try:
+        bse = BaseSec()
         client_socket = request.environ.get('wsgi.websocket')  # type:WebSocket
         client_list.append(client_socket)
         # 第一次接收数据转dict，新建ssh连接并核对用户名密码
         msg_one_cli = client_socket.receive()
         # json转dict
         test1 = json.loads(msg_one_cli)
-        print(type(test1), test1['host'])
-        conn = ParSsh(hostname, port, username, password)
+        print(type(test1), test1['hostname'])
+        query_host_msg = t_host.query.filter_by(alias=test1['hostname']).first()
+        query_msg = query_host_msg.__dict__
+        print(query_msg)
+        # conn = ParSsh(hostname, port, username, password)
         # 根据客户端发送的用户名密码连接
-        # conn = ParSsh(test1['host'], test1['port'], test1['user'], test1['psw'])
+        conn = ParSsh(query_msg['host_ip'], query_msg['host_port'], query_msg['host_user'], bse.base_de(query_msg['host_password']))
         # print(len(client_list), client_list)
         while 1:
             msg_from_cli = client_socket.receive()
