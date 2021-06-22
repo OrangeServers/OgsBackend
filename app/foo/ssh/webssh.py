@@ -31,7 +31,7 @@ class ParSsh:
         self.trans.start_client()
         self.trans.auth_password(username=self.user, password=self.psw)
         self.channel = self.trans.open_session()
-        self.channel.settimeout(7200)
+        self.channel.settimeout(10)
         # 获取一个终端
         self.channel.get_pty()
         # 激活器
@@ -63,30 +63,35 @@ client_list = []
 
 
 # @app.route('/websocket')
-def websocket():
-    try:
-        bse = BaseSec()
-        client_socket = request.environ.get('wsgi.websocket')  # type:WebSocket
-        client_list.append(client_socket)
-        # 第一次接收数据转dict，新建ssh连接并核对用户名密码
-        msg_one_cli = client_socket.receive()
-        # json转dict
-        test1 = json.loads(msg_one_cli)
-        print(type(test1), test1['hostname'])
-        query_host_msg = t_host.query.filter_by(alias=test1['hostname']).first()
-        query_msg = query_host_msg.__dict__
-        print(query_msg)
-        # conn = ParSsh(hostname, port, username, password)
-        # 根据客户端发送的用户名密码连接
-        conn = ParSsh(query_msg['host_ip'], query_msg['host_port'], query_msg['host_user'], bse.base_de(query_msg['host_password']))
-        # print(len(client_list), client_list)
-        while 1:
-            msg_from_cli = client_socket.receive()
-            # print(msg_from_cli)
-            msg = conn.test_paramiko_interact(msg_from_cli)
-            client_socket.send(msg)
-    except TypeError:
-        print('val is none')
+class OgsWebSocket:
+    def __init__(self):
+        self.bse = BaseSec()
+        self.client_socket = request.environ.get('wsgi.websocket')  # type:WebSocket
+
+    def web_ssh(self):
+        try:
+            # 第一次接收数据转dict，新建ssh连接并核对用户名密码
+            msg_one_cli = self.client_socket.receive()
+            # json转dict
+            test1 = json.loads(msg_one_cli)
+            print(type(test1), test1['hostname'])
+            query_host_msg = t_host.query.filter_by(alias=test1['hostname']).first()
+            query_msg = query_host_msg.__dict__
+            # conn = ParSsh(hostname, port, username, password)
+            # 根据客户端发送的用户名密码连接
+            conn = ParSsh(query_msg['host_ip'], query_msg['host_port'], query_msg['host_user'], self.bse.base_de(query_msg['host_password']))
+            # print(len(client_list), client_list)
+            while 1:
+                msg_from_cli = self.client_socket.receive()
+                # print(msg_from_cli)
+                msg = conn.test_paramiko_interact(msg_from_cli)
+                self.client_socket.send(msg)
+        except TypeError:
+            print('val is none')
+        except paramiko.ssh_exception.SSHException:
+            print(1)
+            self.client_socket.send('Unable to connect to {}: [Errno 110] Connection timed out'.format(query_msg['host_ip']))
+            return {'status': 1}
 
 
 if __name__ == '__main__':
