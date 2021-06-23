@@ -85,7 +85,9 @@ class OgsWebSocket:
                 msg_from_cli = self.client_socket.receive()
                 # print(msg_from_cli)
                 msg = conn.test_paramiko_interact(msg_from_cli)
-                self.client_socket.send(msg)
+                res_msg = msg[msg.find('\r\n')+2:]
+                print(res_msg)
+                self.client_socket.send(res_msg)
         except TypeError:
             print('val is none')
         except paramiko.ssh_exception.SSHException:
