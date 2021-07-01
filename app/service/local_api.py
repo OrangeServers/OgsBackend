@@ -4,6 +4,7 @@ from app.foo.local.LocalShell import LocalDirList, LocalFilePut
 from app.conf.conf_test import DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH, RSYNC_SHELL_CMD
 from app.foo.local.LocalInit import AppInit
 from app.foo.ssh.webssh import OgsWebSocket
+from app.foo.local.Settings import OgsSettings
 
 
 # 初始化：
@@ -80,3 +81,13 @@ def local_image_put():
 def local_web_ssh():
     orange = OgsWebSocket()
     return orange.web_ssh()
+
+
+def local_settings_get():
+    orange = OgsSettings()
+    return orange.settings_info()
+
+
+def local_settings_update():
+    orange = OgsSettings()
+    return orange.settings_change()

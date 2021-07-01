@@ -124,6 +124,15 @@ class t_line_chart(db.Model):
     chart_date = db.Column(db.DATE, nullable=False)
 
 
+class t_settings(db.Model):
+    __tablename__ = 't_settings'  # 指定表名字为 user
+    # 主键id, 自增, Integer类型
+    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(20), nullable=False, default=0)
+    login_time = db.Column(db.INT, nullable=False, default=3)
+    rsgister_status = db.Column(db.String(5), nullable=False, default="on")
+
+
 if __name__ == '__main__':
     list_tool = ListTool()
     results = User2.query.all()
