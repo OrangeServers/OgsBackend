@@ -130,7 +130,7 @@ class t_settings(db.Model):
     id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
     name = db.Column(db.String(20), nullable=False, default=0)
     login_time = db.Column(db.INT, nullable=False, default=3)
-    rsgister_status = db.Column(db.String(5), nullable=False, default="on")
+    register_status = db.Column(db.String(5), nullable=False, default="on")
 
 
 if __name__ == '__main__':

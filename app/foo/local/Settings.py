@@ -17,8 +17,8 @@ class OgsSettings:
     def settings_change(self):
         try:
             login_time = request.values.get('login_time')
-            rsgister_status = request.values.get('rsgister_status')
-            t_settings.query.filter_by(name=self.name).update({'name': self.name, 'login_time': login_time, 'rsgister_status': rsgister_status})
+            register_status = request.values.get('register_status')
+            t_settings.query.filter_by(name=self.name).update({'name': self.name, 'login_time': login_time, 'register_status': register_status})
             db.session.commit()
             return jsonify({'status': 'true'})
         except IOError:
