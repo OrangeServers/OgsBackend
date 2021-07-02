@@ -131,6 +131,7 @@ class t_settings(db.Model):
     name = db.Column(db.String(20), nullable=False, default=0)
     login_time = db.Column(db.INT, nullable=False, default=3)
     register_status = db.Column(db.String(5), nullable=False, default="on")
+    color_matching = db.Column(db.String(10), nullable=False, default="black")
 
 
 if __name__ == '__main__':

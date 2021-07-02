@@ -18,7 +18,10 @@ class OgsSettings:
         try:
             login_time = request.values.get('login_time')
             register_status = request.values.get('register_status')
-            t_settings.query.filter_by(name=self.name).update({'name': self.name, 'login_time': login_time, 'register_status': register_status})
+            color_matching = request.values.get('color_matching')
+            t_settings.query.filter_by(name=self.name).update(
+                {'name': self.name, 'login_time': login_time, 'register_status': register_status,
+                 'color_matching': color_matching})
             db.session.commit()
             return jsonify({'status': 'true'})
         except IOError:
