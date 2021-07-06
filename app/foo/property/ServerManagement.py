@@ -277,25 +277,32 @@ class ServerListCmd(ServerCmd2):
 
     @property
     def sh_list_cmd(self):
-        try:
-            msg_list = []
-            alias_list = []
-            for hid in self.host_id:
-                host = t_host.query.filter_by(id=hid).first()
-                host_dict = host.__dict__
-                password_de = self.basesec.base_de(host_dict['host_password'])
+        msg_list = []
+        alias_list = []
+        error_list = []
+        for hid in self.host_id:
+            host = t_host.query.filter_by(id=hid).first()
+            host_dict = host.__dict__
+            password_de = self.basesec.base_de(host_dict['host_password'])
+            try:
                 conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'],
                                         password_de)
                 msg = conn.ssh_cmd(self.command)
                 msg_list.append(msg)
                 alias_list.append(host_dict['alias'])
+            except IOError:
+                error_list.append(host_dict['alias'])
+        if len(error_list) == 0:
             self.com_ins.ins_sql(self.com_name, '批量命令', self.command, self.com_host, '成功', None, self.new_date)
             return jsonify({'server_ping_status': 'true',
                             'command_msg': msg_list,
                             'hostname_list': alias_list})
-        except IOError:
+        else:
             self.com_ins.ins_sql(self.com_name, '批量命令', self.command, self.com_host, '失败', '连接主机失败', self.new_date)
-            return jsonify({'server_ping_status': 'fail'})
+            print(error_list, alias_list)
+            return jsonify({'server_ping_status': 'fail',
+                            'error_list': error_list,
+                            'msg': 'host connect to timeout!'})
 
 
 class GroupCmd:
