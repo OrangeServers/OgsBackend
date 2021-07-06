@@ -123,7 +123,8 @@ class CommandLogs:
     def get_select_logs(self):
         com_jg_date = request.values.get('com_jg_date')
         try:
-            query_msg = t_command_log.query.filter(t_command_log.com_name.like("%{}%".format(com_jg_date))).offset(self.table_offset).limit(self.table_limit).all()
+            query_msg = t_command_log.query.filter(t_command_log.com_name.like("%{}%".format(com_jg_date))).offset(
+                self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
             len_msg = t_command_log.query.filter(t_command_log.com_name.like("%{}%".format(com_jg_date))).count()
             return jsonify({"host_status": 0,
@@ -214,9 +215,9 @@ class ServerUpdate(ServerAdd):
             try:
                 password_en = self.basesec.base_en(self.host_password)
                 t_host.query.filter_by(id=self.id).update({'alias': self.alias, 'host_ip': self.host_ip,
-                                                         'host_port': self.host_port,
-                                                         'host_user': self.host_user,
-                                                         'host_password': password_en, 'group': self.group})
+                                                           'host_port': self.host_port,
+                                                           'host_user': self.host_user,
+                                                           'host_password': password_en, 'group': self.group})
                 db.session.commit()
                 return jsonify({'server_ping_status': 'true',
                                 'server_into_update': 'true'})
@@ -385,13 +386,14 @@ class ServerScript:
         #     dest.write(i)
         # dest.close()
         self.file.save(self.on_file)
-        try:
-            msg_list = []
-            alias_list = []
-            for hid in self.id_list:
-                host = t_host.query.filter_by(id=hid).first()
-                host_dict = host.__dict__
-                password_de = self.basesec.base_de(host_dict['host_password'])
+        msg_list = []
+        alias_list = []
+        error_list = []
+        for hid in self.id_list:
+            host = t_host.query.filter_by(id=hid).first()
+            host_dict = host.__dict__
+            password_de = self.basesec.base_de(host_dict['host_password'])
+            try:
                 conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'],
                                         password_de)
                 conn.put_file(self.on_file, self.to_file)
@@ -399,14 +401,19 @@ class ServerScript:
                 msg_list.append(msg)
                 alias_list.append(host_dict['alias'])
                 conn.ssh_cmd("rm -f %s" % self.to_file)
+            except IOError:
+                error_list.append(host_dict['alias'])
+        if len(error_list) == 0:
             self.com_ins.ins_sql(self.com_name, '批量脚本', self.filename, self.com_host, '成功', None, self.new_date)
             self.local_cmd.cmd_shell("rm -f %s" % self.on_file)
             return jsonify({'server_ping_status': 'true',
                             'command_msg': msg_list,
                             'hostname_list': alias_list})
-        except IOError:
+        else:
             self.com_ins.ins_sql(self.com_name, '批量脚本', self.filename, self.com_host, '失败', '连接主机失败', self.new_date)
-            return jsonify({'server_ping_status': 'fail'})
+            return jsonify({'server_ping_status': 'fail',
+                            'error_list': error_list,
+                            'msg': 'host connect to timeout!'})
 
 
 if __name__ == "__main__":
