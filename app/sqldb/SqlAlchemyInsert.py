@@ -87,6 +87,18 @@ class CommandLogSqlalh:
         db.session.commit()
 
 
+class CzLogSqlalh:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def ins_sql(cz_name, cz_type, cz_info, cz_details, cz_status, cz_reason, cz_time):
+        sql = t_command_log(cz_name=cz_name, cz_type=cz_type, cz_info=cz_info, cz_details=cz_details,cz_status=cz_status,
+                            cz_reason=cz_reason, cz_time=cz_time)
+        db.session.add(sql)
+        db.session.commit()
+
+
 class AuthHostSqlalh:
     def __init__(self):
         pass

@@ -100,61 +100,6 @@ class GroupList:
                             "group_len_msg": 0})
 
 
-class CommandLogs:
-    def __init__(self):
-        self.lt = ListTool()
-        self.table_page = request.values.get('page')
-        self.table_limit = request.values.get('limit')
-        self.table_offset = (int(self.table_page) - 1) * 10
-
-    def get_com_logs(self):
-        try:
-            query_msg = t_command_log.query.offset(self.table_offset).limit(self.table_limit).all()
-            list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
-            len_msg = t_command_log.query.count()
-            return jsonify({"host_status": 0,
-                            "command_list_msg": list_msg,
-                            "msg": "",
-                            "command_len_msg": len_msg})
-        except IOError:
-            return jsonify({"command_list_msg": 'select list msg error',
-                            "command_len_msg": 0})
-
-    def get_select_logs(self):
-        com_jg_date = request.values.get('com_jg_date')
-        try:
-            query_msg = t_command_log.query.filter(t_command_log.com_name.like("%{}%".format(com_jg_date))).offset(
-                self.table_offset).limit(self.table_limit).all()
-            list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
-            len_msg = t_command_log.query.filter(t_command_log.com_name.like("%{}%".format(com_jg_date))).count()
-            return jsonify({"host_status": 0,
-                            "command_list_msg": list_msg,
-                            "msg": "",
-                            "command_len_msg": len_msg})
-        except IOError:
-            return jsonify({"command_list_msg": 'select list msg error',
-                            "command_len_msg": 0})
-
-    def get_date_logs(self):
-        com_jg_date = request.values.get('com_jg_date')
-        type(com_jg_date)
-        msg = com_jg_date.split(' - ')
-        try:
-            query_msg = t_command_log.query.filter(t_command_log.com_time >= msg[0]).filter(
-                t_command_log.com_time <= msg[1]).order_by(t_command_log.com_time.desc()).offset(
-                self.table_offset).limit(self.table_limit).all()
-            list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
-            len_msg = t_command_log.query.filter(t_command_log.com_time >= msg[0]).filter(
-                t_command_log.com_time <= msg[1]).order_by(t_command_log.com_time.desc()).count()
-            return jsonify({"host_status": 0,
-                            "command_list_msg": list_msg,
-                            "msg": "",
-                            "command_len_msg": len_msg})
-        except IOError:
-            return jsonify({"command_list_msg": 'select list msg error',
-                            "command_len_msg": 0})
-
-
 class ServerDel:
     def __init__(self):
         # self.host_ip = request.values.get('host_ip')

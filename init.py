@@ -7,8 +7,7 @@ from datetime import timedelta
 from app.service.local_api import *
 from app.service.user_login_api import *
 from app.service.acc_group import *
-from app.service.user_logs_api import *
-from app.service.server_logs_api import *
+from app.service.logs_api import *
 from app.service.mail_api import *
 from app.service.server_group_api import *
 from app.service.server_mag_api import *

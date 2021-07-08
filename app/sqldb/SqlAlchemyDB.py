@@ -102,6 +102,21 @@ class t_command_log(db.Model):
     com_time = db.Column(db.TIMESTAMP, nullable=False)
 
 
+class t_cz_log(db.Model):
+    __tablename__ = 't_cz_log'  # 指定表名字为 user
+    # 主键id, 自增, Integer类型
+    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
+    cz_name = db.Column(db.String(30), nullable=False)
+    # userName字段 varchar类型 限制45 不为空
+    cz_type = db.Column(db.String(30), nullable=False)
+    # passWord字段, varchar类型 限制45 不为空
+    cz_info = db.Column(db.String(255), nullable=False)
+    cz_details = db.Column(db.String(255), nullable=False)
+    cz_status = db.Column(db.String(10), nullable=False)
+    cz_reason = db.Column(db.String(255), nullable=True)
+    cz_time = db.Column(db.TIMESTAMP, nullable=False)
+
+
 class t_auth_host(db.Model):
     __tablename__ = 't_auth_host'  # 指定表名字为 user
     # 主键id, 自增, Integer类型
