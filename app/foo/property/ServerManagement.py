@@ -3,8 +3,9 @@ from flask import request, jsonify
 from werkzeug.utils import secure_filename
 from app.tools.shellcmd import RemoteConnection
 from app.foo.local.LocalShell import LocalShell
-from app.sqldb.SqlAlchemyDB import t_host, db, t_group, t_auth_host, t_command_log, t_acc_user
-from app.sqldb.SqlAlchemyInsert import HostSqlalh, CommandLogSqlalh
+from app.sqldb.SqlAlchemySettings import db
+from app.sqldb.SqlAlchemyDB import t_host, t_group, t_auth_host, t_acc_user, t_cz_log
+from app.sqldb.SqlAlchemyInsert import HostSqlalh, CommandLogSqlalh, CzLogSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
 
@@ -104,16 +105,21 @@ class ServerDel:
     def __init__(self):
         # self.host_ip = request.values.get('host_ip')
         self.id = request.values.get('id')
+        self.name = request.values.get('name')
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.cz_ins = CzLogSqlalh()
 
     @property
     def host_del(self):
         # user_chk = Host.query.filter_by(host_ip=self.host_ip).first()
         user_chk = t_host.query.filter_by(id=self.id).first()
-        if not user_chk is None:
+        if user_chk:
             db.session.delete(user_chk)
             db.session.commit()
+            self.cz_ins.ins_sql(self.name, '资产修改', '删除资产', self.id, '成功', None, self.new_date)
             return jsonify({'server_del_status': 'true'})
         else:
+            self.cz_ins.ins_sql(self.name, '资产修改', '删除资产', self.id, '失败', '系统内没有该资产', self.new_date)
             return jsonify({'server_del_status': 'fail'})
 
 
@@ -127,6 +133,10 @@ class ServerAdd:
         self.group = request.values.get('group', type=str, default='default')
         self.host_sqlalh = HostSqlalh()
         self.basesec = BaseSec()
+        # 新增记录日志相关
+        self.name = request.values.get('name')
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.cz_ins = CzLogSqlalh()
 
     @property
     def host_add(self):
@@ -138,12 +148,16 @@ class ServerAdd:
                 conn.ssh_cmd('hostname')
                 self.host_sqlalh.ins_sql(self.alias, self.host_ip, self.host_port, self.host_user, password_en,
                                          self.group)
+                self.cz_ins.ins_sql(self.name, '资产修改', '新增资产', self.alias, '成功', None, self.new_date)
                 return jsonify({'server_add_status': 'true'})
             else:
+                self.cz_ins.ins_sql(self.name, '资产修改', '新增资产', self.alias, '失败', '该用户已存在', self.new_date)
                 return jsonify({'server_add_status': 'sel_fail'})
         except IOError:
+            self.cz_ins.ins_sql(self.name, '资产修改', '新增资产', self.alias, '失败', '连接主机失败', self.new_date)
             return jsonify({'server_add_status': 'con_fail'})
         except Exception:
+            self.cz_ins.ins_sql(self.name, '资产修改', '新增资产', self.alias, '失败', '未知错误', self.new_date)
             return jsonify({'server_add_status': 'fail'})
 
 
@@ -164,11 +178,14 @@ class ServerUpdate(ServerAdd):
                                                            'host_user': self.host_user,
                                                            'host_password': password_en, 'group': self.group})
                 db.session.commit()
+                self.cz_ins.ins_sql(self.name, '资产修改', '变更资产', self.alias, '成功', None, self.new_date)
                 return jsonify({'server_ping_status': 'true',
                                 'server_into_update': 'true'})
             except Exception:
+                self.cz_ins.ins_sql(self.name, '资产修改', '变更资产', self.alias, '失败', '连接数据库错误', self.new_date)
                 return jsonify({'server_into_update': 'fail'})
         except Exception:
+            self.cz_ins.ins_sql(self.name, '资产修改', '变更资产', self.alias, '失败', '未知错误', self.new_date)
             return jsonify({'server_ping_status': 'fail'})
 
 

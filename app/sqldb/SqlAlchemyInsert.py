@@ -1,5 +1,6 @@
+from app.sqldb.SqlAlchemySettings import db
 from app.sqldb.SqlAlchemyDB import t_host, t_group, t_acc_user, t_sys_user, t_acc_group, t_login_log, t_auth_host, \
-    t_command_log, t_line_chart, db
+    t_command_log, t_line_chart, t_cz_log
 
 
 class HostSqlalh:
@@ -9,10 +10,12 @@ class HostSqlalh:
     @staticmethod
     # def ins_sql(alias, host_ip, host_port, host_user, host_password, group=None):
     def ins_sql(alias, host_ip, host_port, host_user, host_password, group):
-        sql = t_host(alias=alias, host_ip=host_ip, host_port=host_port, host_user=host_user, host_password=host_password,
-                   group=group)
+        sql = t_host(alias=alias, host_ip=host_ip, host_port=host_port, host_user=host_user,
+                     host_password=host_password,
+                     group=group)
         db.session.add(sql)
         db.session.commit()
+        # db.session.close()
 
 
 class GroupSqlalh:
@@ -81,7 +84,8 @@ class CommandLogSqlalh:
 
     @staticmethod
     def ins_sql(com_name, com_type, com_info, com_host, com_status, com_reason, com_time):
-        sql = t_command_log(com_name=com_name, com_type=com_type, com_info=com_info, com_host=com_host,com_status=com_status,
+        sql = t_command_log(com_name=com_name, com_type=com_type, com_info=com_info, com_host=com_host,
+                            com_status=com_status,
                             com_reason=com_reason, com_time=com_time)
         db.session.add(sql)
         db.session.commit()
@@ -93,10 +97,15 @@ class CzLogSqlalh:
 
     @staticmethod
     def ins_sql(cz_name, cz_type, cz_info, cz_details, cz_status, cz_reason, cz_time):
-        sql = t_command_log(cz_name=cz_name, cz_type=cz_type, cz_info=cz_info, cz_details=cz_details,cz_status=cz_status,
-                            cz_reason=cz_reason, cz_time=cz_time)
+        sql = t_cz_log(cz_name=cz_name, cz_type=cz_type, cz_info=cz_info, cz_details=cz_details,
+                       cz_status=cz_status,
+                       cz_reason=cz_reason, cz_time=cz_time)
         db.session.add(sql)
         db.session.commit()
+        try:
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
 
 
 class AuthHostSqlalh:

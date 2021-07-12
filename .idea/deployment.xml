@@ -5,7 +5,7 @@
       <paths name="web@10.0.1.198:22">
         <serverdata>
           <mappings>
-            <mapping deploy="/data/tmp/pycharm_ogsbackend" local="$PROJECT_DIR$" web="/" />
+            <mapping deploy="/data/tmp/pycharm_ogsbackend" local="$PROJECT_DIR$" />
           </mappings>
         </serverdata>
       </paths>
