@@ -1,8 +1,9 @@
+import time
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_acc_group, db
-from app.sqldb.SqlAlchemyInsert import AccUserSqlalh
+from app.sqldb.SqlAlchemyDB import t_acc_group, t_cz_log, db
+from app.sqldb.SqlAlchemyInsert import AccUserSqlalh, CzLogSqlalh
 
 
 class AccGroupList:
@@ -40,15 +41,21 @@ class AccGroupList:
 class AccGroupDel:
     def __init__(self):
         self.id = request.values.get('id')
+        # 新增记录日志相关
+        self.cz_name = request.values.get('cz_name')
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.cz_ins = CzLogSqlalh()
 
     @property
     def host_del(self):
         user_chk = t_acc_group.query.filter_by(id=self.id).first()
-        if not user_chk is None:
+        if user_chk:
             db.session.delete(user_chk)
             db.session.commit()
+            self.cz_ins.ins_sql(self.cz_name, '用户组操作', '删除用户组', self.id, '成功', None, self.new_date)
             return jsonify({'acc_group_del_status': 'true'})
         else:
+            self.cz_ins.ins_sql(self.cz_name, '用户组操作', '删除用户组', self.id, '失败', '系统内没有该用户组', self.new_date)
             return jsonify({'acc_group_del_status': 'fail'})
 
 
@@ -58,6 +65,10 @@ class AccGroupAdd:
         self.remarks = request.values.get('remarks', type=str, default=None)
         self.host_sqlalh = AccUserSqlalh()
         self.basesec = BaseSec()
+        # 新增记录日志相关
+        self.cz_name = request.values.get('cz_name')
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.cz_ins = CzLogSqlalh()
 
     @property
     def host_add(self):
@@ -65,12 +76,16 @@ class AccGroupAdd:
             user_chk = t_acc_group.query.filter_by(name=self.name).first()
             if user_chk is None:
                 self.host_sqlalh.ins_sql(self.name, self.remarks)
+                self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '成功', None, self.new_date)
                 return jsonify({'acc_group_add_status': 'true'})
             else:
+                self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '失败', '该用户组已存在', self.new_date)
                 return jsonify({'acc_group_add_status': 'sel_fail'})
         except IOError:
+            self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '失败', '连接数据库错误', self.new_date)
             return jsonify({'acc_group_add_status': 'con_fail'})
         except Exception:
+            self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '失败', '未知错误', self.new_date)
             return jsonify({'acc_group_add_status': 'fail'})
 
 
@@ -82,9 +97,11 @@ class AccGroupUpdate(AccGroupAdd):
     @property
     def update(self):
         try:
+            self.cz_ins.ins_sql(self.cz_name, '用户组操作', '修改用户组', self.name, '成功', None, self.new_date)
             t_acc_group.query.filter_by(id=self.id).update({'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
             return jsonify({'acc_group_ping_status': 'true',
                             'acc_group_into_update': 'true'})
         except Exception:
+            self.cz_ins.ins_sql(self.cz_name, '用户组操作', '修改用户组', self.name, '失败', '连接数据库错误', self.new_date)
             return jsonify({'acc_group_into_update': 'fail'})
