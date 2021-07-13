@@ -26,7 +26,8 @@ class LoginLogs:
     def get_select_logs(self):
         login_jg_date = request.values.get('login_jg_date')
         try:
-            query_msg = t_login_log.query.filter(t_login_log.login_name.like("%{}%".format(login_jg_date))).offset(self.table_offset).limit(self.table_limit).all()
+            query_msg = t_login_log.query.filter(t_login_log.login_name.like("%{}%".format(login_jg_date))).offset(
+                self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
             len_msg = t_login_log.query.filter(t_login_log.login_name.like("%{}%".format(login_jg_date))).count()
             return jsonify({"host_status": 0,
@@ -122,23 +123,23 @@ class CzLogs:
     def get_cz_logs(self):
         try:
             query_msg = t_cz_log.query.offset(self.table_offset).limit(self.table_limit).all()
-            list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
+            list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'cz_time')
             len_msg = t_cz_log.query.count()
             return jsonify({"host_status": 0,
                             "cz_list_msg": list_msg,
                             "msg": "",
                             "cz_len_msg": len_msg})
         except IOError:
-            return jsonify({"command_list_msg": 'select list msg error',
-                            "command_len_msg": 0})
+            return jsonify({"cz_list_msg": 'select list msg error',
+                            "cz_len_msg": 0})
 
     def get_select_logs(self):
         cz_jg_date = request.values.get('cz_jg_date')
         try:
-            query_msg = t_cz_log.query.filter(t_cz_log.com_name.like("%{}%".format(cz_jg_date))).offset(
+            query_msg = t_cz_log.query.filter(t_cz_log.cz_name.like("%{}%".format(cz_jg_date))).offset(
                 self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
-            len_msg = t_cz_log.query.filter(t_cz_log.com_name.like("%{}%".format(cz_jg_date))).count()
+            len_msg = t_cz_log.query.filter(t_cz_log.cz_name.like("%{}%".format(cz_jg_date))).count()
             return jsonify({"host_status": 0,
                             "cz_list_msg": list_msg,
                             "msg": "",
@@ -153,11 +154,11 @@ class CzLogs:
         msg = cz_jg_date.split(' - ')
         try:
             query_msg = t_cz_log.query.filter(t_cz_log.cz_time >= msg[0]).filter(
-                t_cz_log.cz_time <= msg[1]).order_by(t_cz_log.com_time.desc()).offset(
+                t_cz_log.cz_time <= msg[1]).order_by(t_cz_log.cz_time.desc()).offset(
                 self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
-            len_msg = t_cz_log.query.filter(t_cz_log.com_time >= msg[0]).filter(
-                t_cz_log.com_time <= msg[1]).order_by(t_cz_log.com_time.desc()).count()
+            len_msg = t_cz_log.query.filter(t_cz_log.cz_time >= msg[0]).filter(
+                t_cz_log.cz_time <= msg[1]).order_by(t_cz_log.cz_time.desc()).count()
             return jsonify({"host_status": 0,
                             "cz_list_msg": list_msg,
                             "msg": "",

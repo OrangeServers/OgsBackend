@@ -1,4 +1,4 @@
-from app.foo.auditd.loginlogs import LoginLogs, CommandLogs
+from app.foo.auditd.loginlogs import LoginLogs, CommandLogs, CzLogs
 
 
 def acc_login_logs():
@@ -28,4 +28,19 @@ def server_com_date():
 
 def server_com_select():
     orange = CommandLogs()
+    return orange.get_select_logs()
+
+
+def server_cz_logs():
+    orange = CzLogs()
+    return orange.get_cz_logs()
+
+
+def server_cz_date():
+    orange = CzLogs()
+    return orange.get_date_logs()
+
+
+def server_cz_select():
+    orange = CzLogs()
     return orange.get_select_logs()

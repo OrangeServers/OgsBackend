@@ -99,10 +99,15 @@ def orange_init_api():
     app.add_url_rule('/account/login/date', view_func=acc_login_date, methods=['POST', 'get'])
     app.add_url_rule('/account/login/select', view_func=acc_login_select, methods=['POST', 'get'])
 
-    # 用户操作日志
+    # 用户执行命令日志
     app.add_url_rule('/server/command/logs', view_func=server_com_logs, methods=['POST', 'get'])
     app.add_url_rule('/server/command/date', view_func=server_com_date, methods=['POST', 'get'])
     app.add_url_rule('/server/command/select', view_func=server_com_select, methods=['POST', 'get'])
+
+    # 用户操作日志
+    app.add_url_rule('/server/cz/logs', view_func=server_cz_logs, methods=['POST', 'get'])
+    app.add_url_rule('/server/cz/date', view_func=server_cz_date, methods=['POST', 'get'])
+    app.add_url_rule('/server/cz/select', view_func=server_cz_select, methods=['POST', 'get'])
 
     # 用户组接口
     app.add_url_rule('/account/group/list', view_func=acc_group_list, methods=['POST', 'get'])
