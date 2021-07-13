@@ -1,6 +1,7 @@
+import time
 from flask import request, jsonify
-from app.sqldb.SqlAlchemyDB import t_sys_user, db
-from app.sqldb.SqlAlchemyInsert import SysUserSqlalh
+from app.sqldb.SqlAlchemyDB import t_sys_user, t_cz_log, db
+from app.sqldb.SqlAlchemyInsert import SysUserSqlalh, CzLogSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
 
@@ -41,16 +42,22 @@ class SysUserDel:
     def __init__(self):
         # self.host_ip = request.values.get('host_ip')
         self.id = request.values.get('id')
+        # 新增记录日志相关
+        self.cz_name = request.values.get('cz_name')
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.cz_ins = CzLogSqlalh()
 
     @property
     def host_del(self):
         # user_chk = Host.query.filter_by(host_ip=self.host_ip).first()
         user_chk = t_sys_user.query.filter_by(id=self.id).first()
-        if not user_chk is None:
+        if user_chk:
             db.session.delete(user_chk)
             db.session.commit()
+            self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '删除资产用户', self.id, '成功', None, self.new_date)
             return jsonify({'sys_user_del_status': 'true'})
         else:
+            self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '删除资产用户', self.id, '失败', '系统内没有该用户', self.new_date)
             return jsonify({'sys_user_del_status': 'fail'})
 
 
@@ -63,6 +70,10 @@ class SysUserAdd:
         self.remarks = request.values.get('remarks', type=str, default=None)
         self.host_sqlalh = SysUserSqlalh()
         self.basesec = BaseSec()
+        # 新增记录日志相关
+        self.cz_name = request.values.get('cz_name')
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.cz_ins = CzLogSqlalh()
 
     @property
     def host_add(self):
@@ -71,12 +82,16 @@ class SysUserAdd:
             if user_chk is None:
                 password_en = self.basesec.base_en(self.host_password)
                 self.host_sqlalh.ins_sql(self.alias, self.host_user, password_en, self.agreement, self.remarks)
+                self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '新增资产用户', self.host_user, '成功', None, self.new_date)
                 return jsonify({'sys_user_add_status': 'true'})
             else:
+                self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '新增资产用户', self.host_user, '失败', '该资产用户已存在', self.new_date)
                 return jsonify({'sys_user_add_status': 'sel_fail'})
         except IOError:
+            self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '新增资产用户', self.host_user, '失败', '连接数据库失败', self.new_date)
             return jsonify({'sys_user_add_status': 'con_fail'})
         except Exception:
+            self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '新增资产用户', self.host_user, '失败', '未知错误', self.new_date)
             return jsonify({'sys_user_add_status': 'fail'})
 
 
@@ -94,7 +109,9 @@ class SysUserUpdate(SysUserAdd):
                                                            'agreement': self.agreement,
                                                            'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
+            self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '修改资产用户', self.host_user, '成功', None, self.new_date)
             return jsonify({'sys_user_ping_status': 'true',
                             'sys_user_into_update': 'true'})
         except Exception:
+            self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '修改资产用户', self.host_user, '失败', '连接数据失败', self.new_date)
             return jsonify({'sys_user_into_update': 'fail'})

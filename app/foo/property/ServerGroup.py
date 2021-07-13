@@ -1,8 +1,9 @@
+import time
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_group, t_auth_host, db
-from app.sqldb.SqlAlchemyInsert import GroupSqlalh
+from app.sqldb.SqlAlchemyDB import t_group, t_auth_host, t_cz_log, db
+from app.sqldb.SqlAlchemyInsert import GroupSqlalh, CzLogSqlalh
 
 
 class ServerGroupList:
@@ -51,15 +52,21 @@ class ServerGroupList:
 class ServerGroupDel:
     def __init__(self):
         self.id = request.values.get('id')
+        # 新增记录日志相关
+        self.cz_name = request.values.get('cz_name')
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.cz_ins = CzLogSqlalh()
 
     @property
     def host_del(self):
         user_chk = t_group.query.filter_by(id=self.id).first()
-        if not user_chk is None:
+        if user_chk:
             db.session.delete(user_chk)
             db.session.commit()
+            self.cz_ins.ins_sql(self.cz_name, '资产组操作', '删除资产组', self.id, '成功', None, self.new_date)
             return jsonify({'server_group_del_status': 'true'})
         else:
+            self.cz_ins.ins_sql(self.cz_name, '资产组操作', '删除资产组', self.id, '失败', '系统内没有该资产组', self.new_date)
             return jsonify({'server_group_del_status': 'fail'})
 
 
@@ -69,6 +76,10 @@ class ServerGroupAdd:
         self.remarks = request.values.get('remarks', type=str, default=None)
         self.host_sqlalh = GroupSqlalh()
         self.basesec = BaseSec()
+        # 新增记录日志相关
+        self.cz_name = request.values.get('cz_name')
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.cz_ins = CzLogSqlalh()
 
     @property
     def host_add(self):
@@ -76,12 +87,16 @@ class ServerGroupAdd:
             user_chk = t_group.query.filter_by(name=self.name).first()
             if user_chk is None:
                 self.host_sqlalh.ins_sql(self.name, self.remarks)
+                self.cz_ins.ins_sql(self.cz_name, '资产组操作', '新增资产组', self.name, '成功', None, self.new_date)
                 return jsonify({'server_group_add_status': 'true'})
             else:
+                self.cz_ins.ins_sql(self.cz_name, '资产组操作', '新增资产组', self.name, '失败', '该资产组已存在', self.new_date)
                 return jsonify({'server_group_add_status': 'sel_fail'})
         except IOError:
+            self.cz_ins.ins_sql(self.cz_name, '资产组操作', '新增资产组', self.name, '失败', '连接数据库失败', self.new_date)
             return jsonify({'server_group_add_status': 'con_fail'})
         except Exception:
+            self.cz_ins.ins_sql(self.cz_name, '资产组操作', '新增资产组', self.name, '失败', '未知错误', self.new_date)
             return jsonify({'server_group_add_status': 'fail'})
 
 
@@ -95,7 +110,9 @@ class ServerGroupUpdate(ServerGroupAdd):
         try:
             t_group.query.filter_by(id=self.id).update({'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
+            self.cz_ins.ins_sql(self.cz_name, '资产组操作', '修改资产组', self.name, '成功', None, self.new_date)
             return jsonify({'server_group_ping_status': 'true',
                             'server_group_into_update': 'true'})
         except Exception:
+            self.cz_ins.ins_sql(self.cz_name, '资产组操作', '修改资产组', self.name, '失败', '连接数据库错误', self.new_date)
             return jsonify({'server_group_into_update': 'fail'})

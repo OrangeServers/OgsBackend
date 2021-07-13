@@ -117,10 +117,10 @@ class ServerDel:
         if user_chk:
             db.session.delete(user_chk)
             db.session.commit()
-            self.cz_ins.ins_sql(self.cz_name, '资产修改', '删除资产', self.id, '成功', None, self.new_date)
+            self.cz_ins.ins_sql(self.cz_name, '资产操作', '删除资产', self.id, '成功', None, self.new_date)
             return jsonify({'server_del_status': 'true'})
         else:
-            self.cz_ins.ins_sql(self.cz_name, '资产修改', '删除资产', self.id, '失败', '系统内没有该资产', self.new_date)
+            self.cz_ins.ins_sql(self.cz_name, '资产操作', '删除资产', self.id, '失败', '系统内没有该资产', self.new_date)
             return jsonify({'server_del_status': 'fail'})
 
 
@@ -149,16 +149,16 @@ class ServerAdd:
                 conn.ssh_cmd('hostname')
                 self.host_sqlalh.ins_sql(self.alias, self.host_ip, self.host_port, self.host_user, password_en,
                                          self.group)
-                self.cz_ins.ins_sql(self.cz_name, '资产修改', '新增资产', self.alias, '成功', None, self.new_date)
+                self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '成功', None, self.new_date)
                 return jsonify({'server_add_status': 'true'})
             else:
-                self.cz_ins.ins_sql(self.cz_name, '资产修改', '新增资产', self.alias, '失败', '该用户已存在', self.new_date)
+                self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '失败', '该用户已存在', self.new_date)
                 return jsonify({'server_add_status': 'sel_fail'})
         except IOError:
-            self.cz_ins.ins_sql(self.cz_name, '资产修改', '新增资产', self.alias, '失败', '连接主机失败', self.new_date)
+            self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '失败', '连接主机失败', self.new_date)
             return jsonify({'server_add_status': 'con_fail'})
         except Exception:
-            self.cz_ins.ins_sql(self.cz_name, '资产修改', '新增资产', self.alias, '失败', '未知错误', self.new_date)
+            self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '失败', '未知错误', self.new_date)
             return jsonify({'server_add_status': 'fail'})
 
 
@@ -179,14 +179,14 @@ class ServerUpdate(ServerAdd):
                                                            'host_user': self.host_user,
                                                            'host_password': password_en, 'group': self.group})
                 db.session.commit()
-                self.cz_ins.ins_sql(self.cz_name, '资产修改', '变更资产', self.alias, '成功', None, self.new_date)
+                self.cz_ins.ins_sql(self.cz_name, '资产操作', '变更资产', self.alias, '成功', None, self.new_date)
                 return jsonify({'server_ping_status': 'true',
                                 'server_into_update': 'true'})
             except Exception:
-                self.cz_ins.ins_sql(self.cz_name, '资产修改', '变更资产', self.alias, '失败', '连接数据库错误', self.new_date)
+                self.cz_ins.ins_sql(self.cz_name, '资产操作', '变更资产', self.alias, '失败', '连接数据库错误', self.new_date)
                 return jsonify({'server_into_update': 'fail'})
         except Exception:
-            self.cz_ins.ins_sql(self.cz_name, '资产修改', '变更资产', self.alias, '失败', '未知错误', self.new_date)
+            self.cz_ins.ins_sql(self.cz_name, '资产操作', '变更资产', self.alias, '失败', '未知错误', self.new_date)
             return jsonify({'server_ping_status': 'fail'})
 
 
