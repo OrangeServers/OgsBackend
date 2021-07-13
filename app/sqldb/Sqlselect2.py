@@ -8,7 +8,6 @@ query_msg = Host.query.all()
 list1_msg = ListTool().dict_ls_reset_list(query_msg)
 list2_msg = ListTool().dict_ls_reset_dict(query_msg)
 
-
-#print(group_list)
+# print(group_list)
 print(list1_msg)
 print(list2_msg)

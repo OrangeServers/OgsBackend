@@ -9,7 +9,6 @@ from geventwebsocket.server import WSGIServer  # websocket服务承载
 # from gevent.pywsgi import WSGIServer
 from geventwebsocket.websocket import WebSocket  # websocket语法提示
 
-
 import paramiko
 import time
 import json
@@ -27,7 +26,7 @@ class ParSsh:
         self.port = p_port
         self.user = p_user
         self.psw = p_psw
-        self.trans = paramiko.Transport((self.host, self.port)) # 【坑1】 如果你使用 paramiko.SSHClient() cd后会回到连接的初始状态
+        self.trans = paramiko.Transport((self.host, self.port))  # 【坑1】 如果你使用 paramiko.SSHClient() cd后会回到连接的初始状态
         self.trans.start_client()
         self.trans.auth_password(username=self.user, password=self.psw)
         self.channel = self.trans.open_session()
@@ -79,20 +78,22 @@ class OgsWebSocket:
             query_msg = query_host_msg.__dict__
             # conn = ParSsh(hostname, port, username, password)
             # 根据客户端发送的用户名密码连接
-            conn = ParSsh(query_msg['host_ip'], query_msg['host_port'], query_msg['host_user'], self.bse.base_de(query_msg['host_password']))
+            conn = ParSsh(query_msg['host_ip'], query_msg['host_port'], query_msg['host_user'],
+                          self.bse.base_de(query_msg['host_password']))
             # print(len(client_list), client_list)
             while 1:
                 msg_from_cli = self.client_socket.receive()
                 # print(msg_from_cli)
                 msg = conn.test_paramiko_interact(msg_from_cli)
-                res_msg = msg[msg.find('\r\n')+2:]
+                res_msg = msg[msg.find('\r\n') + 2:]
                 print(res_msg)
                 self.client_socket.send(res_msg)
         except TypeError:
             print('val is none')
         except paramiko.ssh_exception.SSHException:
             print(1)
-            self.client_socket.send('Unable to connect to {}: [Errno 110] Connection timed out'.format(query_msg['host_ip']))
+            self.client_socket.send(
+                'Unable to connect to {}: [Errno 110] Connection timed out'.format(query_msg['host_ip']))
             return {'status': 1}
 
 

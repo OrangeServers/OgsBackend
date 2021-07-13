@@ -10,13 +10,15 @@ class ConnMysql:
     host-->数据库ip,str类型
     port-->数据库端口,int类型
     """
+
     def __init__(self, dbname, user, password, host, port):
         self.dbname = dbname
         self.user = user
         self.password = password
         self.host = host
         self.port = port
-        self.connection = pymysql.connect(db=self.dbname,user=self.user,password=self.password,host=self.host,port=self.port,charset='utf8')
+        self.connection = pymysql.connect(db=self.dbname, user=self.user, password=self.password, host=self.host,
+                                          port=self.port, charset='utf8')
 
     def sel_sql(self, sql):
         """
@@ -25,7 +27,7 @@ class ConnMysql:
         cursor = self.connection.cursor()
         cursor.execute(sql)
         # result = cursor.fetchone()
-        sqlmsg= list(cursor.fetchall())
+        sqlmsg = list(cursor.fetchall())
         cursor.close()
         return sqlmsg
         # self.connection.close()
@@ -51,9 +53,10 @@ class ConnMysql:
         self.connection.commit()
         cursor.close()
 
-    def czgsh(self,czxx):
-        gsh = ["船只id: ","厂商: ","船只: ","中文翻译: ","官网价格: ","游戏币价格: ","船员: ","货物: ","最大速度: ","HP: ","护盾","DPS: ","导弹: ","量子速度: ","量子范围: "]
-        xq = ("\n".join([i[0]+str(i[1]) for i in zip(gsh,czxx)]))
+    def czgsh(self, czxx):
+        gsh = ["船只id: ", "厂商: ", "船只: ", "中文翻译: ", "官网价格: ", "游戏币价格: ", "船员: ", "货物: ", "最大速度: ", "HP: ", "护盾", "DPS: ",
+               "导弹: ", "量子速度: ", "量子范围: "]
+        xq = ("\n".join([i[0] + str(i[1]) for i in zip(gsh, czxx)]))
         return xq
 
 

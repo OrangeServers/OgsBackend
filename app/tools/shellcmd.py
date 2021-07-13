@@ -47,7 +47,7 @@ class RemoteConnection:
         """
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(self.host,port=self.port, username=self.username, password=self.password, timeout=3)
+        ssh.connect(self.host, port=self.port, username=self.username, password=self.password, timeout=3)
         sftp_cilent = paramiko.SFTPClient.from_transport(ssh.get_transport())
         sftp_cilent.put(form_path, to_path)
         sftp_cilent.close()
@@ -62,7 +62,7 @@ class RemoteConnection:
 
 
 if __name__ == '__main__':
-    test_yw200 = RemoteConnection('10.0.1.200',22,'root','jlb123')
+    test_yw200 = RemoteConnection('10.0.1.200', 22, 'root', 'jlb123')
     test_yw200.ssh_cmd('hostname')
     ssh = paramiko.SSHClient()
     test_yw200.put_file('/data/tmp/1.txt', '/data/tmp/1.txt')

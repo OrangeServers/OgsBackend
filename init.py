@@ -18,21 +18,23 @@ from app.service.auth_api import *
 # 导入skywalking链路追踪
 import asyncio
 from skywalking import agent, config
-config.init(collector='10.0.1.198:11800', service='orangeserver') #采集服务的地址，给自己的服务起个名称
+
+config.init(collector='10.0.1.198:11800', service='orangeserver')  # 采集服务的地址，给自己的服务起个名称
 agent.start()
 
 # 导入elastic apm链路追踪
 from elasticapm.contrib.flask import ElasticAPM
+
 app.config['ELASTIC_APM'] = {
-  # Set required service name. Allowed characters:
-  # a-z, A-Z, 0-9, -, _, and space
-  'SERVICE_NAME': 'orangeserver',
+    # Set required service name. Allowed characters:
+    # a-z, A-Z, 0-9, -, _, and space
+    'SERVICE_NAME': 'orangeserver',
 
-  # Use if APM Server requires a token
-  'SECRET_TOKEN': '',
+    # Use if APM Server requires a token
+    'SECRET_TOKEN': '',
 
-  # Set custom APM Server URL (default: http://localhost:8200)
-  'SERVER_URL': 'http://10.0.1.198:8200',
+    # Set custom APM Server URL (default: http://localhost:8200)
+    'SERVER_URL': 'http://10.0.1.198:8200',
 }
 
 apm = ElasticAPM(app)

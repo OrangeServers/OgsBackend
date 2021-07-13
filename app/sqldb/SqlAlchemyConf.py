@@ -10,8 +10,8 @@ from app.conf.conf_test import MYSQL_CONF
         @ 这里使用了.format函数,这就是个占位符,在format中按顺序填写就好,也可以指定编号比如{1}
 """
 engine = create_engine("mysql+pymysql://{}:{}@{}:{}/{}".format(MYSQL_CONF['user'], MYSQL_CONF['password'],
-                                                                      MYSQL_CONF['host'], MYSQL_CONF['port'],
-                                                                      MYSQL_CONF['dbname']))
+                                                               MYSQL_CONF['host'], MYSQL_CONF['port'],
+                                                               MYSQL_CONF['dbname']))
 
 """
     说明:

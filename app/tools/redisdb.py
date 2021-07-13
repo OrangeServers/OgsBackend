@@ -9,6 +9,7 @@ class ConnRedis:
     port-->redis的端口,int类型
     max_connections-->连接最大超时时间,int类型
     """
+
     def __init__(self, host, port, max_connections=10):
         self.host = host
         self.port = port
@@ -47,5 +48,5 @@ class ConnRedis:
 
 
 if __name__ == "__main__":
-    cn_red = ConnRedis(REDIS_CONF['host'],REDIS_CONF['port'])
+    cn_red = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
     cn_red.get_red('name')

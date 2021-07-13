@@ -98,7 +98,8 @@ class AccGroupUpdate(AccGroupAdd):
     def update(self):
         try:
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '修改用户组', self.name, '成功', None, self.new_date)
-            t_acc_group.query.filter_by(id=self.id).update({'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
+            t_acc_group.query.filter_by(id=self.id).update(
+                {'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
             return jsonify({'acc_group_ping_status': 'true',
                             'acc_group_into_update': 'true'})

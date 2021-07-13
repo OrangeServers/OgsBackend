@@ -143,7 +143,8 @@ class UserRegister(UserLogin):
                 if not self.cnres.get_red(self.email) is None:
                     if self.verification == self.cnres.get_red(self.email):
                         # self.user_sqlalh.ins_sql(self.username, self.base.base_en(self.password), self.email)
-                        self.reg_ins.ins_sql(None, self.username, self.base.base_en(self.password), 'develop', self.email, None)
+                        self.reg_ins.ins_sql(None, self.username, self.base.base_en(self.password), 'develop',
+                                             self.email, None)
                         return jsonify({
                             'chk_user_status': 'true',
                             'verification': 'true',
@@ -209,7 +210,7 @@ class AccUserAdd:
             if user_chk is None:
                 password_en = self.basesec.base_en(self.password)
                 self.user_ins.ins_sql(self.alias, self.name, password_en, self.usrole, self.mail,
-                                         self.remarks)
+                                      self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '成功', None, self.new_date)
                 return jsonify({'acc_user_add_status': 'true'})
             else:

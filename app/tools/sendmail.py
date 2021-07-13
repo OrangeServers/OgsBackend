@@ -17,7 +17,7 @@ class SendMail:
         self.smtp_server = smtp_server
         self.smtp = smtplib.SMTP()
 
-    def send(self,to_mail, to_send, header, message):
+    def send(self, to_mail, to_send, header, message):
         """
         to_mail-->发送到目的邮箱的邮箱名,str类型
         to_send-->指定发送的名称,str类型
@@ -35,5 +35,5 @@ class SendMail:
 
 
 if __name__ == "__main__":
-    sendmail = SendMail(MAIL_CONF['form_mail'],MAIL_CONF['password'],MAIL_CONF['smtp_server'])
-    sendmail.send('18301022797@163.com','orange','测试','这是一封测试邮件')
+    sendmail = SendMail(MAIL_CONF['form_mail'], MAIL_CONF['password'], MAIL_CONF['smtp_server'])
+    sendmail.send('18301022797@163.com', 'orange', '测试', '这是一封测试邮件')
