@@ -152,7 +152,7 @@ class ServerAdd:
                 self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '成功', None, self.new_date)
                 return jsonify({'server_add_status': 'true'})
             else:
-                self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '失败', '该用户已存在', self.new_date)
+                self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '失败', '该资产已存在', self.new_date)
                 return jsonify({'server_add_status': 'sel_fail'})
         except IOError:
             self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '失败', '连接主机失败', self.new_date)
