@@ -1,6 +1,6 @@
 from app.sqldb.SqlAlchemySettings import db
 from app.sqldb.SqlAlchemyDB import t_host, t_group, t_acc_user, t_sys_user, t_acc_group, t_login_log, t_auth_host, \
-    t_command_log, t_line_chart, t_cz_log
+    t_command_log, t_line_chart, t_cz_log, t_settings
 
 
 class HostSqlalh:
@@ -126,5 +126,17 @@ class LineChartSqlalh:
     @staticmethod
     def ins_sql(login_count, user_count, chart_date):
         sql = t_line_chart(login_count=login_count, user_count=user_count, chart_date=chart_date)
+        db.session.add(sql)
+        db.session.commit()
+
+
+class SettingsSqlalh:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def ins_sql(name, login_time, register_status, color_matching):
+        sql = t_settings(name=name, login_time=login_time, register_status=register_status,
+                         color_matching=color_matching)
         db.session.add(sql)
         db.session.commit()
