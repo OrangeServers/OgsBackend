@@ -99,6 +99,7 @@ class SysUserUpdate(SysUserAdd):
     def __init__(self):
         super(SysUserUpdate, self).__init__()
         self.id = request.values.get('id')
+        self.nums = request.values.get('nums')
 
     @property
     def update(self):
@@ -112,6 +113,7 @@ class SysUserUpdate(SysUserAdd):
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '修改资产用户', self.host_user, '成功', None, self.new_date)
             return jsonify({'sys_user_ping_status': 'true',
                             'sys_user_into_update': 'true'})
-        except Exception:
+        except Exception as e:
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '修改资产用户', self.host_user, '失败', '连接数据失败', self.new_date)
+            print(e)
             return jsonify({'sys_user_into_update': 'fail'})

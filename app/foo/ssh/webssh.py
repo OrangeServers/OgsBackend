@@ -86,7 +86,7 @@ class OgsWebSocket:
                 # print(msg_from_cli)
                 msg = conn.test_paramiko_interact(msg_from_cli)
                 res_msg = msg[msg.find('\r\n') + 2:]
-                print(res_msg)
+                # print(res_msg)
                 self.client_socket.send(res_msg)
         except TypeError:
             print('val is none')
