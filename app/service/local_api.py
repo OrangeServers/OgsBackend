@@ -5,6 +5,7 @@ from app.conf.conf_test import DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH, RSYNC_SHELL
 from app.foo.local.LocalInit import AppInit
 from app.foo.ssh.webssh import OgsWebSocket
 from app.foo.local.Settings import OgsSettings
+from app.foo.local.download import download
 
 
 # 初始化：
@@ -91,3 +92,7 @@ def local_settings_get():
 def local_settings_update():
     orange = OgsSettings()
     return orange.settings_change()
+
+
+def local_download():
+    return download()

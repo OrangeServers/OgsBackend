@@ -178,6 +178,7 @@ def orange_init_api():
     app.add_url_rule('/local/image/test_put', view_func=local_image_put, methods=['POST', 'get'])
     app.add_url_rule('/local/settings/get', view_func=local_settings_get, methods=['POST', 'get'])
     app.add_url_rule('/local/settings/update', view_func=local_settings_update, methods=['POST', 'get'])
+    app.add_url_rule('/local/download', view_func=local_download, methods=['POST', 'get'])
 
     # ssh专用websocket接口
     app.add_url_rule('/local/websocket', view_func=local_web_ssh)
