@@ -38,13 +38,13 @@ class DownloadFile:
         """
 
         if self.file_path is None:
-            return self.to_json({'success': 0, 'message': '请输入参数'})
+            return self.to_json({'status': 'fail', 'msg': '请输入参数'})
         else:
             if self.file_path == '':
-                return self.to_json({'success': 0, 'message': '请输入正确路径'})
+                return self.to_json({'status': 'fail', 'msg': '请输入正确路径'})
             else:
                 if not os.path.isfile(self.file_path + self.file_name):
-                    return self.to_json({'success': 0, 'message': '文件路径不存在'})
+                    return self.to_json({'status': 'fail', 'msg': '文件路径不存在'})
                 else:
                     filename = os.path.basename(self.file_path + self.file_name)
                     response = Response(self.file_iterator(self.file_path + self.file_name))
