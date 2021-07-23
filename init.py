@@ -180,6 +180,9 @@ def orange_init_api():
     app.add_url_rule('/local/settings/update', view_func=local_settings_update, methods=['POST', 'get'])
     app.add_url_rule('/local/download', view_func=local_download, methods=['POST', 'get'])
 
+    # 文件类型操作
+    app.add_url_rule('/local/file/def_get', view_func=file_def_get, methods=['POST', 'get'])
+
     # ssh专用websocket接口
     app.add_url_rule('/local/websocket', view_func=local_web_ssh)
     with app.app_context():

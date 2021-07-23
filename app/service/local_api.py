@@ -6,6 +6,7 @@ from app.foo.local.LocalInit import AppInit
 from app.foo.ssh.webssh import OgsWebSocket
 from app.foo.local.Settings import OgsSettings
 from app.foo.local.download import DownloadFile
+from app.foo.file.file import FileGet
 
 
 # 初始化：
@@ -97,3 +98,8 @@ def local_settings_update():
 def local_download():
     orange = DownloadFile()
     return orange.download()
+
+
+def file_def_get():
+    orange = FileGet()
+    return orange.get_file_list()

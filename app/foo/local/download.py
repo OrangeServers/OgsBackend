@@ -3,6 +3,10 @@ from flask import request, Response
 
 
 class DownloadFile:
+    """
+        文件下载接口
+    :post传值下载文件
+    """
     def __init__(self):
         self.file_path = '/data/tmp/test/'
         self.file_name = request.values.get('filename')
@@ -36,7 +40,6 @@ class DownloadFile:
             文件下载
         :return:
         """
-
         if self.file_path is None:
             return self.to_json({'status': 'fail', 'msg': '请输入参数'})
         else:
