@@ -105,6 +105,11 @@ def file_def_get():
     return orange.get_file_list()
 
 
+def file_checkout_get():
+    orange = FileGet()
+    return orange.checkout_file_list()
+
+
 def file_remove():
     orange = FileGet()
     return orange.remove_file()
