@@ -182,6 +182,7 @@ def orange_init_api():
 
     # 文件类型操作
     app.add_url_rule('/local/file/def_get', view_func=file_def_get, methods=['POST', 'get'])
+    app.add_url_rule('/local/file/del', view_func=file_remove, methods=['POST', 'get'])
 
     # ssh专用websocket接口
     app.add_url_rule('/local/websocket', view_func=local_web_ssh)

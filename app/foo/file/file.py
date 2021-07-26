@@ -5,7 +5,7 @@ from flask import request, jsonify
 class FileGet:
     def __init__(self):
         self.req_dir = request.values.get('req_dir', default='')
-        self.def_dir_path = '/data/putfile/'
+        self.def_dir_path = '/data/tmp/test/'
         self.old_def_dir = self.def_dir_path + self.req_dir
         self.dir_list = []
         self.file_list = []

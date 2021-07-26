@@ -103,3 +103,8 @@ def local_download():
 def file_def_get():
     orange = FileGet()
     return orange.get_file_list()
+
+
+def file_remove():
+    orange = FileGet()
+    return orange.remove_file()
