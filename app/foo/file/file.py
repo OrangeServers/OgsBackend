@@ -16,7 +16,7 @@ class FileGet:
         if get_file_type == 'checkout':
             if os.getcwd() == '/data/tmp/test':
                 os.chdir('/data/tmp/test')
-                # 逻辑不正确 待修复
+                # 回退服务端逻辑待删除测试
             else:
                 os.chdir('../')
         dir_list = os.listdir('./')
