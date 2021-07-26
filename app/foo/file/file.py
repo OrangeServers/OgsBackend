@@ -11,6 +11,9 @@ class FileGet:
         self.file_list = []
 
     def get_file_list(self):
+        if self.req_dir != '':
+            self.old_def_dir += '/'
+            print(self.old_def_dir)
         dir_list = os.listdir(self.old_def_dir)
         for i in dir_list:
             file_type = os.path.isfile(self.old_def_dir + i)
@@ -18,7 +21,7 @@ class FileGet:
                 self.file_list.append(i)
             else:
                 self.dir_list.append(i)
-        return jsonify({'file': self.file_list, 'dir': self.dir_list})
+        return jsonify({'file': self.file_list, 'dir': self.dir_list, 'ispath': '/' + self.req_dir})
 
     def change_file_name(self):
         new_dir = request.values.get('new_dir')
