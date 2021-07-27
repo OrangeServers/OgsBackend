@@ -8,7 +8,7 @@ class DownloadFile:
     :post传值下载文件
     """
     def __init__(self):
-        self.file_path = '/data/tmp/test/'
+        self.file_path = '/data/tmp/test'
         self.file_name = request.values.get('filename')
 
     @staticmethod
