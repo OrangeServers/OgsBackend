@@ -325,7 +325,7 @@ class GroupListCmd(GroupCmd):
             return jsonify({'server_ping_status': 'fail'})
 
 
-# 图片上传接口
+# 脚本上传接口
 class ServerScript:
     def __init__(self):
         self.file = request.files.get('file')

@@ -1,5 +1,6 @@
 import os
 from flask import request, jsonify
+from werkzeug.utils import secure_filename
 
 
 class FileGet:
@@ -59,3 +60,10 @@ class FileGet:
         else:
             os.rmdir(rm_filename)
             return jsonify({'status': 'true', 'msg': '删除了一个目录'})
+
+    def save_file(self):
+        os.chdir(self.old_def_dir)
+        file = request.files.get('file')
+        filename = secure_filename(file.filename)
+        file.save(filename)
+        return jsonify({'status': 'true'})

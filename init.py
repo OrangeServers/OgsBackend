@@ -178,12 +178,13 @@ def orange_init_api():
     app.add_url_rule('/local/image/test_put', view_func=local_image_put, methods=['POST', 'get'])
     app.add_url_rule('/local/settings/get', view_func=local_settings_get, methods=['POST', 'get'])
     app.add_url_rule('/local/settings/update', view_func=local_settings_update, methods=['POST', 'get'])
-    app.add_url_rule('/local/download', view_func=local_download, methods=['POST', 'get'])
 
     # 文件类型操作
+    app.add_url_rule('/local/download', view_func=file_download, methods=['POST', 'get'])
     app.add_url_rule('/local/file/def_get', view_func=file_def_get, methods=['POST', 'get'])
     app.add_url_rule('/local/file/add', view_func=file_create, methods=['POST', 'get'])
     app.add_url_rule('/local/file/del', view_func=file_remove, methods=['POST', 'get'])
+    app.add_url_rule('/local/file/put', view_func=file_save, methods=['POST', 'get'])
 
     # ssh专用websocket接口
     app.add_url_rule('/local/websocket', view_func=local_web_ssh)

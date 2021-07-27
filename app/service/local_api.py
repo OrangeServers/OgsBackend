@@ -95,7 +95,7 @@ def local_settings_update():
     return orange.settings_change()
 
 
-def local_download():
+def file_download():
     orange = DownloadFile()
     return orange.download()
 
@@ -113,3 +113,8 @@ def file_create():
 def file_remove():
     orange = FileGet()
     return orange.remove_file()
+
+
+def file_save():
+    orange = FileGet()
+    return orange.save_file()
