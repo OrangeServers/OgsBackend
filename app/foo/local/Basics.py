@@ -4,6 +4,7 @@ from flask import request, jsonify, make_response
 from app.sqldb.SqlAlchemyDB import t_host, db, t_group, t_sys_user, t_acc_user, t_auth_host, t_login_log, t_line_chart
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyInsert import LineChartSqlalh
+from app.conf.conf_test import FILE_CONF
 
 
 class CountUpdate:
@@ -145,7 +146,8 @@ class DataSumAll:
 
 class GetUserImage:
     def __init__(self):
-        self.path = '/data/putfile/'
+        # self.path = '/data/putfile/'
+        self.path = FILE_CONF['image_path']
         self.default_img = 'juzi11.png'
 
     def get_img(self, img_name):
@@ -166,7 +168,8 @@ class GetUserImage:
 
 class PutUserImage:
     def __init__(self):
-        self.path = '/data/putfile/'
+        # self.path = '/data/putfile/'
+        self.path = FILE_CONF['image_path']
         self.img_file = request.files.get('file')
         self.img_user = request.values.get('user')
 

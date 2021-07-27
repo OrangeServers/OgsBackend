@@ -1,12 +1,14 @@
 import os
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
+from app.conf.conf_test import FILE_CONF
 
 
 class FileGet:
     def __init__(self):
         self.req_dir = request.values.get('req_dir', default='')
-        self.def_dir_path = '/data/tmp/test'
+        # self.def_dir_path = '/data/tmp/test'
+        self.def_dir_path = FILE_CONF['file_path']
         self.old_def_dir = self.def_dir_path + self.req_dir
         self.dir_list = []
         self.file_list = []
@@ -15,8 +17,8 @@ class FileGet:
         get_file_type = request.values.get('get_file_type')
         os.chdir(self.old_def_dir)
         if get_file_type == 'checkout':
-            if os.getcwd() == '/data/tmp/test':
-                os.chdir('/data/tmp/test')
+            if os.getcwd() == self.def_dir_path:
+                os.chdir(self.def_dir_path)
                 # 回退服务端逻辑待删除测试
             else:
                 os.chdir('../')
@@ -29,7 +31,8 @@ class FileGet:
                 self.file_list.append(i)
             else:
                 self.dir_list.append(i)
-        return jsonify({'file': self.file_list, 'dir': self.dir_list, 'ispath': is_path.partition('/data/tmp/test')[2] + '/'})
+        return jsonify(
+            {'file': self.file_list, 'dir': self.dir_list, 'ispath': is_path.partition(self.def_dir_path)[2] + '/'})
 
     def mkdir_file_name(self):
         os.chdir(self.old_def_dir)
