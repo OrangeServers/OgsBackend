@@ -105,9 +105,9 @@ def file_def_get():
     return orange.get_file_list()
 
 
-def file_checkout_get():
+def file_create():
     orange = FileGet()
-    return orange.checkout_file_list()
+    return orange.mkdir_file_name()
 
 
 def file_remove():

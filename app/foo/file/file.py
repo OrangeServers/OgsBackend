@@ -30,6 +30,16 @@ class FileGet:
                 self.dir_list.append(i)
         return jsonify({'file': self.file_list, 'dir': self.dir_list, 'ispath': is_path.partition('/data/tmp/test')[2] + '/'})
 
+    def mkdir_file_name(self):
+        os.chdir(self.old_def_dir)
+        mk_filename = request.values.get('mk_filename')
+        is_file = os.path.exists(mk_filename)
+        if is_file:
+            return jsonify({'status': 'fail', 'msg': '该文件已存在'})
+        else:
+            os.mkdir(mk_filename)
+            return jsonify({'status': 'true', 'msg': '创建成功'})
+
     def change_file_name(self):
         new_dir = request.values.get('new_dir')
         is_file = os.path.exists(self.def_dir_path + new_dir)
@@ -40,10 +50,12 @@ class FileGet:
             return jsonify({'status': 'true', 'msg': '修改成功'})
 
     def remove_file(self):
-        file_type = os.path.isfile(self.old_def_dir)
+        os.chdir(self.old_def_dir)
+        rm_filename = request.values.get('rm_filename')
+        file_type = os.path.isfile(rm_filename)
         if file_type:
-            os.remove(self.old_def_dir)
+            os.remove(rm_filename)
             return jsonify({'status': 'true', 'msg': '删除了一个文件'})
         else:
-            os.rmdir(self.old_def_dir)
+            os.rmdir(rm_filename)
             return jsonify({'status': 'true', 'msg': '删除了一个目录'})
