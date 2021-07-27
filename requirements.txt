@@ -10,3 +10,4 @@ flask-sqlalchemy
 elastic-apm[flask]
 apache-skywalking
 asyncio
+pillow
