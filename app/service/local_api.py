@@ -5,8 +5,6 @@ from app.conf.conf_test import DEFAULT_DIR1_PATH, DEFAULT_DIR2_PATH, RSYNC_SHELL
 from app.foo.local.LocalInit import AppInit
 from app.foo.ssh.webssh import OgsWebSocket
 from app.foo.local.Settings import OgsSettings
-from app.foo.local.download import DownloadFile
-from app.foo.file.file import FileGet
 
 
 # 初始化：
@@ -93,33 +91,3 @@ def local_settings_get():
 def local_settings_update():
     orange = OgsSettings()
     return orange.settings_change()
-
-
-def file_download():
-    orange = DownloadFile()
-    return orange.download()
-
-
-def file_def_get():
-    orange = FileGet()
-    return orange.get_file_list()
-
-
-def file_create():
-    orange = FileGet()
-    return orange.mkdir_file_name()
-
-
-def file_remove():
-    orange = FileGet()
-    return orange.remove_file()
-
-
-def file_save():
-    orange = FileGet()
-    return orange.save_file()
-
-
-def file_rename():
-    orange = FileGet()
-    return orange.change_file_name()

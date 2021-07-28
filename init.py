@@ -14,6 +14,7 @@ from app.service.server_mag_api import *
 from app.service.ser_acc_user_api import *
 from app.service.server_sysuser_api import *
 from app.service.auth_api import *
+from app.service.file_api import *
 
 # 导入skywalking链路追踪
 import asyncio
