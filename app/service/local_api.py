@@ -118,3 +118,8 @@ def file_remove():
 def file_save():
     orange = FileGet()
     return orange.save_file()
+
+
+def file_rename():
+    orange = FileGet()
+    return orange.change_file_name()
