@@ -1,4 +1,4 @@
-import os
+import os, psutil
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
 from app.conf.conf_test import FILE_CONF
@@ -14,6 +14,12 @@ class FileGet:
         self.file_list = []
 
     def get_file_list(self):
+        # 磁盘操作
+        disk_msg = psutil.disk_usage(self.def_dir_path)
+        disk_total = round(disk_msg.total / 1024 / 1024 / 1024)
+        disk_used = round(disk_msg.used / 1024 / 1024 / 1024)
+        disk_free = round(disk_msg.free / 1024 / 1024 / 1024)
+        # 文件列表操作
         get_file_type = request.values.get('get_file_type')
         os.chdir(self.old_def_dir)
         if get_file_type == 'checkout':
@@ -32,7 +38,8 @@ class FileGet:
             else:
                 self.dir_list.append(i)
         return jsonify(
-            {'file': self.file_list, 'dir': self.dir_list, 'ispath': is_path.partition(self.def_dir_path)[2] + '/'})
+            {'file': self.file_list, 'dir': self.dir_list, 'ispath': is_path.partition(self.def_dir_path)[2] + '/',
+             'disk': {'total': disk_total, 'used': disk_used, 'free': disk_free}})
 
     def mkdir_file_name(self):
         os.chdir(self.old_def_dir)

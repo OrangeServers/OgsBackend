@@ -11,3 +11,4 @@ elastic-apm[flask]
 apache-skywalking
 asyncio
 pillow
+psutil
