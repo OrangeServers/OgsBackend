@@ -30,3 +30,8 @@ def file_save():
 def file_rename():
     orange = FileGet()
     return orange.change_file_name()
+
+
+def file_size():
+    orange = FileGet()
+    return orange.get_file_size()
