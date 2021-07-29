@@ -41,6 +41,21 @@ class FileGet:
             {'file': self.file_list, 'dir': self.dir_list, 'ispath': is_path.partition(self.def_dir_path)[2] + '/',
              'disk': {'total': disk_total, 'used': disk_used, 'free': disk_free}})
 
+    def get_file_size(self):
+        si_filename = request.values.get('si_filename')
+        os.chdir(self.old_def_dir)
+        file_size = os.path.getsize(si_filename)
+        if file_size / 1024 < 1:
+            return jsonify({'filename': si_filename, 'size': file_size, 'size_type': 'B'})
+        elif file_size / 1024 >= 1 and file_size / 1024 / 1024 < 1:
+            return jsonify({'filename': si_filename, 'size': round(file_size / 1024), 'size_type': 'KB'})
+        elif file_size / 1024 / 1024 >= 1 and file_size / 1024 / 1024 / 1024 < 1:
+            return jsonify({'filename': si_filename, 'size': round(file_size / 1024 / 1024), 'size_type': 'MB'})
+        elif file_size / 1024 / 1024 / 1024 >= 1 and file_size / 1024 / 1024 / 1024 / 1024 < 1:
+            return jsonify({'filename': si_filename, 'size': round(file_size / 1024 / 1024 / 1024), 'size_type': 'GB'})
+        elif file_size / 1024 / 1024 / 1024 / 1024 >= 1 and file_size / 1024 / 1024 / 1024 / 1024 / 1024 < 1:
+            return jsonify({'filename': si_filename, 'size': round(file_size / 1024 / 1024 / 1024 / 1024), 'size_type': 'TB'})
+
     def mkdir_file_name(self):
         mk_filename = request.values.get('mk_filename')
         os.chdir(self.old_def_dir)
