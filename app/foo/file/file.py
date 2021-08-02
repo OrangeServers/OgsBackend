@@ -46,15 +46,15 @@ class FileGet:
         os.chdir(self.old_def_dir)
         file_size = os.path.getsize(si_filename)
         if file_size / 1024 < 1:
-            return jsonify({'filename': si_filename, 'size': file_size, 'size_type': 'B'})
+            return jsonify({'filename': si_filename, 'size': str(file_size) + 'B'})
         elif file_size / 1024 >= 1 and file_size / 1024 / 1024 < 1:
-            return jsonify({'filename': si_filename, 'size': round(file_size / 1024), 'size_type': 'KB'})
+            return jsonify({'filename': si_filename, 'size': str(round(file_size / 1024)) + 'KB'})
         elif file_size / 1024 / 1024 >= 1 and file_size / 1024 / 1024 / 1024 < 1:
-            return jsonify({'filename': si_filename, 'size': round(file_size / 1024 / 1024), 'size_type': 'MB'})
+            return jsonify({'filename': si_filename, 'size': str(round(file_size / 1024 / 1024)) + 'MB'})
         elif file_size / 1024 / 1024 / 1024 >= 1 and file_size / 1024 / 1024 / 1024 / 1024 < 1:
-            return jsonify({'filename': si_filename, 'size': round(file_size / 1024 / 1024 / 1024), 'size_type': 'GB'})
+            return jsonify({'filename': si_filename, 'size': str(round(file_size / 1024 / 1024 / 1024)) + 'GB'})
         elif file_size / 1024 / 1024 / 1024 / 1024 >= 1 and file_size / 1024 / 1024 / 1024 / 1024 / 1024 < 1:
-            return jsonify({'filename': si_filename, 'size': round(file_size / 1024 / 1024 / 1024 / 1024), 'size_type': 'TB'})
+            return jsonify({'filename': si_filename, 'size': str(round(file_size / 1024 / 1024 / 1024 / 1024)) + 'TB'})
 
     def mkdir_file_name(self):
         mk_filename = request.values.get('mk_filename')
