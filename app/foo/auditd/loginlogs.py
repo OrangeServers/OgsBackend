@@ -12,7 +12,8 @@ class LoginLogs:
 
     def get_login_logs(self):
         try:
-            query_msg = t_login_log.query.offset(self.table_offset).limit(self.table_limit).all()
+            # query_msg = t_login_log.query.offset(self.table_offset).limit(self.table_limit).all()
+            query_msg = t_login_log.query.order_by(t_login_log.login_time.desc()).offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
             len_msg = t_login_log.query.count()
             return jsonify({"host_status": 0,
@@ -67,7 +68,7 @@ class CommandLogs:
 
     def get_com_logs(self):
         try:
-            query_msg = t_command_log.query.offset(self.table_offset).limit(self.table_limit).all()
+            query_msg = t_command_log.query.order_by(t_command_log.com_time.desc()).offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
             len_msg = t_command_log.query.count()
             return jsonify({"host_status": 0,
@@ -122,7 +123,7 @@ class CzLogs:
 
     def get_cz_logs(self):
         try:
-            query_msg = t_cz_log.query.offset(self.table_offset).limit(self.table_limit).all()
+            query_msg = t_cz_log.query.order_by(t_cz_log.cz_time.desc()).offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'cz_time')
             len_msg = t_cz_log.query.count()
             return jsonify({"host_status": 0,

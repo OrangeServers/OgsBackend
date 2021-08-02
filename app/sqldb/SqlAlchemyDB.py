@@ -85,6 +85,10 @@ class t_login_log(db.Model):
     login_status = db.Column(db.String(255), nullable=False)
     login_reason = db.Column(db.String(30), nullable=True)
     login_time = db.Column(db.TIMESTAMP, nullable=False)
+    # 查询结果倒叙
+    # __mapper_args__ = {
+    #     "order_by": login_time.desc()
+    # }
 
 
 class t_command_log(db.Model):
