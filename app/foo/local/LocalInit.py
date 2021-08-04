@@ -13,7 +13,7 @@ class AppInit:
         self.mysql_list = [t_host, t_group, t_line_chart, t_acc_user, t_login_log, t_acc_group, t_command_log,
                            t_auth_host, t_sys_user]
 
-    @ogs_runtime
+    @ogs_runtime('init')
     def con_init(self):
         if self.res.status_red() is False:
             print('error! redis is not connection')
