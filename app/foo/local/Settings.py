@@ -18,7 +18,6 @@ class OgsSettings:
             return jsonify(st_msg)
         else:
             st_msg = self.lt.dict_reset_pop_auto(query_msg)
-            print(st_msg)
             return jsonify(st_msg)
 
     def settings_change(self):
