@@ -6,7 +6,7 @@ from enum import Enum, unique
 def ogs_runtime_test(func):
     def wrapper(*args, **kwargs):
         # 不带参数的装饰器，方法执行前打印执行时间和方法名
-        print('%s run func %s text %s' % (datetime.datetime.now(), func.__name__))
+        print('%s run func text %s' % (datetime.datetime.now(), func.__name__))
         return func(*args, *kwargs)
 
     return wrapper
