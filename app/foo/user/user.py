@@ -23,13 +23,18 @@ class AccUserList:
                 acc_user_id = request.values.get("id")
                 query_msg = t_acc_user.query.filter_by(id=acc_user_id).first()
                 list_msg = self.lt.dict_reset_pop_auto(query_msg, 'password')
+                Log.logger.info('req_body: [ %s=%s, %s=%s ] /account/user/list (true)' % (
+                    'user_type', acc_user_type, 'id', acc_user_id))
                 return jsonify(list_msg)
             elif acc_user_type == 'user_info':
                 acc_user_name = request.values.get("name")
                 query_msg = t_acc_user.query.filter_by(name=acc_user_name).first()
                 list_msg = self.lt.dict_reset_pop_auto(query_msg, 'password')
+                Log.logger.info('req_body: [ %s=%s, %s=%s ] /account/user/list (true)' % (
+                    'user_type', acc_user_type, 'name', acc_user_name))
                 return jsonify(list_msg)
         except IOError:
+            Log.logger.info('req_body: [ None ] /account/user/list (acc_user_list_msg select list msg error)')
             return jsonify({"acc_user_list_msg": 'select list msg error'})
 
     @property
@@ -38,10 +43,13 @@ class AccUserList:
             acc_user_name = request.values.get("name")
             user_role = acc_user_name + '_role'
             role = self.cnres.get_red(user_role)
+            Log.logger.info('req_body: [ %s=%s ] /account/user/auth_list (true)' % ('name', acc_user_name))
             return jsonify({'usrole': role})
         except IOError:
+            Log.logger.info('req_body: [ None ] /account/user/auth_list (acc_user_list_msg select list msg error)')
             return jsonify({"acc_user_list_msg": 'select list msg error'})
         except TypeError:
+            Log.logger.info('req_body: [ None ] /account/user/auth_list (acc_user_list_msg name is none error)')
             return jsonify({"acc_user_list_msg": 'name is none error'})
 
     @property
@@ -50,11 +58,13 @@ class AccUserList:
             query_msg = t_acc_user.query.all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg, 'password')
             len_msg = t_acc_user.query.count()
+            Log.logger.info('req_body: [ None ] /account/user/list_all (true)')
             return jsonify({"host_status": 0,
                             "acc_user_list_msg": list_msg,
                             "msg": "",
                             "acc_user_len_msg": len_msg})
         except IOError:
+            Log.logger.info('req_body: [ None ] /account/user/list_all (acc_user_list_msg select list msg error)')
             return jsonify({"acc_user_list_msg": 'select list msg error',
                             "acc_user_len_msg": 0})
 
@@ -73,8 +83,12 @@ class CheckMail:
             self.cnres.set_red(self.email, mail_verification)
             self.cnres.exp_red(self.email, 180)
             self.sendmail.send(self.email, 'OrangeServer', '注册验证码', msg)
+            Log.logger.info('req_body: [ %s=%s ] /mail/send_user_mail (send %s true)' % (mail_verification,
+                                                                                         'email', self.email))
             return jsonify({'send_status': 'true'})
         else:
+            Log.logger.info('req_body: [ %s=%s ] /mail/send_user_mail (mail fail)' % (
+                'email', self.email))
             return jsonify({'send_status': 'fail'})
 
 
@@ -85,8 +99,12 @@ class CheckUser:
     def check(self):
         user_chk = t_acc_user.query.filter_by(name=self.username).first()
         if user_chk:
+            Log.logger.info('req_body: [ %s=%s ] /account/chk_username (username fail)' % (
+                'username', self.username))
             return jsonify({'chk_user_status': 'fail'})
         else:
+            Log.logger.info('req_body: [ %s=%s ] /account/chk_username (true)' % (
+                'username', self.username))
             return jsonify({'chk_user_status': 'true'})
 
 
@@ -101,7 +119,6 @@ class UserLogin(CheckUser):
         self.login_ins = LoginLogSqlalh
 
         self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
-        self.Log = Log
 
     def login_dl(self):
         user_info = t_acc_user.query.filter_by(name=self.username).first()
@@ -118,19 +135,19 @@ class UserLogin(CheckUser):
                 self.cnres.set_red(role_name, user_role['usrole'])
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功',
                                        None, self.new_date)
-                self.Log.logger.info('req_body: [ %s=%s, %s=%s ] /account/login_dl (true)' % (
+                Log.logger.info('req_body: [ %s=%s, %s=%s ] /account/login_dl (true)' % (
                     'username', self.username, 'password', self.password))
                 return jsonify({'chk_status': 'true'})
             else:
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
                                        '密码错误', self.new_date)
-                self.Log.logger.info('req_body: [ %s=%s, %s=%s ] /account/login_dl (password fail)' % (
+                Log.logger.info('req_body: [ %s=%s, %s=%s ] /account/login_dl (password fail)' % (
                     'username', self.username, 'password', self.password))
                 return jsonify({'password_status': 'fail'})
         else:
             self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
                                    '用户名无效', self.new_date)
-            self.Log.logger.info('req_body: [ %s=%s, %s=%s ] /account/login_dl (username fail)' % (
+            Log.logger.info('req_body: [ %s=%s, %s=%s ] /account/login_dl (username fail)' % (
                 'username', self.username, 'password', self.password))
             return jsonify({'user_status': 'fail'})
 
@@ -153,23 +170,46 @@ class UserRegister(UserLogin):
                         # self.user_sqlalh.ins_sql(self.username, self.base.base_en(self.password), self.email)
                         self.reg_ins.ins_sql(None, self.username, self.base.base_en(self.password), 'develop',
                                              self.email, None)
+                        Log.logger.info('req_body: [ %s=%s, %s=%s, %s=%s, %s=%s ] /account/com_register (true)' % (
+                            'username', self.username, 'password', self.password, 'email', self.email, 'verification',
+                            self.verification))
                         return jsonify({
                             'chk_user_status': 'true',
                             'verification': 'true',
                             'chk_mail_status': 'true'
                         })
                     else:
+                        Log.logger.info(
+                            'req_body: [ %s=%s, %s=%s, %s=%s, %s=%s ] /account/com_register (verification fail)' % (
+                                'username', self.username, 'password', self.password, 'email', self.email,
+                                'verification',
+                                self.verification))
                         return jsonify({
                             'verification': 'fail',
                         })
                 else:
+                    Log.logger.info(
+                        'req_body: [ %s=%s, %s=%s, %s=%s, %s=%s ] /account/com_register (chk_verification fail)' % (
+                            'username', self.username, 'password', self.password, 'email', self.email,
+                            'verification',
+                            self.verification))
                     return jsonify({'chk_verification': 'fail'})
             else:
+                Log.logger.info(
+                    'req_body: [ %s=%s, %s=%s, %s=%s, %s=%s ] /account/com_register (chk_mail_status fail)' % (
+                        'username', self.username, 'password', self.password, 'email', self.email,
+                        'verification',
+                        self.verification))
                 return jsonify({
                     'chk_user_status': 'true',
                     'chk_mail_status': 'fail'
                 })
         else:
+            Log.logger.info(
+                'req_body: [ %s=%s, %s=%s, %s=%s, %s=%s ] /account/com_register (chk_user_status fail)' % (
+                    'username', self.username, 'password', self.password, 'email', self.email,
+                    'verification',
+                    self.verification))
             return jsonify({'chk_user_status': 'fail'})
 
 
@@ -190,9 +230,15 @@ class AccUserDel:
             db.session.delete(user_chk)
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '删除用户', self.id, '成功', None, self.new_date)
+            Log.logger.info(
+                'req_body: [ %s=%s ] /account/user/del (true)' % (
+                    'id', self.id))
             return jsonify({'acc_user_del_status': 'true'})
         else:
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '删除用户', self.id, '失败', '系统内没有该用户', self.new_date)
+            Log.logger.info(
+                'req_body: [ %s=%s ] /account/user/del (acc_user_del_status fail)' % (
+                    'id', self.id))
             return jsonify({'acc_user_del_status': 'fail'})
 
 
@@ -220,15 +266,35 @@ class AccUserAdd:
                 self.user_ins.ins_sql(self.alias, self.name, password_en, self.usrole, self.mail,
                                       self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '成功', None, self.new_date)
+                Log.logger.info(
+                    'req_body: [ %s=%s, %s=%s, %s=%s, %s=%s, %s=%s, %s=%s ] /account/user/add ('
+                    'acc_user_del_status fail)' % (
+                        'alias', self.alias, 'name', self.name, 'password', self.password, 'usrole', self.usrole,
+                        'meal', self.mail, 'remarks', self.remarks))
                 return jsonify({'acc_user_add_status': 'true'})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '失败', '该用户已存在', self.new_date)
+                Log.logger.info(
+                    'req_body: [ %s=%s, %s=%s, %s=%s, %s=%s, %s=%s, %s=%s ] /account/user/add ('
+                    'acc_user_del_status sel_fail)' % (
+                        'alias', self.alias, 'name', self.name, 'password', self.password, 'usrole', self.usrole,
+                        'meal', self.mail, 'remarks', self.remarks))
                 return jsonify({'acc_user_add_status': 'sel_fail'})
         except IOError:
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '失败', '连接数据库错误', self.new_date)
+            Log.logger.info(
+                'req_body: [ %s=%s, %s=%s, %s=%s, %s=%s, %s=%s, %s=%s ] /account/user/add ('
+                'acc_user_add_status con_fail)' % (
+                    'alias', self.alias, 'name', self.name, 'password', self.password, 'usrole', self.usrole,
+                    'meal', self.mail, 'remarks', self.remarks))
             return jsonify({'acc_user_add_status': 'con_fail'})
         except Exception:
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '失败', '未知错误', self.new_date)
+            Log.logger.info(
+                'req_body: [ %s=%s, %s=%s, %s=%s, %s=%s, %s=%s, %s=%s ] /account/user/add ('
+                'acc_user_add_status fail)' % (
+                    'alias', self.alias, 'name', self.name, 'password', self.password, 'usrole', self.usrole,
+                    'meal', self.mail, 'remarks', self.remarks))
             return jsonify({'acc_user_add_status': 'fail'})
 
 
@@ -250,8 +316,19 @@ class AccUserUpdate(AccUserAdd):
             role_name = self.name + '_role'
             self.cnres.set_red(role_name, self.usrole)
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '变更用户', self.name, '成功', None, self.new_date)
+            Log.logger.info(
+                'req_body: [ %s=%s, %s=%s, %s=%s, %s=%s, %s=%s, %s=%s, %s=%s ] /account/user/update (true)' % (
+                    'id', self.id, 'alias', self.alias, 'name', self.name, 'password', self.password, 'usrole',
+                    self.usrole,
+                    'meal', self.mail, 'remarks', self.remarks))
             return jsonify({'acc_user_ping_status': 'true',
                             'acc_user_into_update': 'true'})
         except Exception:
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '变更用户', self.name, '失败', '连接数据库错误', self.new_date)
+            Log.logger.info(
+                'req_body: [ %s=%s, %s=%s, %s=%s, %s=%s, %s=%s, %s=%s, %s=%s ] /account/user/update ('
+                'acc_user_into_update fail)' % (
+                    'id', self.id, 'alias', self.alias, 'name', self.name, 'password', self.password, 'usrole',
+                    self.usrole,
+                    'meal', self.mail, 'remarks', self.remarks))
             return jsonify({'acc_user_into_update': 'fail'})
