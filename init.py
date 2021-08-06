@@ -53,9 +53,6 @@ apm = ElasticAPM(app)
 # app = Flask(__name__, static_folder='./static', template_folder='')
 app.config.update(DEBUG=False)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
-app.logger.info('info log')
-app.logger.warning('warning log')
-app.logger.error('error log')
 
 # 赋予session值的密钥,前后端分离后已经不用
 app.secret_key = "!@#$%^&*()"

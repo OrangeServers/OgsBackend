@@ -7,6 +7,7 @@ from app.tools.redisdb import ConnRedis
 from app.sqldb.SqlAlchemyDB import t_acc_user, t_cz_log, db
 from app.sqldb.SqlAlchemyInsert import AccUserSqlalh, LoginLogSqlalh, CzLogSqlalh
 from app.conf.conf_test import REDIS_CONF, MAIL_CONF
+from app.tools.at import Log
 
 
 class AccUserList:
@@ -100,12 +101,13 @@ class UserLogin(CheckUser):
         self.login_ins = LoginLogSqlalh
 
         self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.Log = Log
 
     def login_dl(self):
         user_info = t_acc_user.query.filter_by(name=self.username).first()
         user_gw_ip = request.values.get('user_gw_ip')
         user_gw_cs = request.values.get('user_gw_cs')
-        if not user_info is None:
+        if user_info is not None:
             password_de = self.base.base_de(user_info.password)
             if self.username == user_info.name and self.password == password_de:
                 # 每个用户登录生成一个session
@@ -116,14 +118,20 @@ class UserLogin(CheckUser):
                 self.cnres.set_red(role_name, user_role['usrole'])
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功',
                                        None, self.new_date)
+                self.Log.logger.info('req_body: [ %s=%s, %s=%s ] /account/login_dl (true)' % (
+                    'username', self.username, 'password', self.password))
                 return jsonify({'chk_status': 'true'})
             else:
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
                                        '密码错误', self.new_date)
+                self.Log.logger.info('req_body: [ %s=%s, %s=%s ] /account/login_dl (password fail)' % (
+                    'username', self.username, 'password', self.password))
                 return jsonify({'password_status': 'fail'})
         else:
             self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
                                    '用户名无效', self.new_date)
+            self.Log.logger.info('req_body: [ %s=%s, %s=%s ] /account/login_dl (username fail)' % (
+                'username', self.username, 'password', self.password))
             return jsonify({'user_status': 'fail'})
 
 
