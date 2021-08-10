@@ -21,7 +21,6 @@ class AccUserList:
         log_msg = 'req_body: [ name=%s ] /account/user/alias' % acc_user_name
         try:
             user_alias = self.cnres.get_red(acc_user_name + '_alias')
-            Log.logger.info(log_msg + ' \"true\"')
             return jsonify({'alias': user_alias})
         except IOError:
             Log.logger.info(log_msg + ' \"fail select list msg error\"')
@@ -36,13 +35,11 @@ class AccUserList:
                 acc_user_id = request.values.get("id")
                 query_msg = t_acc_user.query.filter_by(id=acc_user_id).first()
                 list_msg = self.lt.dict_reset_pop_auto(query_msg, 'password')
-                Log.logger.info(log_msg + ' \"true\"')
                 return jsonify(list_msg)
             elif acc_user_type == 'user_info':
                 acc_user_name = request.values.get("name")
                 query_msg = t_acc_user.query.filter_by(name=acc_user_name).first()
                 list_msg = self.lt.dict_reset_pop_auto(query_msg, 'password')
-                Log.logger.info(log_msg + ' \"true\"')
                 return jsonify(list_msg)
         except IOError:
             Log.logger.info(log_msg + ' \"fail select list msg error\"')
@@ -55,7 +52,6 @@ class AccUserList:
         try:
             user_role = acc_user_name + '_role'
             role = self.cnres.get_red(user_role)
-            Log.logger.info(log_msg + ' \"true\"')
             return jsonify({'usrole': role})
         except IOError:
             Log.logger.info(log_msg + ' \"fail select list msg error\"')
@@ -71,7 +67,6 @@ class AccUserList:
             query_msg = t_acc_user.query.all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg, 'password')
             len_msg = t_acc_user.query.count()
-            Log.logger.info(log_msg + ' \"true\"')
             return jsonify({"host_status": 0,
                             "acc_user_list_msg": list_msg,
                             "msg": "",
@@ -97,7 +92,6 @@ class CheckMail:
             self.cnres.set_red(self.email, mail_verification)
             self.cnres.exp_red(self.email, 180)
             self.sendmail.send(self.email, 'OrangeServer', '注册验证码', msg)
-            Log.logger.info(log_msg + ' \"true\"')
             return jsonify({'send_status': 'true'})
         else:
             Log.logger.info(log_msg + ' \"fail\"')
@@ -115,7 +109,6 @@ class CheckUser:
             Log.logger.info(log_msg + ' \"fail\"')
             return jsonify({'chk_user_status': 'fail'})
         else:
-            Log.logger.info(log_msg + ' \"true\"')
             return jsonify({'chk_user_status': 'true'})
 
 
@@ -147,7 +140,6 @@ class UserLogin(CheckUser):
                 self.cnres.set_red(role_name, user_role['usrole'])
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功',
                                        None, self.new_date)
-                Log.logger.info(log_msg + ' \"true\"')
                 return jsonify({'chk_status': 'true'})
             else:
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
@@ -182,7 +174,6 @@ class UserRegister(UserLogin):
                         self.reg_ins.ins_sql(None, self.username, self.base.base_en(self.password), 'develop',
                                              self.email, None)
                         self.cnres.set_red(self.username + '_alias', 'develop')
-                        Log.logger.info(log_msg + ' \"true\"')
                         return jsonify({
                             'chk_user_status': 'true',
                             'verification': 'true',
@@ -228,7 +219,6 @@ class AccUserDel:
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '删除用户', self.id, '成功', None, self.new_date)
             self.cnres.del_red(alias_name + '_alias')
-            Log.logger.info(log_msg + ' \"true\"')
             return jsonify({'acc_user_del_status': 'true'})
         else:
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '删除用户', self.id, '失败', '系统内没有该用户', self.new_date)
@@ -265,7 +255,6 @@ class AccUserAdd:
                                       self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '成功', None, self.new_date)
                 self.cnres.set_red(self.name + '_alias', self.alias)
-                Log.logger.info(log_msg + ' \"true\"')
                 return jsonify({'acc_user_add_status': 'true'})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '失败', '该用户已存在', self.new_date)
@@ -302,7 +291,6 @@ class AccUserUpdate(AccUserAdd):
             self.cnres.set_red(role_name, self.usrole)
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '变更用户', self.name, '成功', None, self.new_date)
             self.cnres.set_red(self.name + '_alias', self.alias)
-            Log.logger.info(log_msg + ' \"true\"')
             return jsonify({'acc_user_ping_status': 'true',
                             'acc_user_into_update': 'true'})
         except Exception:

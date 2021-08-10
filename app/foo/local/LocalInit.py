@@ -32,7 +32,6 @@ class AppInit:
         sta = request.values.get('status')
         log_msg = 'req_body: [ status=%s ] /local/init' % sta
         if sta == 'ogsfront':
-            self.Log.logger.info(log_msg + ' \"true\"')
             return jsonify({'status': 200})
         else:
             self.Log.logger.error(log_msg + ' \"fail 403\"')

@@ -12,39 +12,31 @@ class OgsSettings:
         self.set_ins = SettingsSqlalh()
 
     def settings_info(self):
-        log_msg = 'req_body: [ name=%s ] /local/settings/get' % self.name
         query_msg = t_settings.query.filter_by(name=self.name).first()
         if query_msg is None:
             default_msg = t_settings.query.filter_by(name='default').first()
             st_msg = self.lt.dict_reset_pop_auto(default_msg)
-            Log.logger.info(log_msg + ' \"true\"')
             return jsonify(st_msg)
         else:
             st_msg = self.lt.dict_reset_pop_auto(query_msg)
-            Log.logger.info(log_msg + ' \"true default\"')
             return jsonify(st_msg)
 
     def settings_change(self):
+        log_msg = 'req_body: [ name=%s ] /local/settings/update (fail)' % self.name
         try:
             login_time = request.values.get('login_time')
             register_status = request.values.get('register_status')
             color_matching = request.values.get('color_matching')
-            log_msg = 'req_body: [ name=%s, login_time=%s, register_status=%s, color_matching=%s ] ' \
-                      '/local/settings/update' % (
-                          self.name, login_time, register_status, color_matching)
             query_msg = t_settings.query.filter_by(name=self.name).first()
             if query_msg is None:
                 self.set_ins.ins_sql(self.name, login_time, register_status, color_matching)
-                Log.logger.info(log_msg + ' \"true insert\"')
                 return jsonify({'status': 'true'})
             else:
                 t_settings.query.filter_by(name=self.name).update(
                     {'name': self.name, 'login_time': login_time, 'register_status': register_status,
                      'color_matching': color_matching})
                 db.session.commit()
-                Log.logger.info(log_msg + ' \"true update"')
                 return jsonify({'status': 'true'})
         except IOError:
-            log_msg = 'req_body: [ name=%s ] /local/settings/update (fail)' % self.name
             Log.logger.info(log_msg + ' \"fail"')
             return jsonify({'status': 'fail'})
