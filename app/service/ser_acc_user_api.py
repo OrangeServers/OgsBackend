@@ -29,3 +29,8 @@ def acc_user_update():
 def acc_user_del():
     orange = AccUserDel()
     return orange.host_del
+
+
+def acc_user_alias():
+    orange = AccUserList()
+    return orange.acc_user_alias

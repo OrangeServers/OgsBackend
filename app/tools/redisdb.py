@@ -46,6 +46,13 @@ class ConnRedis:
         msg = self.redis_conn.expire(key, time)
         return msg
 
+    def del_red(self, key):
+        """
+        key-->删除key,str类型
+        """
+        msg = self.redis_conn.delete(key)
+        return msg
+
 
 if __name__ == "__main__":
     cn_red = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])

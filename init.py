@@ -123,6 +123,7 @@ def orange_init_api():
     app.add_url_rule('/account/user/add', view_func=acc_user_add, methods=['POST', 'get'])
     app.add_url_rule('/account/user/update', view_func=acc_user_update, methods=['POST', 'get'])
     app.add_url_rule('/account/user/del', view_func=acc_user_del, methods=['POST', 'get'])
+    app.add_url_rule('/account/user/alias', view_func=acc_user_alias, methods=['POST', 'get'])
 
     # 这里是系统用户接口
     app.add_url_rule('/server/sys/user/list', view_func=sys_user_list, methods=['POST', 'get'])
