@@ -1,4 +1,5 @@
 import time
+from flask import request, jsonify
 import psutil, os, signal
 from datetime import datetime, date
 from app.cron.CronSettings import scheduler, app
@@ -39,6 +40,19 @@ def start():
     # 5.启动调度器，不阻塞
     scheduler.start()
     return '启动成功'
+
+
+# 动态添加定时任务2  对现有项目定制。。。。。
+@app.route("/add_job/")
+def add_job2(param):
+    job_minute = request.values.get('job_minute')
+    job_hour = request.values.get('job_hour')
+    job_day = request.values.get('day')
+    job_month = request.values.get('job_month')
+    job_week = request.values.get('week')
+    scheduler.add_job(job, 'cron', week=job_week, month=job_month, day=job_day, hour=job_hour, minute=job_minute,
+                      id='1')
+    return "动态添加定时任务：{}".format(param)
 
 
 # 动态添加定时任务
