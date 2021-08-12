@@ -189,6 +189,8 @@ def orange_init_api():
     app.add_url_rule('/local/file/size', view_func=file_size, methods=['POST', 'get'])
 
     # 定时任务相关接口
+    app.add_url_rule('/local/cron/list', view_func=local_cron_list, methods=['POST', 'get'])
+    app.add_url_rule('/local/cron/list_all', view_func=local_cron_list_all, methods=['POST', 'get'])
     app.add_url_rule('/local/cron/add', view_func=local_cron_add, methods=['POST', 'get'])
     app.add_url_rule('/local/cron/pause', view_func=local_cron_pause, methods=['POST', 'get'])
     app.add_url_rule('/local/cron/resume', view_func=local_cron_resume, methods=['POST', 'get'])

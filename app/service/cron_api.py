@@ -1,4 +1,14 @@
-from app.cron.cron import OgsCron
+from app.cron.cron import OgsCron, CronList
+
+
+def local_cron_list():
+    orange = CronList()
+    return orange.cron_list
+
+
+def local_cron_list_all():
+    orange = CronList()
+    return orange.cron_list_all
 
 
 def local_cron_add():

@@ -94,6 +94,35 @@ class OgsCron:
         return "关闭所有定时任务成功"
 
 
+class CronList:
+    def __init__(self):
+        self.lt = ListTool()
+
+    @property
+    def cron_list(self):
+        try:
+            cron_id = request.values.get("id")
+            query_msg = t_cron.query.filter_by(id=cron_id).first()
+            list_msg = self.lt.dict_reset_pop_auto(query_msg)
+            return jsonify(list_msg)
+        except IOError:
+            return jsonify({"cron_list_msg": 'select list msg error'})
+
+    @property
+    def cron_list_all(self):
+        try:
+            query_msg = t_cron.query.all()
+            list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
+            len_msg = t_cron.query.count()
+            return jsonify({"host_status": 0,
+                            "cron_list_msg": list_msg,
+                            "msg": "",
+                            "cron_len_msg": len_msg})
+        except IOError:
+            return jsonify({"cron_list_msg": 'select list msg error',
+                            "cron_len_msg": 0})
+
+
 if __name__ == '__main__':
     print('cron')
     # app.run(host='0.0.0.0', port=28110)
