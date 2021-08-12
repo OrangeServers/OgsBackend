@@ -15,6 +15,7 @@ from app.service.ser_acc_user_api import *
 from app.service.server_sysuser_api import *
 from app.service.auth_api import *
 from app.service.file_api import *
+from app.service.cron_api import *
 
 # 导入skywalking链路追踪
 import asyncio
@@ -186,6 +187,13 @@ def orange_init_api():
     app.add_url_rule('/local/file/put', view_func=file_save, methods=['POST', 'get'])
     app.add_url_rule('/local/file/rename', view_func=file_rename, methods=['POST', 'get'])
     app.add_url_rule('/local/file/size', view_func=file_size, methods=['POST', 'get'])
+
+    # 定时任务相关接口
+    app.add_url_rule('/local/cron/add', view_func=local_cron_add, methods=['POST', 'get'])
+    app.add_url_rule('/local/cron/pause', view_func=local_cron_pause, methods=['POST', 'get'])
+    app.add_url_rule('/local/cron/resume', view_func=local_cron_resume, methods=['POST', 'get'])
+    app.add_url_rule('/local/cron/del', view_func=local_cron_del, methods=['POST', 'get'])
+    app.add_url_rule('/local/cron/close', view_func=local_cron_close, methods=['POST', 'get'])
 
     # ssh专用websocket接口
     app.add_url_rule('/local/websocket', view_func=local_web_ssh)

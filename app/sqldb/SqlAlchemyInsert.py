@@ -136,10 +136,10 @@ class CronSqlalh:
 
     @staticmethod
     def ins_sql(job_name, job_minute, job_hour, job_day, job_month, job_week, job_groups, job_command,
-                job_remarks=None):
+                job_status, job_remarks=None):
         sql = t_cron(job_name=job_name, job_minute=job_minute, job_hour=job_hour, job_day=job_day,
                      job_month=job_month, job_week=job_week, job_groups=job_groups, job_command=job_command,
-                     job_remarks=job_remarks)
+                     job_status=job_status, job_remarks=job_remarks)
         db.session.add(sql)
         db.session.commit()
 
