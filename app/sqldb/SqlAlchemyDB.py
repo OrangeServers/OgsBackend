@@ -143,6 +143,21 @@ class t_line_chart(db.Model):
     chart_date = db.Column(db.DATE, nullable=False)
 
 
+class t_cron(db.Model):
+    __tablename__ = 't_cron'  # 指定表名字为 user
+    # 主键id, 自增, Integer类型
+    id = db.Column(db.INTEGER, primary_key=True, autoincrement=True)
+    job_name = db.Column(db.String(30), nullable=False)
+    job_minute = db.Column(db.String(20), nullable=False)
+    job_hour = db.Column(db.String(20), nullable=False)
+    job_day = db.Column(db.String(20), nullable=False)
+    job_month = db.Column(db.String(20), nullable=False)
+    job_week = db.Column(db.String(20), nullable=False)
+    job_groups = db.Column(db.String(255), nullable=False)
+    job_command = db.Column(db.String(255), nullable=False)
+    job_remarks = db.Column(db.String(255), nullable=True)
+
+
 class t_settings(db.Model):
     __tablename__ = 't_settings'  # 指定表名字为 user
     # 主键id, 自增, Integer类型

@@ -1,6 +1,6 @@
 from app.sqldb.SqlAlchemySettings import db
 from app.sqldb.SqlAlchemyDB import t_host, t_group, t_acc_user, t_sys_user, t_acc_group, t_login_log, t_auth_host, \
-    t_command_log, t_line_chart, t_cz_log, t_settings
+    t_command_log, t_line_chart, t_cz_log, t_cron, t_settings
 
 
 class HostSqlalh:
@@ -126,6 +126,20 @@ class LineChartSqlalh:
     @staticmethod
     def ins_sql(login_count, user_count, chart_date):
         sql = t_line_chart(login_count=login_count, user_count=user_count, chart_date=chart_date)
+        db.session.add(sql)
+        db.session.commit()
+
+
+class CronSqlalh:
+    def __init__(self):
+        pass
+
+    @staticmethod
+    def ins_sql(job_name, job_minute, job_hour, job_day, job_month, job_week, job_groups, job_command,
+                job_remarks=None):
+        sql = t_cron(job_name=job_name, job_minute=job_minute, job_hour=job_hour, job_day=job_day,
+                     job_month=job_month, job_week=job_week, job_groups=job_groups, job_command=job_command,
+                     job_remarks=job_remarks)
         db.session.add(sql)
         db.session.commit()
 
