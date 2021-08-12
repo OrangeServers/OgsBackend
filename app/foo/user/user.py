@@ -63,10 +63,13 @@ class AccUserList:
     @property
     def acc_user_list_all(self):
         log_msg = 'req_body: [ None ] /account/user/list_all'
+        table_page = request.values.get('page')
+        table_limit = request.values.get('limit')
+        table_offset = (int(self.table_page) - 1) * 10
         try:
-            query_msg = t_acc_user.query.all()
+            query_msg = t_acc_user.query.offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg, 'password')
-            len_msg = t_acc_user.query.count()
+            len_msg = t_acc_user.query.offset(table_offset).limit(table_limit).count()
             return jsonify({"host_status": 0,
                             "acc_user_list_msg": list_msg,
                             "msg": "",

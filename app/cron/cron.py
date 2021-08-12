@@ -97,6 +97,9 @@ class OgsCron:
 class CronList:
     def __init__(self):
         self.lt = ListTool()
+        self.table_page = request.values.get('page')
+        self.table_limit = request.values.get('limit')
+        self.table_offset = (int(self.table_page) - 1) * 10
 
     @property
     def cron_list(self):
@@ -111,9 +114,9 @@ class CronList:
     @property
     def cron_list_all(self):
         try:
-            query_msg = t_cron.query.all()
+            query_msg = t_cron.query.offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
-            len_msg = t_cron.query.count()
+            len_msg = t_cron.query.offset(self.table_offset).limit(self.table_limit).count()
             return jsonify({"host_status": 0,
                             "cron_list_msg": list_msg,
                             "msg": "",
