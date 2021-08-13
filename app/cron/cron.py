@@ -50,11 +50,13 @@ class OgsCron:
         job_command = request.values.get('job_command')
         job_remarks = request.values.get('job_remarks', default=None)
         try:
-            job_name_query = t_cron.query.filter_by(job_name=self.job_name).first()
+            job_name_query = t_cron.query.filter_by(job_name=self.job_name).with_hint(t_cron,"force index(job_name)", 'mysql').first()
             if job_name_query is None:
                 id_list = []
                 for i in job_groups.split(','):
-                    host_list = self.lt.list_gather(t_host.query.filter_by(group=i).with_entities(t_host.id).all())
+                    host_list = self.lt.list_gather(
+                        t_host.query.filter_by(group=i).with_hint(t_cron, "force index(job_name)",
+                                                                  'mysql').with_entities(t_host.id).all())
                     id_list.append(host_list)
                 id_list_rep = self.lt.list_gather(id_list)
                 scheduler.add_job(cron_list_cmd, 'cron', week=job_week, month=job_month, day=job_day, hour=job_hour,
@@ -74,7 +76,8 @@ class OgsCron:
     def pause_job(self):
         try:
             scheduler.pause_job(self.job_name)
-            t_cron.query.filter_by(job_name=self.job_name).update({'job_status': '暂停'})
+            t_cron.query.filter_by(job_name=self.job_name).with_hint(t_cron, "force index(job_name)", 'mysql').update(
+                {'job_status': '暂停'})
             db.session.commit()
             return jsonify({'cron_pause_status': 'true'})
         except Exception:
@@ -84,7 +87,8 @@ class OgsCron:
     def resume_job(self):
         try:
             scheduler.resume_job(self.job_name)
-            t_cron.query.filter_by(job_name=self.job_name).update({'job_status': '启动'})
+            t_cron.query.filter_by(job_name=self.job_name).with_hint(t_cron, "force index(job_name)", 'mysql').update(
+                {'job_status': '启动'})
             db.session.commit()
             return jsonify({'cron_resume_status': 'true'})
         except Exception:
@@ -94,7 +98,8 @@ class OgsCron:
     def remove_job(self):
         try:
             scheduler.remove_job(self.job_name)
-            job = t_cron.query.filter_by(job_name=self.job_name).first()
+            job = t_cron.query.filter_by(job_name=self.job_name).with_hint(t_cron, "force index(job_name)",
+                                                                           'mysql').first()
             db.session.delete(job)
             db.session.commit()
             return jsonify({'cron_del_status': 'true'})
