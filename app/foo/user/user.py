@@ -65,7 +65,7 @@ class AccUserList:
         log_msg = 'req_body: [ None ] /account/user/list_all'
         table_page = request.values.get('page')
         table_limit = request.values.get('limit')
-        table_offset = (int(self.table_page) - 1) * 10
+        table_offset = (int(table_page) - 1) * 10
         try:
             query_msg = t_acc_user.query.offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg, 'password')
