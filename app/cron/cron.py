@@ -1,8 +1,5 @@
-import time
 from flask import request, jsonify
-from datetime import datetime, date
 from app.cron.CronSettings import scheduler, app
-from app.foo.property.ServerManagement import ServerListCmd
 from app.sqldb.SqlAlchemyDB import t_host, t_cron, db
 from app.sqldb.SqlAlchemyInsert import CronSqlalh
 from app.tools.basesec import BaseSec
@@ -52,46 +49,66 @@ class OgsCron:
         job_groups = request.values.get('job_groups')
         job_command = request.values.get('job_command')
         job_remarks = request.values.get('job_remarks', default=None)
-        id_list = []
-        for i in job_groups.split(','):
-            host_list = self.lt.list_gather(t_host.query.filter_by(group=i).with_entities(t_host.id).all())
-            id_list.append(host_list)
-        id_list_rep = self.lt.list_gather(id_list)
-        # host_list = self.lt.list_gather(t_host.query.filter_by(group=job_groups).with_entities(t_host.id).all())
-        scheduler.add_job(cron_list_cmd, 'cron', week=job_week, month=job_month, day=job_day, hour=job_hour,
-                          minute=job_minute, args=[self.job_name, id_list_rep, job_command],
-                          id=self.job_name)
-        self.cron_ins.ins_sql(self.job_name, job_minute, job_hour, job_day, job_month, job_week, job_groups,
-                              job_command, '启动', job_remarks)
-        return "动态添加定时任务：{}".format(self.job_name)
+        try:
+            job_name_query = t_cron.query.filter_by(job_name=self.job_name).first()
+            if job_name_query is None:
+                id_list = []
+                for i in job_groups.split(','):
+                    host_list = self.lt.list_gather(t_host.query.filter_by(group=i).with_entities(t_host.id).all())
+                    id_list.append(host_list)
+                id_list_rep = self.lt.list_gather(id_list)
+                scheduler.add_job(cron_list_cmd, 'cron', week=job_week, month=job_month, day=job_day, hour=job_hour,
+                                  minute=job_minute, args=[self.job_name, id_list_rep, job_command],
+                                  id=self.job_name)
+                self.cron_ins.ins_sql(self.job_name, job_minute, job_hour, job_day, job_month, job_week, job_groups,
+                                      job_command, '启动', job_remarks)
+                return jsonify({'cron_add_status': 'true'})
+            else:
+                return jsonify({'cron_add_status': 'sel_fail'})
+        except IOError:
+            return jsonify({'cron_add_status': 'con_fail'})
+        except Exception:
+            return jsonify({'cron_add_status': 'fail'})
 
     # 动态暂停定时任务
     def pause_job(self):
-        scheduler.pause_job(self.job_name)
-        t_cron.query.filter_by(job_name=self.job_name).update({'job_status': '暂停'})
-        db.session.commit()
-        return "动态暂停定时任务成功：{}".format(self.job_name)
+        try:
+            scheduler.pause_job(self.job_name)
+            t_cron.query.filter_by(job_name=self.job_name).update({'job_status': '暂停'})
+            db.session.commit()
+            return jsonify({'cron_pause_status': 'true'})
+        except Exception:
+            return jsonify({'cron_pause_status': 'fail'})
 
     # 动态恢复定时任务
     def resume_job(self):
-        scheduler.resume_job(self.job_name)
-        t_cron.query.filter_by(job_name=self.job_name).update({'job_status': '启动'})
-        db.session.commit()
-        return "动态恢复定时任务成功：{}".format(self.job_name)
+        try:
+            scheduler.resume_job(self.job_name)
+            t_cron.query.filter_by(job_name=self.job_name).update({'job_status': '启动'})
+            db.session.commit()
+            return jsonify({'cron_resume_status': 'true'})
+        except Exception:
+            return jsonify({'cron_resume_status': 'fail'})
 
     # 动态删除定时任务
     def remove_job(self):
-        scheduler.remove_job(self.job_name)
-        job = t_cron.query.filter_by(job_name=self.job_name).first()
-        db.session.delete(job)
-        db.session.commit()
-        return "动态删除定时任务成功：{}".format(self.job_name)
+        try:
+            scheduler.remove_job(self.job_name)
+            job = t_cron.query.filter_by(job_name=self.job_name).first()
+            db.session.delete(job)
+            db.session.commit()
+            return jsonify({'cron_del_status': 'true'})
+        except Exception:
+            return jsonify({'cron_del_status': 'fail'})
 
     # 关闭所有定时任务
     @property
     def close_job(self):
-        scheduler.shutdown()
-        return "关闭所有定时任务成功"
+        try:
+            scheduler.shutdown()
+            return jsonify({'cron_shutdown_status': 'true'})
+        except Exception:
+            return jsonify({'cron_shutdown_status': 'fail'})
 
 
 class CronList:
