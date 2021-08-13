@@ -113,7 +113,7 @@ DROP TABLE IF EXISTS `t_cron`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `t_cron` (
-  `id` int(10) NOT NULL,
+  `id` int(10) NOT NULL AUTO_INCREMENT,
   `job_name` varchar(30) NOT NULL,
   `job_minute` varchar(20) NOT NULL,
   `job_hour` varchar(20) NOT NULL,
@@ -124,8 +124,9 @@ CREATE TABLE `t_cron` (
   `job_command` varchar(255) NOT NULL,
   `job_status` varchar(20) NOT NULL,
   `job_remarks` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `job_name` (`job_name`) USING HASH
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -196,7 +197,7 @@ CREATE TABLE `t_line_chart` (
   `login_count` int(255) DEFAULT NULL,
   `user_count` int(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -217,7 +218,7 @@ CREATE TABLE `t_login_log` (
   `login_reason` varchar(30) DEFAULT NULL,
   `login_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=168 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=169 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -281,4 +282,4 @@ CREATE TABLE `t_user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-08-12 17:40:08
+-- Dump completed on 2021-08-13 11:02:51
