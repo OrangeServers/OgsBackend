@@ -30,7 +30,6 @@ class FileGet:
                 os.chdir('../')
         dir_list = os.listdir('./')
         is_path = os.getcwd()
-        print(is_path)
         for i in dir_list:
             file_type = os.path.isfile(i)
             if file_type:

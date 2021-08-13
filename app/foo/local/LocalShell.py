@@ -59,7 +59,6 @@ class LocalDirList(LocalShell):
                 rsync_dir = (self.rscmd % (self.group_dir, project_dir))
                 try:
                     msg_out = LocalShell().cmdlist_shell(rsync_dir)
-                    print(msg_out)
                     return jsonify({
                         'status': 'sucessfuly',
                         # 'msg': ("rsync %s %s is ok!" % (self.group_dir, project_dir))

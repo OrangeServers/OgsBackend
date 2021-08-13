@@ -73,7 +73,6 @@ class OgsWebSocket:
             msg_one_cli = self.client_socket.receive()
             # json转dict
             test1 = json.loads(msg_one_cli)
-            print(type(test1), test1['hostname'])
             query_host_msg = t_host.query.filter_by(alias=test1['hostname']).first()
             query_msg = query_host_msg.__dict__
             # conn = ParSsh(hostname, port, username, password)

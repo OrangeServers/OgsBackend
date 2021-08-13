@@ -263,7 +263,6 @@ class ServerListCmd(ServerCmd2):
                             'hostname_list': alias_list})
         else:
             self.com_ins.ins_sql(self.com_name, '批量命令', self.command, self.com_host, '失败', '连接主机失败', self.new_date)
-            print(error_list, alias_list)
             return jsonify({'server_ping_status': 'fail',
                             'error_list': error_list,
                             'msg': 'host connect to timeout!'})
@@ -343,11 +342,6 @@ class ServerScript:
         self.com_host = ','.join(self.id_list)
 
     def sh_script(self):
-        print("files", self.file.filename, self.id_list)
-        # dest = open(self.on_file, 'wb+')
-        # for i in self.file:
-        #     dest.write(i)
-        # dest.close()
         self.file.save(self.on_file)
         msg_list = []
         alias_list = []

@@ -18,7 +18,6 @@ class CountUpdate:
         self.query_login_count = t_login_log.query.filter(
             t_login_log.login_time.like("%{}%".format(self.now_date))).count()
         self.query_msg = t_line_chart.query.filter_by(chart_date=self.now_date).first()
-        print(self.query_msg)
 
     @property
     def count_into_all(self):
@@ -72,7 +71,6 @@ class CountList:
             new_date = (datetime.date.today() - datetime.timedelta(days=-5)).strftime("%Y-%m-%d")
             old_date = (datetime.date.today() - datetime.timedelta(days=+15)).strftime("%Y-%m-%d")
             now_date = datetime.date.today()
-            print(new_date, old_date, datetime.date.today())
             query_msg_all = t_line_chart.query.filter(t_line_chart.chart_date <= now_date).filter(
                 t_line_chart.chart_date >= old_date).all()
             for i in query_msg_all:
@@ -95,7 +93,6 @@ class DataList:
         name = request.values.get('name')
         que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
         res_group = set(self.lt.auth_ls_list_que(que_auth_group))
-        print(res_group)
         group_count = 1000
         # host_count = 100
         msg_list = []
@@ -152,7 +149,6 @@ class GetUserImage:
 
     def get_img(self, img_name):
         request_begin_time = datetime.date.today()
-        print("request_begin_time", request_begin_time)
         try:
             # 根据图片名显示对应路径图片
             if os.path.isfile(self.path + img_name + '.png'):

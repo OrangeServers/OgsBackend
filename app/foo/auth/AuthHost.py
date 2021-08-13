@@ -45,11 +45,9 @@ class AuthHostList:
             try:
                 query_user_name = t_acc_user.query.with_entities(t_acc_user.name).all()
                 user_name = self.lt.list_gather(query_user_name)
-                print(user_name)
                 query_auth_msg = t_auth_host.query.filter_by(name=auth_name).first()
                 auth_msg = query_auth_msg.user
                 auth_msg_list = auth_msg.split(',')
-                print(auth_msg_list)
                 for i in user_name:
                     if i in auth_msg_list:
                         auth_list.append({'name': i, 'value': i, 'selected': 'selected'})
@@ -66,11 +64,9 @@ class AuthHostList:
             try:
                 query_group_name = t_group.query.with_entities(t_group.name).all()
                 group_name = self.lt.list_gather(query_group_name)
-                print(group_name)
                 query_auth_msg = t_auth_host.query.filter_by(name=auth_name).first()
                 auth_msg = query_auth_msg.host_group
                 auth_msg_list = auth_msg.split(',')
-                print(auth_msg_list)
                 for i in group_name:
                     if i in auth_msg_list:
                         auth_list.append({'name': i, 'value': i, 'selected': 'selected'})

@@ -50,7 +50,8 @@ class OgsCron:
         job_command = request.values.get('job_command')
         job_remarks = request.values.get('job_remarks', default=None)
         try:
-            job_name_query = t_cron.query.filter_by(job_name=self.job_name).with_hint(t_cron,"force index(job_name)", 'mysql').first()
+            job_name_query = t_cron.query.filter_by(job_name=self.job_name).with_hint(t_cron, "force index(job_name)",
+                                                                                      'mysql').first()
             if job_name_query is None:
                 id_list = []
                 for i in job_groups.split(','):
@@ -146,9 +147,3 @@ class CronList:
         except IOError:
             return jsonify({"cron_list_msg": 'select list msg error',
                             "cron_len_msg": 0})
-
-
-if __name__ == '__main__':
-    print('cron')
-    # app.run(host='0.0.0.0', port=28110)
-    # aps_run()
