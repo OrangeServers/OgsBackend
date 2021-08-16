@@ -46,6 +46,7 @@ class OgsCron:
         job_day = request.values.get('job_day', default="*")
         job_month = request.values.get('job_month', default="*")
         job_week = request.values.get('job_week', default="*")
+        job_hosts = request.values.get('job_hosts', default=None)
         job_groups = request.values.get('job_groups')
         job_command = request.values.get('job_command')
         job_remarks = request.values.get('job_remarks', default=None)
@@ -54,23 +55,30 @@ class OgsCron:
                                                                                       'mysql').first()
             if job_name_query is None:
                 id_list = []
+                id_list2 = []
                 for i in job_groups.split(','):
                     host_list = self.lt.list_gather(
-                        t_host.query.filter_by(group=i).with_hint(t_cron, "force index(job_name)",
-                                                                  'mysql').with_entities(t_host.id).all())
+                        t_host.query.filter_by(group=i).with_entities(t_host.id).all())
                     id_list.append(host_list)
-                id_list_rep = self.lt.list_gather(id_list)
+                for x in job_hosts.split(','):
+                    host_list2 = t_host.query.filter_by(alias=x).with_entities(t_host.id).first()
+                    id_list2.append(host_list2)
+                print(self.lt.list_gather(id_list2))
+                id_list_rep = list(set(self.lt.list_gather(id_list) + self.lt.list_gather(id_list2)))
+                print(id_list_rep)
                 scheduler.add_job(cron_list_cmd, 'cron', week=job_week, month=job_month, day=job_day, hour=job_hour,
                                   minute=job_minute, args=[self.job_name, id_list_rep, job_command],
                                   id=self.job_name)
-                self.cron_ins.ins_sql(self.job_name, job_minute, job_hour, job_day, job_month, job_week, job_groups,
+                self.cron_ins.ins_sql(self.job_name, job_minute, job_hour, job_day, job_month, job_week, job_hosts,
+                                      job_groups,
                                       job_command, '启动', job_remarks)
                 return jsonify({'cron_add_status': 'true'})
             else:
                 return jsonify({'cron_add_status': 'sel_fail'})
         except IOError:
             return jsonify({'cron_add_status': 'con_fail'})
-        except Exception:
+        except Exception as e:
+            print(e)
             return jsonify({'cron_add_status': 'fail'})
 
     # 动态暂停定时任务

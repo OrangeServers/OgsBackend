@@ -153,6 +153,7 @@ class t_cron(db.Model):
     job_day = db.Column(db.String(20), nullable=False)
     job_month = db.Column(db.String(20), nullable=False)
     job_week = db.Column(db.String(20), nullable=False)
+    job_hosts = db.Column(db.String(255), nullable=True)
     job_groups = db.Column(db.String(255), nullable=False)
     job_command = db.Column(db.String(255), nullable=False)
     job_status = db.Column(db.String(20), nullable=False)
