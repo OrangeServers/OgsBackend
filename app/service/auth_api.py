@@ -6,14 +6,9 @@ def auth_host_list_all():
     return orange.auth_host_list_all
 
 
-def auth_host_del():
-    orange = AuthHostDel()
-    return orange.auth_host_del
-
-
 def auth_group_uplist():
     orange = AuthHostList()
-    return orange.test_auth_group
+    return orange.auth_group_role
 
 
 def auth_create_get_list():
@@ -29,3 +24,8 @@ def auth_host_add():
 def auth_host_update():
     orange = AuthHostUpdate()
     return orange.auth_host_update
+
+
+def auth_host_del():
+    orange = AuthHostDel()
+    return orange.auth_host_del

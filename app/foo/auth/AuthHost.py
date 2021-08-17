@@ -23,7 +23,7 @@ class AuthHostList:
             return jsonify({'msg': auth_list})
 
     @property
-    def test_auth_group(self):
+    def auth_group_role(self):
         auth_name = request.values.get('name')
         req_type = request.values.get("req_type")
         auth_list = []
