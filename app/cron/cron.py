@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.cron.CronSettings import scheduler, app
-from app.sqldb.SqlAlchemyDB import t_host, t_cron, db
+from app.sqldb.SqlAlchemyDB import t_host, t_auth_host, t_cron, db
 from app.sqldb.SqlAlchemyInsert import CronSqlalh
 from app.tools.basesec import BaseSec
 from app.tools.shellcmd import RemoteConnection
@@ -128,8 +128,8 @@ class OgsCron:
 class CronList:
     def __init__(self):
         self.lt = ListTool()
-        self.table_page = request.values.get('page')
-        self.table_limit = request.values.get('limit')
+        self.table_page = request.values.get('page', default=1)
+        self.table_limit = request.values.get('limit', default=10)
         self.table_offset = (int(self.table_page) - 1) * 10
 
     @property
@@ -155,3 +155,24 @@ class CronList:
         except IOError:
             return jsonify({"cron_list_msg": 'select list msg error',
                             "cron_len_msg": 0})
+
+    @property
+    def cron_auth_list(self):
+        auth_name = request.values.get('name')
+        req_type = request.values.get("req_type")
+        auth_list = []
+        try:
+            user_role_query = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(auth_name))).all()
+            user_role = self.lt.auth_ls_list_que(user_role_query)
+            if req_type == 'cron_hosts':
+                for i in user_role:
+                    query_msg = self.lt.list_gather(t_host.query.filter_by(group=i).with_entities(t_host.alias).all())
+                    for y in query_msg:
+                        auth_list.append({'name': y, 'value': y})
+                return jsonify({'msg': auth_list})
+            elif req_type == 'cron_groups':
+                for i in user_role:
+                    auth_list.append({'name': i, 'value': i})
+                return jsonify({'msg': auth_list})
+        except IOError:
+            return jsonify({'msg': 'fail'})

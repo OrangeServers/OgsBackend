@@ -22,23 +22,6 @@ class AuthHostList:
         elif req_type == 'user_group':
             return jsonify({'msg': auth_list})
 
-        elif req_type == 'host_all':
-            try:
-                query_host_name = t_host.query.with_entities(t_host.alias).all()
-                host_name = self.lt.list_gather(query_host_name)
-                for i in host_name:
-                    auth_list.append({'name': i, 'value': i})
-                return jsonify({'msg': auth_list})
-            except IOError:
-                return jsonify({'msg': 'fail'})
-
-        elif req_type == 'host_group':
-            query_group_name = t_group.query.with_entities(t_group.name).all()
-            group_name = self.lt.list_gather(query_group_name)
-            for i in group_name:
-                auth_list.append({'name': i, 'value': i})
-            return jsonify({'msg': auth_list})
-
     @property
     def test_auth_group(self):
         auth_name = request.values.get('name')

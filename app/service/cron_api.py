@@ -6,6 +6,11 @@ def local_cron_list():
     return orange.cron_list
 
 
+def local_cron_auth_list():
+    orange = CronList()
+    return orange.cron_auth_list
+
+
 def local_cron_list_all():
     orange = CronList()
     return orange.cron_list_all
