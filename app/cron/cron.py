@@ -35,7 +35,7 @@ def cron_list_cmd(job_name, host_id: list, command: str):
 
 class OgsCron:
     def __init__(self):
-        self.job_name = request.values.get('job_name')
+        self.job_name = request.values.get('job_name', default=None)
         self.lt = ListTool()
         self.cron_ins = CronSqlalh()
 
@@ -56,15 +56,19 @@ class OgsCron:
             if job_name_query is None:
                 id_list = []
                 id_list2 = []
+                id_list_rep = ''
                 for i in job_groups.split(','):
                     host_list = self.lt.list_gather(
                         t_host.query.filter_by(group=i).with_entities(t_host.id).all())
                     id_list.append(host_list)
-                for x in job_hosts.split(','):
-                    host_list2 = t_host.query.filter_by(alias=x).with_entities(t_host.id).first()
-                    id_list2.append(host_list2)
-                print(self.lt.list_gather(id_list2))
-                id_list_rep = list(set(self.lt.list_gather(id_list) + self.lt.list_gather(id_list2)))
+                if job_hosts is None:
+                    id_list_rep = list(set(self.lt.list_gather(id_list)))
+                else:
+                    for x in job_hosts.split(','):
+                        host_list2 = t_host.query.filter_by(alias=x).with_entities(t_host.id).first()
+                        id_list2.append(host_list2)
+                        id_list_rep = list(set(self.lt.list_gather(id_list) + self.lt.list_gather(id_list2)))
+                        print(self.lt.list_gather(id_list2))
                 print(id_list_rep)
                 scheduler.add_job(cron_list_cmd, 'cron', week=job_week, month=job_month, day=job_day, hour=job_hour,
                                   minute=job_minute, args=[self.job_name, id_list_rep, job_command],
@@ -104,16 +108,24 @@ class OgsCron:
             return jsonify({'cron_resume_status': 'fail'})
 
     # 动态删除定时任务
-    def remove_job(self):
+    def remove_job(self, job_name=None):
         try:
-            scheduler.remove_job(self.job_name)
-            job = t_cron.query.filter_by(job_name=self.job_name).with_hint(t_cron, "force index(job_name)",
-                                                                           'mysql').first()
+            if job_name is None:
+                job_name = self.job_name
+            scheduler.remove_job(job_name)
+            job = t_cron.query.filter_by(job_name=job_name).with_hint(t_cron, "force index(job_name)",
+                                                                      'mysql').first()
             db.session.delete(job)
             db.session.commit()
             return jsonify({'cron_del_status': 'true'})
         except Exception:
             return jsonify({'cron_del_status': 'fail'})
+
+    def remove_list_job(self):
+        job_name_list = request.values.get('job_name_list')
+        for i in job_name_list:
+            self.remove_job(i)
+        return jsonify({'cron_del_status': 'true'})
 
     # 关闭所有定时任务
     @property
