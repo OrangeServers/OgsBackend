@@ -84,10 +84,12 @@ class OgsCron:
             return jsonify({'cron_add_status': 'fail'})
 
     # 动态暂停定时任务
-    def pause_job(self):
+    def pause_job(self, job_name=None):
         try:
-            scheduler.pause_job(self.job_name)
-            t_cron.query.filter_by(job_name=self.job_name).with_hint(t_cron, "force index(job_name)", 'mysql').update(
+            if job_name is None:
+                job_name = self.job_name
+            scheduler.pause_job(job_name)
+            t_cron.query.filter_by(job_name=job_name).with_hint(t_cron, "force index(job_name)", 'mysql').update(
                 {'job_status': '暂停'})
             db.session.commit()
             return jsonify({'cron_pause_status': 'true'})
@@ -95,10 +97,12 @@ class OgsCron:
             return jsonify({'cron_pause_status': 'fail'})
 
     # 动态恢复定时任务
-    def resume_job(self):
+    def resume_job(self, job_name=None):
         try:
-            scheduler.resume_job(self.job_name)
-            t_cron.query.filter_by(job_name=self.job_name).with_hint(t_cron, "force index(job_name)", 'mysql').update(
+            if job_name is None:
+                job_name = self.job_name
+            scheduler.resume_job(job_name)
+            t_cron.query.filter_by(job_name=job_name).with_hint(t_cron, "force index(job_name)", 'mysql').update(
                 {'job_status': '启动'})
             db.session.commit()
             return jsonify({'cron_resume_status': 'true'})
@@ -120,12 +124,23 @@ class OgsCron:
             print(e)
             return jsonify({'cron_del_status': 'fail'})
 
-    def remove_list_job(self):
+    def com_list_job(self):
         job_name_list = request.values.getlist('job_name_list')
-        print(job_name_list)
-        for i in job_name_list:
-            self.remove_job(i)
-        return jsonify({'cron_del_status': 'true'})
+        job_type = request.values.get('job_type')
+        try:
+            if job_type == 'del':
+                for i in job_name_list:
+                    self.remove_job(i)
+            elif job_type == 'pause':
+                for i in job_name_list:
+                    self.pause_job(i)
+            elif job_type == 'resume':
+                for i in job_name_list:
+                    self.resume_job(i)
+            return jsonify({'cron_com_status': 'true'})
+        except Exception as e:
+            print(e)
+            return jsonify({'cron_com_status': 'fail'})
 
     # 关闭所有定时任务
     @property
