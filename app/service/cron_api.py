@@ -36,6 +36,11 @@ def local_cron_del():
     return orange.remove_job()
 
 
+def local_cron_del_list():
+    orange = OgsCron()
+    return orange.remove_list_job()
+
+
 def local_cron_close():
     orange = OgsCron()
     return orange.close_job

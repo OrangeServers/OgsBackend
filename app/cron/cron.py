@@ -61,15 +61,13 @@ class OgsCron:
                     host_list = self.lt.list_gather(
                         t_host.query.filter_by(group=i).with_entities(t_host.id).all())
                     id_list.append(host_list)
-                if job_hosts is None:
+                if job_hosts is None or job_hosts == '':
                     id_list_rep = list(set(self.lt.list_gather(id_list)))
                 else:
                     for x in job_hosts.split(','):
                         host_list2 = t_host.query.filter_by(alias=x).with_entities(t_host.id).first()
                         id_list2.append(host_list2)
                         id_list_rep = list(set(self.lt.list_gather(id_list) + self.lt.list_gather(id_list2)))
-                        print(self.lt.list_gather(id_list2))
-                print(id_list_rep)
                 scheduler.add_job(cron_list_cmd, 'cron', week=job_week, month=job_month, day=job_day, hour=job_hour,
                                   minute=job_minute, args=[self.job_name, id_list_rep, job_command],
                                   id=self.job_name)
@@ -118,11 +116,13 @@ class OgsCron:
             db.session.delete(job)
             db.session.commit()
             return jsonify({'cron_del_status': 'true'})
-        except Exception:
+        except Exception as e:
+            print(e)
             return jsonify({'cron_del_status': 'fail'})
 
     def remove_list_job(self):
-        job_name_list = request.values.get('job_name_list')
+        job_name_list = request.values.getlist('job_name_list')
+        print(job_name_list)
         for i in job_name_list:
             self.remove_job(i)
         return jsonify({'cron_del_status': 'true'})
