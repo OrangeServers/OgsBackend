@@ -49,6 +49,20 @@ class ServerGroupList:
                             "host_len_msg": 0})
 
 
+class ServerGroupAuto:
+    def __init__(self):
+        self.lt = ListTool()
+
+    def grp_auth_auto_update(self):
+        try:
+            query_msg = self.lt.list_gather(t_group.query.with_entities(t_group.name).all())
+            grp_msg = ','.join(query_msg)
+            t_auth_host.query.filter_by(name='所有权限').update({'host_group': grp_msg})
+            return True
+        except IOError:
+            return False
+
+
 class ServerGroupDel:
     def __init__(self):
         self.id = request.values.get('id')
@@ -56,6 +70,7 @@ class ServerGroupDel:
         self.cz_name = request.values.get('cz_name')
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
+        self.grp_auto = ServerGroupAuto()
 
     @property
     def host_del(self):
@@ -64,6 +79,7 @@ class ServerGroupDel:
             db.session.delete(user_chk)
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产组操作', '删除资产组', self.id, '成功', None, self.new_date)
+            self.grp_auto.grp_auth_auto_update()
             return jsonify({'server_group_del_status': 'true'})
         else:
             self.cz_ins.ins_sql(self.cz_name, '资产组操作', '删除资产组', self.id, '失败', '系统内没有该资产组', self.new_date)
@@ -80,6 +96,7 @@ class ServerGroupAdd:
         self.cz_name = request.values.get('cz_name')
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
+        self.grp_auto = ServerGroupAuto()
 
     @property
     def host_add(self):
@@ -88,6 +105,7 @@ class ServerGroupAdd:
             if user_chk is None:
                 self.host_sqlalh.ins_sql(self.name, self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '资产组操作', '新增资产组', self.name, '成功', None, self.new_date)
+                self.grp_auto.grp_auth_auto_update()
                 return jsonify({'server_group_add_status': 'true'})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '资产组操作', '新增资产组', self.name, '失败', '该资产组已存在', self.new_date)
