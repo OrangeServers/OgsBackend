@@ -174,7 +174,7 @@ class CronList:
         try:
             query_msg = t_cron.query.offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
-            len_msg = t_cron.query.offset(self.table_offset).limit(self.table_limit).count()
+            len_msg = t_cron.query.count()
             return jsonify({"host_status": 0,
                             "cron_list_msg": list_msg,
                             "msg": "",

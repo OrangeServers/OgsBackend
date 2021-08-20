@@ -69,7 +69,7 @@ class AccUserList:
         try:
             query_msg = t_acc_user.query.offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg, 'password')
-            len_msg = t_acc_user.query.offset(table_offset).limit(table_limit).count()
+            len_msg = t_acc_user.query.count()
             return jsonify({"host_status": 0,
                             "acc_user_list_msg": list_msg,
                             "msg": "",

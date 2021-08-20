@@ -72,7 +72,7 @@ class ServerList:
             auth_group = self.lt.auth_ls_list_que(que_auth_group)
             query_msg = t_host.query.filter(t_host.group.in_(auth_group)).offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict(query_msg)
-            len_msg = t_host.query.filter(t_host.group.in_(auth_group)).offset(table_offset).limit(table_limit).count()
+            len_msg = t_host.query.filter(t_host.group.in_(auth_group)).count()
             return jsonify({"host_status": 0,
                             "host_list_msg": list_msg,
                             "msg": "",
