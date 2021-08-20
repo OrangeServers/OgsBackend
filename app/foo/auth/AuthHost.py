@@ -113,10 +113,13 @@ class AuthHostDel:
     def auth_host_del(self):
         # user_chk = Host.query.filter_by(host_ip=self.host_ip).first()
         auth_chk = t_auth_host.query.filter_by(name=self.name).first()
-        if not auth_chk is None:
-            db.session.delete(auth_chk)
-            db.session.commit()
-            return jsonify({'auth_host_del_status': 'true'})
+        if auth_chk:
+            if self.name != '所有权限':
+                db.session.delete(auth_chk)
+                db.session.commit()
+                return jsonify({'auth_host_del_status': 'true'})
+            elif self.name == '所有权限':
+                return jsonify({'auth_host_del_status': 'auth fail'})
         else:
             return jsonify({'auth_host_del_status': 'fail'})
 
