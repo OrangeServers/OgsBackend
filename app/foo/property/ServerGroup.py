@@ -2,7 +2,7 @@ import time
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_group, t_auth_host, t_cz_log, db
+from app.sqldb.SqlAlchemyDB import t_group, t_auth_host, t_host, db
 from app.sqldb.SqlAlchemyInsert import GroupSqlalh, CzLogSqlalh
 
 
@@ -76,8 +76,12 @@ class ServerGroupDel:
     def host_del(self):
         user_chk = t_group.query.filter_by(id=self.id).first()
         if user_chk:
+            query_host = t_host.query.filter_by(group=user_chk.name).all()
             db.session.delete(user_chk)
             db.session.commit()
+            for i in query_host:
+                db.session.delete(i)
+                db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产组操作', '删除资产组', self.id, '成功', None, self.new_date)
             self.grp_auto.grp_auth_auto_update()
             return jsonify({'server_group_del_status': 'true'})
