@@ -105,12 +105,11 @@ class ServerAuto:
     def __init__(self):
         self.lt = ListTool()
 
-    def host_grp_auto_update(self):
+    @staticmethod
+    def host_grp_auto_update(group):
         try:
-            grp_name = self.lt.list_gather(t_group.query.with_entities(t_group.name).all())
-            for i in grp_name:
-                host_count = t_host.query.filter_by(group=i).count()
-                t_group.query.filter_by(name=i).update({'nums': host_count})
+            host_count = t_host.query.filter_by(group=group).count()
+            t_group.query.filter_by(name=group).update({'nums': host_count})
             return True
         except IOError:
             return False
@@ -134,7 +133,7 @@ class ServerDel:
             db.session.delete(user_chk)
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产操作', '删除资产', self.id, '成功', None, self.new_date)
-            self.ser_auto.host_grp_auto_update()
+            self.ser_auto.host_grp_auto_update(user_chk.group)
             return jsonify({'server_del_status': 'true'})
         else:
             self.cz_ins.ins_sql(self.cz_name, '资产操作', '删除资产', self.id, '失败', '系统内没有该资产', self.new_date)
@@ -168,7 +167,7 @@ class ServerAdd:
                 self.host_sqlalh.ins_sql(self.alias, self.host_ip, self.host_port, self.host_user, password_en,
                                          self.group)
                 self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '成功', None, self.new_date)
-                self.ser_auto.host_grp_auto_update()
+                self.ser_auto.host_grp_auto_update(self.group)
                 return jsonify({'server_add_status': 'true'})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '失败', '该资产已存在', self.new_date)
@@ -193,13 +192,18 @@ class ServerUpdate(ServerAdd):
             conn.ssh_cmd('hostname')
             try:
                 password_en = self.basesec.base_en(self.host_password)
+                up_host = t_host.query.filter_by(id=self.id).first()
                 t_host.query.filter_by(id=self.id).update({'alias': self.alias, 'host_ip': self.host_ip,
                                                            'host_port': self.host_port,
                                                            'host_user': self.host_user,
                                                            'host_password': password_en, 'group': self.group})
                 db.session.commit()
                 self.cz_ins.ins_sql(self.cz_name, '资产操作', '变更资产', self.alias, '成功', None, self.new_date)
-                self.ser_auto.host_grp_auto_update()
+                if up_host.group == self.group:
+                    self.ser_auto.host_grp_auto_update(self.group)
+                else:
+                    self.ser_auto.host_grp_auto_update(up_host.group)
+                    self.ser_auto.host_grp_auto_update(self.group)
                 return jsonify({'server_ping_status': 'true',
                                 'server_into_update': 'true'})
             except Exception:
