@@ -39,9 +39,10 @@ class ServerGroupList:
             table_limit = request.values.get('limit')
             table_offset = (int(table_page) - 1) * 10
             auth_list = auth_list_get()
-            query_msg = t_group.query.filter(t_host.group.in_(auth_list)).offset(table_offset).limit(table_limit).all()
+            print(auth_list)
+            query_msg = t_group.query.filter(t_group.name.in_(auth_list)).offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
-            len_msg = t_group.query.filter(t_host.group.in_(auth_list)).count()
+            len_msg = t_group.query.filter(t_group.name.in_(auth_list)).count()
             return jsonify({"host_status": 0,
                             "group_list_msg": list_msg,
                             "msg": "",
