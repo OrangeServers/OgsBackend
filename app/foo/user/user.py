@@ -236,6 +236,7 @@ class AccUserAdd:
         self.password = request.values.get('password')
         self.usrole = request.values.get('usrole')
         self.mail = request.values.get('mail')
+        self.group = request.values.get('group')
         self.remarks = request.values.get('remarks', type=str, default=None)
         self.user_ins = AccUserSqlalh()
         self.basesec = BaseSec()
@@ -247,14 +248,15 @@ class AccUserAdd:
 
     @property
     def host_add(self):
-        log_msg = 'req_body: [ alias=%s, name=%s, password=%s, usrole=%s, mail=%s, remarks=%s ] /account/user/add' % (
-            self.alias, self.name, self.password, self.usrole, self.mail,
-            self.remarks)
+        log_msg = 'req_body: [ alias=%s, name=%s, password=%s, usrole=%s, mail=%s, group=%s, remarks=%s ] ' \
+                  '/account/user/add' % (
+                      self.alias, self.name, self.password, self.usrole, self.mail, self.group,
+                      self.remarks)
         try:
             user_chk = t_acc_user.query.filter_by(name=self.name).first()
             if user_chk is None:
                 password_en = self.basesec.base_en(self.password)
-                self.user_ins.ins_sql(self.alias, self.name, password_en, self.usrole, self.mail,
+                self.user_ins.ins_sql(self.alias, self.name, password_en, self.usrole, self.mail, self.group,
                                       self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '成功', None, self.new_date)
                 self.cnres.set_red(self.name + '_alias', self.alias)
@@ -267,7 +269,8 @@ class AccUserAdd:
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '失败', '连接数据库错误', self.new_date)
             Log.logger.info(log_msg + ' \"fail con_fail\"')
             return jsonify({'acc_user_add_status': 'con_fail'})
-        except Exception:
+        except Exception as e:
+            print(e)
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '失败', '未知错误', self.new_date)
             Log.logger.info(log_msg + ' \"fail\"')
             return jsonify({'acc_user_add_status': 'fail'})
@@ -288,6 +291,7 @@ class AccUserUpdate(AccUserAdd):
             t_acc_user.query.filter_by(id=self.id).update({'alias': self.alias, 'name': self.name,
                                                            'password': password_en,
                                                            'usrole': self.usrole,
+                                                           'group': self.group,
                                                            'mail': self.mail, 'remarks': self.remarks})
             db.session.commit()
             role_name = self.name + '_role'

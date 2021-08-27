@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_auth_host, t_group, t_acc_user, t_host, db
+from app.sqldb.SqlAlchemyDB import t_auth_host, t_group, t_acc_user, t_host, t_acc_group, db
 from app.sqldb.SqlAlchemyInsert import AuthHostSqlalh
 
 
@@ -20,6 +20,10 @@ class AuthHostList:
             return jsonify({'msg': auth_list})
 
         elif req_type == 'user_group':
+            query_group_name = t_acc_group.query.with_entities(t_acc_group.name).all()
+            group_name = self.lt.list_gather(query_group_name)
+            for i in group_name:
+                auth_list.append({'name': i, 'value': i})
             return jsonify({'msg': auth_list})
 
         elif req_type == 'host_group':
@@ -58,7 +62,20 @@ class AuthHostList:
                 return jsonify({'msg': 'fail'})
 
         elif req_type == 'user_group':
-            return jsonify({'msg': auth_list})
+            try:
+                query_group_name = t_acc_group.query.with_entities(t_acc_group.name).all()
+                group_name = self.lt.list_gather(query_group_name)
+                query_auth_msg = t_auth_host.query.filter_by(name=auth_name).first()
+                auth_msg = query_auth_msg.user_group
+                auth_msg_list = auth_msg.split(',')
+                for i in group_name:
+                    if i in auth_msg_list:
+                        auth_list.append({'name': i, 'value': i, 'selected': 'selected'})
+                    else:
+                        auth_list.append({'name': i, 'value': i})
+                return jsonify({'msg': auth_list})
+            except IOError:
+                return jsonify({'msg': 'fail'})
 
         elif req_type == 'host_group':
             try:

@@ -6,6 +6,11 @@ def acc_group_list():
     return orange.group_list
 
 
+def acc_group_name_list():
+    orange = AccGroupList()
+    return orange.group_name_list
+
+
 def acc_group_list_all():
     orange = AccGroupList()
     return orange.group_list_all

@@ -57,9 +57,9 @@ class AccUserSqlalh:
         pass
 
     @staticmethod
-    def ins_sql(alias, name, password, usrole, mail, remarks):
+    def ins_sql(alias, name, password, usrole, mail, group, remarks):
         sql = t_acc_user(alias=alias, name=name, password=password, usrole=usrole, mail=mail,
-                         remarks=remarks)
+                         group=group, remarks=remarks)
         db.session.add(sql)
         db.session.commit()
 

@@ -112,6 +112,7 @@ def orange_init_api():
 
     # 用户组接口
     app.add_url_rule('/account/group/list', view_func=acc_group_list, methods=['POST', 'get'])
+    app.add_url_rule('/account/group/name_list', view_func=acc_group_name_list, methods=['POST', 'get'])
     app.add_url_rule('/account/group/list_all', view_func=acc_group_list_all, methods=['POST', 'get'])
     app.add_url_rule('/account/group/add', view_func=acc_group_add, methods=['POST', 'get'])
     app.add_url_rule('/account/group/update', view_func=acc_group_update, methods=['POST', 'get'])

@@ -21,6 +21,16 @@ class AccGroupList:
             return jsonify({"acc_group_list_msg": 'select list msg error'})
 
     @property
+    def group_name_list(self):
+        name = request.values.get('name')
+        try:
+            que_auth_group = t_acc_group.query.with_entities(t_acc_group.name).all()
+            group_list = self.lt.list_gather(que_auth_group)
+            return jsonify({'group_name_list_msg': group_list})
+        except IOError:
+            return jsonify({'get_name_list': 'fail'})
+
+    @property
     def group_list_all(self):
         try:
             table_page = request.values.get('page')
