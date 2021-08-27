@@ -3,7 +3,7 @@ from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyDB import t_acc_group, t_cz_log, db
-from app.sqldb.SqlAlchemyInsert import AccUserSqlalh, CzLogSqlalh
+from app.sqldb.SqlAlchemyInsert import AccGroupSqlalh, CzLogSqlalh
 
 
 class AccGroupList:
@@ -63,7 +63,7 @@ class AccGroupAdd:
     def __init__(self):
         self.name = request.values.get('name')
         self.remarks = request.values.get('remarks', type=str, default=None)
-        self.host_sqlalh = AccUserSqlalh()
+        self.host_sqlalh = AccGroupSqlalh()
         self.basesec = BaseSec()
         # 新增记录日志相关
         self.cz_name = request.values.get('cz_name')
@@ -84,7 +84,8 @@ class AccGroupAdd:
         except IOError:
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '失败', '连接数据库错误', self.new_date)
             return jsonify({'acc_group_add_status': 'con_fail'})
-        except Exception:
+        except Exception as e:
+            print(e)
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '失败', '未知错误', self.new_date)
             return jsonify({'acc_group_add_status': 'fail'})
 
