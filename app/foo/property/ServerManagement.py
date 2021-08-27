@@ -71,8 +71,6 @@ class ServerList:
             grp_name = t_acc_user.query.filter_by(name=name).first()
             que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
             que_grp_group = t_auth_host.query.filter(t_auth_host.user_group.like("%{}%".format(grp_name.group))).all()
-            auth_group = self.lt.auth_ls_list_que(que_auth_group)
-            grp_group = self.lt.auth_ls_list_que(que_grp_group)
             auth_list = set(list(self.lt.auth_ls_list_que(que_auth_group)) + list(self.lt.auth_ls_list_que(que_grp_group)))
             query_msg = t_host.query.filter(t_host.group.in_(auth_list)).offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict(query_msg)
