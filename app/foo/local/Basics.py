@@ -91,8 +91,10 @@ class DataList:
         que_group = t_group.query.with_entities(t_group.name).all()
         host_group = self.lt.list_rep_gather(que_group)
         name = request.values.get('name')
+        grp_name = t_acc_user.query.filter_by(name=name).first()
         que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
-        res_group = set(self.lt.auth_ls_list_que(que_auth_group))
+        que_grp_group = t_auth_host.query.filter(t_auth_host.user_group.like("%{}%".format(grp_name.group))).all()
+        res_group = set(list(self.lt.auth_ls_list_que(que_auth_group)) + list(self.lt.auth_ls_list_que(que_grp_group)))
         group_count = 1000
         # host_count = 100
         msg_list = []
