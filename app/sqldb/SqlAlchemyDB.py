@@ -46,6 +46,7 @@ class t_acc_user(db.Model):
     password = db.Column(db.String(24), nullable=False)
     usrole = db.Column(db.String(10), nullable=False)
     mail = db.Column(db.String(24), nullable=False)
+    group = db.Column(db.String(24), nullable=False)
     remarks = db.Column(db.String(30), nullable=True)
 
 
