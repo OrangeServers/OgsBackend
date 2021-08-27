@@ -2,8 +2,9 @@ import time
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_group, t_auth_host, t_host, db
+from app.sqldb.SqlAlchemyDB import t_group, t_auth_host, t_host, t_acc_user, db
 from app.sqldb.SqlAlchemyInsert import GroupSqlalh, CzLogSqlalh
+from app.tools.at import auth_list_get
 
 
 class ServerGroupList:
@@ -37,9 +38,10 @@ class ServerGroupList:
             table_page = request.values.get('page')
             table_limit = request.values.get('limit')
             table_offset = (int(table_page) - 1) * 10
-            query_msg = t_group.query.offset(table_offset).limit(table_limit).all()
+            auth_list = auth_list_get()
+            query_msg = t_group.query.filter(t_host.group.in_(auth_list)).offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
-            len_msg = t_group.query.count()
+            len_msg = t_group.query.filter(t_host.group.in_(auth_list)).count()
             return jsonify({"host_status": 0,
                             "group_list_msg": list_msg,
                             "msg": "",

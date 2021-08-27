@@ -5,6 +5,7 @@ from app.sqldb.SqlAlchemyDB import t_host, db, t_group, t_sys_user, t_acc_user, 
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyInsert import LineChartSqlalh
 from app.conf.conf_test import FILE_CONF
+from app.tools.at import auth_list_get
 
 
 class CountUpdate:
@@ -90,11 +91,7 @@ class DataList:
         # que_group = Host.query.with_entities(Host.group).all()
         que_group = t_group.query.with_entities(t_group.name).all()
         host_group = self.lt.list_rep_gather(que_group)
-        name = request.values.get('name')
-        grp_name = t_acc_user.query.filter_by(name=name).first()
-        que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
-        que_grp_group = t_auth_host.query.filter(t_auth_host.user_group.like("%{}%".format(grp_name.group))).all()
-        res_group = set(list(self.lt.auth_ls_list_que(que_auth_group)) + list(self.lt.auth_ls_list_que(que_grp_group)))
+        res_group = auth_list_get()
         group_count = 1000
         # host_count = 100
         msg_list = []

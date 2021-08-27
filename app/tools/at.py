@@ -1,6 +1,19 @@
 import datetime, functools, logging
 from logging import handlers
 from enum import Enum, unique
+from flask import request
+from app.tools.SqlListTool import ListTool
+from app.sqldb.SqlAlchemyDB import t_acc_user, t_auth_host
+
+
+def auth_list_get():
+    lt = ListTool()
+    name = request.values.get('name')
+    grp_name = t_acc_user.query.filter_by(name=name).first()
+    que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
+    que_grp_group = t_auth_host.query.filter(t_auth_host.user_group.like("%{}%".format(grp_name.group))).all()
+    auth_list = set(list(lt.auth_ls_list_que(que_auth_group)) + list(lt.auth_ls_list_que(que_grp_group)))
+    return auth_list
 
 
 def ogs_runtime_test(func):
