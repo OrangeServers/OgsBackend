@@ -2,7 +2,7 @@ import time
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_acc_group, t_cz_log, db
+from app.sqldb.SqlAlchemyDB import t_acc_group, t_acc_user, db
 from app.sqldb.SqlAlchemyInsert import AccGroupSqlalh, CzLogSqlalh
 
 
@@ -50,8 +50,12 @@ class AccGroupDel:
     def host_del(self):
         user_chk = t_acc_group.query.filter_by(id=self.id).first()
         if user_chk:
+            acc_user = t_acc_user.query.filter_by(group=user_chk.name).all()
             db.session.delete(user_chk)
             db.session.commit()
+            for i in acc_user:
+                db.session.delete(i)
+                db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '删除用户组', self.id, '成功', None, self.new_date)
             return jsonify({'acc_group_del_status': 'true'})
         else:
