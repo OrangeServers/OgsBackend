@@ -134,7 +134,7 @@ class DataSumAll:
                 sys_user_list = self.lt.list_rep_gather(query_sys_user)
                 for i in sys_user_list:
                     sys_user_count = t_host.query.filter_by(host_user=i).count()
-                    t_sys_user.query.filter_by(host_user=i).update({'host_user': sys_user_count})
+                    t_sys_user.query.filter_by(host_user=i).update({'nums': sys_user_count})
                     db.session.commit()
                     return jsonify({'update_table_sum': 'true'})
             except IOError:
