@@ -4,7 +4,7 @@ from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
 from app.tools.sendmail import SendMail
 from app.tools.redisdb import ConnRedis
-from app.sqldb.SqlAlchemyDB import t_acc_user, t_cz_log, db
+from app.sqldb.SqlAlchemyDB import t_acc_user, t_acc_group, db
 from app.sqldb.SqlAlchemyInsert import AccUserSqlalh, LoginLogSqlalh, CzLogSqlalh
 from app.conf.conf_test import REDIS_CONF, MAIL_CONF
 from app.tools.at import Log
@@ -201,6 +201,20 @@ class UserRegister(UserLogin):
             return jsonify({'chk_user_status': 'fail'})
 
 
+class UserAuto:
+    def __init__(self):
+        self.lt = ListTool()
+
+    @staticmethod
+    def user_grp_auto_update(group):
+        try:
+            host_count = t_acc_user.query.filter_by(group=group).count()
+            t_acc_group.query.filter_by(name=group).update({'nums': host_count})
+            return True
+        except IOError:
+            return False
+
+
 class AccUserDel:
     def __init__(self):
         # self.host_ip = request.values.get('host_ip')
@@ -210,6 +224,7 @@ class AccUserDel:
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
         self.cz_ins = CzLogSqlalh()
+        self.use_auto = UserAuto()
 
     @property
     def host_del(self):
@@ -222,6 +237,7 @@ class AccUserDel:
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '删除用户', self.id, '成功', None, self.new_date)
             self.cnres.del_red(alias_name + '_alias')
+            self.use_auto.user_grp_auto_update(user_chk.group)
             return jsonify({'acc_user_del_status': 'true'})
         else:
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '删除用户', self.id, '失败', '系统内没有该用户', self.new_date)
@@ -245,6 +261,7 @@ class AccUserAdd:
         self.cz_name = request.values.get('cz_name')
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
+        self.use_auto = UserAuto()
 
     @property
     def host_add(self):
@@ -260,6 +277,7 @@ class AccUserAdd:
                                       self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '成功', None, self.new_date)
                 self.cnres.set_red(self.name + '_alias', self.alias)
+                self.use_auto.user_grp_auto_update(self.group)
                 return jsonify({'acc_user_add_status': 'true'})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '失败', '该用户已存在', self.new_date)
@@ -288,6 +306,7 @@ class AccUserUpdate(AccUserAdd):
                       self.id, self.alias, self.name, self.password, self.usrole, self.mail, self.remarks)
         try:
             password_en = self.basesec.base_en(self.password)
+            up_user = t_acc_user.query.filter_by(id=self.id).first()
             t_acc_user.query.filter_by(id=self.id).update({'alias': self.alias, 'name': self.name,
                                                            'password': password_en,
                                                            'usrole': self.usrole,
@@ -298,6 +317,11 @@ class AccUserUpdate(AccUserAdd):
             self.cnres.set_red(role_name, self.usrole)
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '变更用户', self.name, '成功', None, self.new_date)
             self.cnres.set_red(self.name + '_alias', self.alias)
+            if up_user.group == self.group:
+                self.use_auto.user_grp_auto_update(self.group)
+            else:
+                self.use_auto.user_grp_auto_update(up_user.group)
+                self.use_auto.user_grp_auto_update(self.group)
             return jsonify({'acc_user_ping_status': 'true',
                             'acc_user_into_update': 'true'})
         except Exception:
