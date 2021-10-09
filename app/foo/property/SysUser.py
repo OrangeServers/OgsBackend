@@ -65,7 +65,10 @@ class SysUserAdd:
     def __init__(self):
         self.alias = request.values.get('alias')
         self.host_user = request.values.get('host_user')
-        self.host_password = request.values.get('host_password')
+        self.host_password = request.values.get('host_password', default=None)
+        # 新增获取传入的key文件
+        self.host_key = request.files.get('host_key', default=None)
+
         self.agreement = request.values.get('agreement')
         self.remarks = request.values.get('remarks', type=str, default=None)
         self.host_sqlalh = SysUserSqlalh()
@@ -80,8 +83,18 @@ class SysUserAdd:
         try:
             user_chk = t_sys_user.query.filter_by(alias=self.alias).first()
             if user_chk is None:
-                password_en = self.basesec.base_en(self.host_password)
-                self.host_sqlalh.ins_sql(self.alias, self.host_user, password_en, self.agreement, self.remarks)
+                # 保存key文件 判断文件是否存在，后续逻辑待优化
+                if self.host_key:
+                    key_path = '/data/tmp/test/sshkey/' + self.alias + '.rsa'
+                    self.host_key.save(key_path)
+                else:
+                    key_path = None
+                if self.host_password:
+                    password_en = self.basesec.base_en(self.host_password)
+                else:
+                    password_en = None
+                self.host_sqlalh.ins_sql(self.alias, self.host_user, password_en, key_path, self.agreement,
+                                         self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '新增资产用户', self.host_user, '成功', None, self.new_date)
                 return jsonify({'sys_user_add_status': 'true'})
             else:
