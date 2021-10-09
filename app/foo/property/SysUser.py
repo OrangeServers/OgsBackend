@@ -1,9 +1,12 @@
+import os
+import stat
 import time
 from flask import request, jsonify
 from app.sqldb.SqlAlchemyDB import t_sys_user, t_cz_log, db
 from app.sqldb.SqlAlchemyInsert import SysUserSqlalh, CzLogSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
+from app.conf.conf_test import FILE_CONF
 
 
 class SysUserList:
@@ -52,6 +55,7 @@ class SysUserDel:
         # user_chk = Host.query.filter_by(host_ip=self.host_ip).first()
         user_chk = t_sys_user.query.filter_by(id=self.id).first()
         if user_chk:
+            os.remove(FILE_CONF['key_path'] + user_chk.alias + '_rsa')
             db.session.delete(user_chk)
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '删除资产用户', self.id, '成功', None, self.new_date)
@@ -67,7 +71,7 @@ class SysUserAdd:
         self.host_user = request.values.get('host_user')
         self.host_password = request.values.get('host_password', default=None)
         # 新增获取传入的key文件
-        self.host_key = request.files.get('host_key', default=None)
+        self.host_key = request.files.get('host_key')
 
         self.agreement = request.values.get('agreement')
         self.remarks = request.values.get('remarks', type=str, default=None)
@@ -84,9 +88,11 @@ class SysUserAdd:
             user_chk = t_sys_user.query.filter_by(alias=self.alias).first()
             if user_chk is None:
                 # 保存key文件 判断文件是否存在，后续逻辑待优化
+                print(self.host_key)
                 if self.host_key:
-                    key_path = '/data/tmp/test/sshkey/' + self.alias + '.rsa'
+                    key_path = FILE_CONF['key_path'] + self.alias + '_rsa'
                     self.host_key.save(key_path)
+                    os.chmod(key_path, stat.S_IRUSR | stat.S_IWUSR)
                 else:
                     key_path = None
                 if self.host_password:
