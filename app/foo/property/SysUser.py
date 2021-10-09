@@ -122,17 +122,19 @@ class SysUserUpdate(SysUserAdd):
 
     @property
     def update(self):
+        query_msg = t_sys_user.query.filter_by(id=self.id).first()
+        print(query_msg)
         try:
             if self.host_password:
                 password_en = self.basesec.base_en(self.host_password)
             else:
-                password_en = None
+                password_en = query_msg.host_password
             if self.host_key:
                 key_path = FILE_CONF['key_path'] + self.alias + '_rsa'
                 self.host_key.save(key_path)
                 os.chmod(key_path, stat.S_IRUSR | stat.S_IWUSR)
             else:
-                key_path = None
+                key_path = query_msg.host_key
             t_sys_user.query.filter_by(id=self.id).update({'alias': self.alias, 'host_user': self.host_user,
                                                            'host_password': password_en,
                                                            'agreement': self.agreement,
