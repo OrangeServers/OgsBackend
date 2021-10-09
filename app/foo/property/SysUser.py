@@ -55,7 +55,8 @@ class SysUserDel:
         # user_chk = Host.query.filter_by(host_ip=self.host_ip).first()
         user_chk = t_sys_user.query.filter_by(id=self.id).first()
         if user_chk:
-            os.remove(FILE_CONF['key_path'] + user_chk.alias + '_rsa')
+            if user_chk.host_key:
+                os.remove(FILE_CONF['key_path'] + user_chk.alias + '_rsa')
             db.session.delete(user_chk)
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '删除资产用户', self.id, '成功', None, self.new_date)
@@ -88,7 +89,6 @@ class SysUserAdd:
             user_chk = t_sys_user.query.filter_by(alias=self.alias).first()
             if user_chk is None:
                 # 保存key文件 判断文件是否存在，后续逻辑待优化
-                print(self.host_key)
                 if self.host_key:
                     key_path = FILE_CONF['key_path'] + self.alias + '_rsa'
                     self.host_key.save(key_path)
@@ -123,10 +123,20 @@ class SysUserUpdate(SysUserAdd):
     @property
     def update(self):
         try:
-            password_en = self.basesec.base_en(self.host_password)
+            if self.host_password:
+                password_en = self.basesec.base_en(self.host_password)
+            else:
+                password_en = None
+            if self.host_key:
+                key_path = FILE_CONF['key_path'] + self.alias + '_rsa'
+                self.host_key.save(key_path)
+                os.chmod(key_path, stat.S_IRUSR | stat.S_IWUSR)
+            else:
+                key_path = None
             t_sys_user.query.filter_by(id=self.id).update({'alias': self.alias, 'host_user': self.host_user,
                                                            'host_password': password_en,
                                                            'agreement': self.agreement,
+                                                           'host_key': key_path,
                                                            'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '修改资产用户', self.host_user, '成功', None, self.new_date)
