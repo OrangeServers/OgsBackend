@@ -64,7 +64,6 @@ class RemoteConnection:
 # 新增继承方法，待测试
 class RemoteConnectionKey(RemoteConnection):
     def __init__(self, host, port, username, pkey):
-        super(RemoteConnectionKey, self).__init__()
         """
         host-->远程连接的主机ip,str类型
         port-->远程连接的主机ssh端口,int类型
@@ -93,6 +92,19 @@ class RemoteConnectionKey(RemoteConnection):
             return stderr_msg.decode()
         elif stderr_msg.decode() == '':
             return stdout_msg.decode()
+
+    def put_file(self, form_path, to_path):
+        """
+        form_path-->从本地上传的文件路径;str类型
+        to_path-->上传到对方服务器的文件路径;str类型
+        """
+        ssh = paramiko.SSHClient()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        key = paramiko.RSAKey.from_private_key_file(self.pkey)
+        ssh.connect(self.host, port=self.port, username=self.username, pkey=key, timeout=3)
+        sftp_cilent = paramiko.SFTPClient.from_transport(ssh.get_transport())
+        sftp_cilent.put(form_path, to_path)
+        sftp_cilent.close()
 
 
 if __name__ == '__main__':
