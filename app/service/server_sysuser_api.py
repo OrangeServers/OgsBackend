@@ -6,6 +6,11 @@ def sys_user_list():
     return orange.sys_user_list
 
 
+def sys_name_list():
+    orange = SysUserList()
+    return orange.sys_user_name_list
+
+
 def sys_user_list_all():
     orange = SysUserList()
     return orange.sys_user_list_all

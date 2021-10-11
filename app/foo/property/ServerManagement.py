@@ -1,10 +1,12 @@
 import time
+
+import paramiko.ssh_exception
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
-from app.tools.shellcmd import RemoteConnection
+from app.tools.shellcmd import RemoteConnection, RemoteConnectionKey
 from app.foo.local.LocalShell import LocalShell
 from app.sqldb.SqlAlchemySettings import db
-from app.sqldb.SqlAlchemyDB import t_host, t_group, t_auth_host, t_acc_user, t_cz_log
+from app.sqldb.SqlAlchemyDB import t_host, t_group, t_auth_host, t_acc_user, t_cz_log, t_sys_user
 from app.sqldb.SqlAlchemyInsert import HostSqlalh, CommandLogSqlalh, CzLogSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
@@ -254,13 +256,14 @@ class ServerCmd2:
 class ServerListCmd(ServerCmd2):
     def __init__(self):
         super(ServerListCmd, self).__init__()
-        # self.host_ip = request.values.getlist('host_ip')
         self.host_id = request.values.getlist('host_id')
-
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.com_name = request.values.get('com_name')
         self.com_ins = CommandLogSqlalh
         self.com_host = ','.join(self.host_id)
+
+        # 新增选择执行的系统用户
+        self.sys_user = request.values.get('sys_user', default=None)
 
     @property
     def sh_list_cmd(self):
@@ -269,16 +272,22 @@ class ServerListCmd(ServerCmd2):
         error_list = []
         for hid in self.host_id:
             host = t_host.query.filter_by(id=hid).first()
-            host_dict = host.__dict__
-            password_de = self.basesec.base_de(host_dict['host_password'])
+            # 查询系统用户信息
+            sys_user_info = t_sys_user.query.filter_by(alias=self.sys_user).first()
             try:
-                conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'],
-                                        password_de)
+                if sys_user_info.host_key:
+                    conn = RemoteConnectionKey(host.host_ip, host.host_port, sys_user_info.host_user,
+                                               sys_user_info.host_key)
+                else:
+                    password_de = self.basesec.base_de(sys_user_info.host_password)
+                    conn = RemoteConnection(host.host_ip, host.host_port, sys_user_info.host_user, password_de)
                 msg = conn.ssh_cmd(self.command)
                 msg_list.append(msg)
-                alias_list.append(host_dict['alias'])
+                alias_list.append(host.alias)
             except IOError:
-                error_list.append(host_dict['alias'])
+                error_list.append(host.alias)
+            except paramiko.ssh_exception.AuthenticationException:
+                error_list.append(host.alias)
         if len(error_list) == 0:
             self.com_ins.ins_sql(self.com_name, '批量命令', self.command, self.com_host, '成功', None, self.new_date)
             return jsonify({'server_ping_status': 'true',
@@ -304,13 +313,12 @@ class GroupCmd:
             group_list = t_host.query.filter_by(group=self.group).all()
             group_in_host_list = []
             for groups in group_list:
-                group_dict = groups.__dict__
-                password_de = self.basesec.base_de(group_dict['host_password'])
-                conn = RemoteConnection(group_dict['host_ip'], group_dict['host_port'], group_dict['host_user'],
+                password_de = self.basesec.base_de(groups.host_password)
+                conn = RemoteConnection(groups.host_ip, groups.host_port, groups.host_user,
                                         password_de)
                 msg = conn.ssh_cmd(self.command)
                 msg_list.append(msg)
-                group_in_host_list.append(group_dict['host_ip'])
+                group_in_host_list.append(groups.host_ip)
             return jsonify({'group_ping_status': 'true',
                             'command_msg': msg_list,
                             'group_list': self.group,
@@ -334,8 +342,8 @@ class GroupListCmd(GroupCmd):
                 group_list = t_host.query.filter_by(group=group).all()
                 for groups in group_list:
                     group_dict = groups.__dict__
-                    password_de = self.basesec.base_de(group_dict['host_password'])
-                    conn = RemoteConnection(group_dict['host_ip'], group_dict['host_port'], group_dict['host_user'],
+                    password_de = self.basesec.base_de(groups.host_password)
+                    conn = RemoteConnection(groups.host_ip, groups.host_port, groups.host_user,
                                             password_de)
                     msg = conn.ssh_cmd(self.command)
                     msg_list.append(msg)
@@ -364,6 +372,9 @@ class ServerScript:
         self.com_ins = CommandLogSqlalh
         self.com_host = ','.join(self.id_list)
 
+        # 新增选择执行的系统用户
+        self.sys_user = request.values.get('sys_user', default=None)
+
     def sh_script(self):
         self.file.save(self.on_file)
         msg_list = []
@@ -371,18 +382,24 @@ class ServerScript:
         error_list = []
         for hid in self.id_list:
             host = t_host.query.filter_by(id=hid).first()
-            host_dict = host.__dict__
-            password_de = self.basesec.base_de(host_dict['host_password'])
+            # 查询系统用户信息
+            sys_user_info = t_sys_user.query.filter_by(alias=self.sys_user).first()
             try:
-                conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'],
-                                        password_de)
+                if sys_user_info.host_key:
+                    conn = RemoteConnectionKey(host.host_ip, host.host_port, sys_user_info.host_user,
+                                               sys_user_info.host_key)
+                else:
+                    password_de = self.basesec.base_de(sys_user_info.host_password)
+                    conn = RemoteConnection(host.host_ip, host.host_port, sys_user_info.host_user, password_de)
                 conn.put_file(self.on_file, self.to_file)
                 msg = conn.ssh_cmd("chmod +x %s && %s" % (self.to_file, self.to_file))
                 msg_list.append(msg)
-                alias_list.append(host_dict['alias'])
+                alias_list.append(host.alias)
                 conn.ssh_cmd("rm -f %s" % self.to_file)
             except IOError:
-                error_list.append(host_dict['alias'])
+                error_list.append(host.alias)
+            except paramiko.ssh_exception.AuthenticationException:
+                error_list.append(host.alias)
         if len(error_list) == 0:
             self.com_ins.ins_sql(self.com_name, '批量脚本', self.filename, self.com_host, '成功', None, self.new_date)
             self.local_cmd.cmd_shell("rm -f %s" % self.on_file)

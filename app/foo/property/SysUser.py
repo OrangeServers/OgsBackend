@@ -14,6 +14,15 @@ class SysUserList:
         self.ls_tool = ListTool()
 
     @property
+    def sys_user_name_list(self):
+        try:
+            user_name_list = t_sys_user.query.with_entities(t_sys_user.alias).all()
+            name_list = self.ls_tool.list_gather(user_name_list)
+            return jsonify({'msg': name_list})
+        except IOError:
+            return jsonify({"sys_user_list_msg": 'select list msg error'})
+
+    @property
     def sys_user_list(self):
         try:
             sys_user_id = request.values.get("id")

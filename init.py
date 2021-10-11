@@ -129,6 +129,7 @@ def orange_init_api():
 
     # 这里是系统用户接口
     app.add_url_rule('/server/sys/user/list', view_func=sys_user_list, methods=['POST', 'get'])
+    app.add_url_rule('/server/sys/user/name_list', view_func=sys_name_list, methods=['POST', 'get'])
     app.add_url_rule('/server/sys/user/list_all', view_func=sys_user_list_all, methods=['POST', 'get'])
     app.add_url_rule('/server/sys/user/add', view_func=sys_user_add, methods=['POST', 'get'])
     app.add_url_rule('/server/sys/user/update', view_func=sys_user_update, methods=['POST', 'get'])
