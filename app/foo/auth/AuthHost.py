@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_auth_host, t_group, t_acc_user, t_host, t_acc_group, db
+from app.sqldb.SqlAlchemyDB import t_auth_host, t_group, t_acc_user, t_sys_user, t_acc_group, db
 from app.sqldb.SqlAlchemyInsert import AuthHostSqlalh
 
 
@@ -33,6 +33,13 @@ class AuthHostList:
                 auth_list.append({'name': i, 'value': i})
             return jsonify({'msg': auth_list})
 
+        elif req_type == 'sys_user':
+            query_user_name = t_sys_user.query.with_entities(t_sys_user.alias).all()
+            user_name = self.lt.list_gather(query_user_name)
+            for i in user_name:
+                auth_list.append({'name': i, 'value': i})
+            return jsonify({'msg': auth_list})
+
     @property
     def auth_group_role(self):
         auth_name = request.values.get('name')
@@ -51,6 +58,8 @@ class AuthHostList:
                 user_name = self.lt.list_gather(query_user_name)
                 query_auth_msg = t_auth_host.query.filter_by(name=auth_name).first()
                 auth_msg = query_auth_msg.user
+                if auth_msg is None:
+                    auth_msg = ''
                 auth_msg_list = auth_msg.split(',')
                 for i in user_name:
                     if i in auth_msg_list:
@@ -67,6 +76,8 @@ class AuthHostList:
                 group_name = self.lt.list_gather(query_group_name)
                 query_auth_msg = t_auth_host.query.filter_by(name=auth_name).first()
                 auth_msg = query_auth_msg.user_group
+                if auth_msg is None:
+                    auth_msg = ''
                 auth_msg_list = auth_msg.split(',')
                 for i in group_name:
                     if i in auth_msg_list:
@@ -83,8 +94,28 @@ class AuthHostList:
                 group_name = self.lt.list_gather(query_group_name)
                 query_auth_msg = t_auth_host.query.filter_by(name=auth_name).first()
                 auth_msg = query_auth_msg.host_group
+                if auth_msg is None:
+                    auth_msg = ''
                 auth_msg_list = auth_msg.split(',')
                 for i in group_name:
+                    if i in auth_msg_list:
+                        auth_list.append({'name': i, 'value': i, 'selected': 'selected'})
+                    else:
+                        auth_list.append({'name': i, 'value': i})
+                return jsonify({'msg': auth_list})
+            except IOError:
+                return jsonify({'msg': 'fail'})
+
+        elif req_type == 'sys_user':
+            try:
+                query_user_name = t_sys_user.query.with_entities(t_sys_user.alias).all()
+                user_name = self.lt.list_gather(query_user_name)
+                query_auth_msg = t_auth_host.query.filter_by(name=auth_name).first()
+                auth_msg = query_auth_msg.sys_user
+                if auth_msg is None:
+                    auth_msg = ''
+                auth_msg_list = auth_msg.split(',')
+                for i in user_name:
                     if i in auth_msg_list:
                         auth_list.append({'name': i, 'value': i, 'selected': 'selected'})
                     else:
@@ -147,6 +178,7 @@ class AuthHostAdd:
         self.user = request.values.get('user')
         self.user_group = request.values.get('user_group')
         self.host_group = request.values.get('host_group')
+        self.sys_user = request.values.get('sys_user')
         self.remarks = request.values.get('remarks', type=str, default=None)
         self.auth_sqlalh = AuthHostSqlalh()
 
@@ -155,7 +187,8 @@ class AuthHostAdd:
         try:
             auth_chk = t_auth_host.query.filter_by(name=self.name).first()
             if auth_chk is None:
-                self.auth_sqlalh.ins_sql(self.name, self.user, self.user_group, self.host_group, self.remarks)
+                self.auth_sqlalh.ins_sql(self.name, self.user, self.user_group, self.host_group, self.sys_user,
+                                         self.remarks)
                 return jsonify({'auth_host_add_status': 'true'})
             else:
                 return jsonify({'auth_host_add_status': 'sel_fail'})
@@ -176,6 +209,7 @@ class AuthHostUpdate(AuthHostAdd):
             t_auth_host.query.filter_by(name=self.name).update({'name': self.name, 'user': self.user,
                                                                 'user_group': self.user_group,
                                                                 'host_group': self.host_group,
+                                                                'sys_user': self.sys_user,
                                                                 'remarks': self.remarks})
             db.session.commit()
             return jsonify({'auth_host_ping_status': 'true',

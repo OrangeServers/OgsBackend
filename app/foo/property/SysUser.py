@@ -2,7 +2,7 @@ import os
 import stat
 import time
 from flask import request, jsonify
-from app.sqldb.SqlAlchemyDB import t_sys_user, t_cz_log, db
+from app.sqldb.SqlAlchemyDB import t_sys_user, t_auth_host, db
 from app.sqldb.SqlAlchemyInsert import SysUserSqlalh, CzLogSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
@@ -16,8 +16,18 @@ class SysUserList:
     @property
     def sys_user_name_list(self):
         try:
-            user_name_list = t_sys_user.query.with_entities(t_sys_user.alias).all()
-            name_list = self.ls_tool.list_gather(user_name_list)
+            name = request.values.get('name')
+            sys_list = []
+            # user_name_list = t_sys_user.query.with_entities(t_sys_user.alias).all()
+            user_name_list = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
+            for i in user_name_list:
+                sys_user_list = i.sys_user
+                if sys_user_list:
+                    sys_user = sys_user_list.split(',')
+                    sys_list.append(sys_user)
+            name_list = list(set(self.ls_tool.list_gather(sys_list)))
+            print(name_list)
+
             return jsonify({'msg': name_list})
         except IOError:
             return jsonify({"sys_user_list_msg": 'select list msg error'})

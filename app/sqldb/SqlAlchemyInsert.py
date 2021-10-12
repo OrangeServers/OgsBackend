@@ -114,8 +114,9 @@ class AuthHostSqlalh:
         pass
 
     @staticmethod
-    def ins_sql(name, user, user_group, host_group, remarks):
-        sql = t_auth_host(name=name, user=user, user_group=user_group, host_group=host_group, remarks=remarks)
+    def ins_sql(name, user, user_group, host_group, sys_user, remarks):
+        sql = t_auth_host(name=name, user=user, user_group=user_group, host_group=host_group, sys_user=sys_user,
+                          remarks=remarks)
         db.session.add(sql)
         db.session.commit()
 

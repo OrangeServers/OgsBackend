@@ -133,6 +133,7 @@ class t_auth_host(db.Model):
     user = db.Column(db.String(255), nullable=True)
     user_group = db.Column(db.String(255), nullable=True)
     host_group = db.Column(db.String(255), nullable=True)
+    sys_user = db.Column(db.String(255), nullable=True)
     remarks = db.Column(db.String(255), nullable=True)
 
 
