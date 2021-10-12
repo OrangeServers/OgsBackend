@@ -16,6 +16,7 @@ class SysUserList:
     @property
     def sys_user_name_list(self):
         try:
+            # 还差根据用户组选出系统用户名
             name = request.values.get('name')
             sys_list = []
             # user_name_list = t_sys_user.query.with_entities(t_sys_user.alias).all()
