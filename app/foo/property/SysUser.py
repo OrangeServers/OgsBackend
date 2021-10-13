@@ -2,7 +2,7 @@ import os
 import stat
 import time
 from flask import request, jsonify
-from app.sqldb.SqlAlchemyDB import t_sys_user, t_auth_host, db
+from app.sqldb.SqlAlchemyDB import t_sys_user, t_auth_host, t_acc_user, db
 from app.sqldb.SqlAlchemyInsert import SysUserSqlalh, CzLogSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
@@ -18,16 +18,21 @@ class SysUserList:
         try:
             # 还差根据用户组选出系统用户名
             name = request.values.get('name')
-            sys_list = []
-            # user_name_list = t_sys_user.query.with_entities(t_sys_user.alias).all()
-            user_name_list = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
-            for i in user_name_list:
-                sys_user_list = i.sys_user
-                if sys_user_list:
-                    sys_user = sys_user_list.split(',')
-                    sys_list.append(sys_user)
-            name_list = list(set(self.ls_tool.list_gather(sys_list)))
 
+            user_name_list = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
+            grp_name = t_acc_user.query.filter_by(name=name).first()
+            user_gre_list = t_auth_host.query.filter(t_auth_host.user_group.like("%{}%".format(grp_name.group))).all()
+
+            def sys_list_get(msg_list):
+                sys_list = []
+                for i in msg_list:
+                    sys_user_list = i.sys_user
+                    if sys_user_list:
+                        sys_user = sys_user_list.split(',')
+                        sys_list.append(sys_user)
+                return list(set(self.ls_tool.list_gather(sys_list)))
+
+            name_list = list(set(sys_list_get(user_name_list) + sys_list_get(user_gre_list)))
             return jsonify({'msg': name_list})
         except IOError:
             return jsonify({"sys_user_list_msg": 'select list msg error'})
