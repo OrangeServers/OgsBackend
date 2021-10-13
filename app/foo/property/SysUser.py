@@ -27,7 +27,6 @@ class SysUserList:
                     sys_user = sys_user_list.split(',')
                     sys_list.append(sys_user)
             name_list = list(set(self.ls_tool.list_gather(sys_list)))
-            print(name_list)
 
             return jsonify({'msg': name_list})
         except IOError:
@@ -61,6 +60,20 @@ class SysUserList:
                             "sys_user_len_msg": 0})
 
 
+class SysUserAuto:
+    def __init__(self):
+        self.lt = ListTool()
+
+    def user_auth_auto_update(self):
+        try:
+            query_msg = self.lt.list_gather(t_sys_user.query.with_entities(t_sys_user.alias).all())
+            user_msg = ','.join(query_msg)
+            t_auth_host.query.filter_by(name='所有权限').update({'sys_user': user_msg})
+            return True
+        except IOError:
+            return False
+
+
 class SysUserDel:
     def __init__(self):
         # self.host_ip = request.values.get('host_ip')
@@ -69,6 +82,7 @@ class SysUserDel:
         self.cz_name = request.values.get('cz_name')
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
+        self.user_auto = SysUserAuto()
 
     @property
     def host_del(self):
@@ -80,6 +94,7 @@ class SysUserDel:
             db.session.delete(user_chk)
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '删除资产用户', self.id, '成功', None, self.new_date)
+            self.user_auto.user_auth_auto_update()
             return jsonify({'sys_user_del_status': 'true'})
         else:
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '删除资产用户', self.id, '失败', '系统内没有该用户', self.new_date)
@@ -102,6 +117,7 @@ class SysUserAdd:
         self.cz_name = request.values.get('cz_name')
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
+        self.user_auto = SysUserAuto()
 
     @property
     def host_add(self):
@@ -122,6 +138,7 @@ class SysUserAdd:
                 self.host_sqlalh.ins_sql(self.alias, self.host_user, password_en, key_path, self.agreement,
                                          self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '新增资产用户', self.host_user, '成功', None, self.new_date)
+                self.user_auto.user_auth_auto_update()
                 return jsonify({'sys_user_add_status': 'true'})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '新增资产用户', self.host_user, '失败', '该资产用户已存在', self.new_date)
@@ -139,11 +156,11 @@ class SysUserUpdate(SysUserAdd):
         super(SysUserUpdate, self).__init__()
         self.id = request.values.get('id')
         self.nums = request.values.get('nums')
+        self.user_auto = SysUserAuto()
 
     @property
     def update(self):
         query_msg = t_sys_user.query.filter_by(id=self.id).first()
-        print(query_msg)
         try:
             if self.host_password:
                 password_en = self.basesec.base_en(self.host_password)
@@ -162,6 +179,7 @@ class SysUserUpdate(SysUserAdd):
                                                            'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '修改资产用户', self.host_user, '成功', None, self.new_date)
+            self.user_auto.user_auth_auto_update()
             return jsonify({'sys_user_ping_status': 'true',
                             'sys_user_into_update': 'true'})
         except Exception:
