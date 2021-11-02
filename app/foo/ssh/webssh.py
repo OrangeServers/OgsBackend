@@ -64,7 +64,7 @@ class ParSshKey(ParSsh):
         self.port = p_port
         self.user = p_user
         self.key = paramiko.RSAKey.from_private_key_file(p_key)
-        self.trans = paramiko.Transport((self.host, self.port))  # 【坑1】 如果你使用 paramiko.SSHClient() cd后会回到连接的初始状态
+        self.trans = paramiko.Transport((self.host, self.port))
         self.trans.start_client()
         self.trans.auth_publickey(username=self.user, key=self.key)
         self.channel = self.trans.open_session()
