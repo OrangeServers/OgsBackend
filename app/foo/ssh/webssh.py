@@ -82,14 +82,14 @@ class OgsWebSocket:
         self.client_socket = request.environ.get('wsgi.websocket')  # type:WebSocket
 
     def web_ssh(self):
+        # 第一次接收数据转dict，新建ssh连接并核对用户名密码
+        msg_one_cli = self.client_socket.receive()
+        # json转dict
+        front_msg = json.loads(msg_one_cli)
+        query_host_msg = t_host.query.filter_by(alias=front_msg['hostname']).first()
+        # 查询系统用户信息
+        sys_user_info = t_sys_user.query.filter_by(alias=front_msg['username']).first()
         try:
-            # 第一次接收数据转dict，新建ssh连接并核对用户名密码
-            msg_one_cli = self.client_socket.receive()
-            # json转dict
-            front_msg = json.loads(msg_one_cli)
-            query_host_msg = t_host.query.filter_by(alias=front_msg['hostname']).first()
-            # 查询系统用户信息
-            sys_user_info = t_sys_user.query.filter_by(alias=front_msg['username']).first()
             # 查询主机信息和用户名密码，优先用key连接
             if sys_user_info.host_key:
                 conn = ParSshKey(query_host_msg.host_ip, query_host_msg.host_port, sys_user_info.host_user,
@@ -109,7 +109,7 @@ class OgsWebSocket:
             print('val is none')
         except paramiko.ssh_exception.SSHException:
             self.client_socket.send(
-                'Unable to connect to {}: [Errno 110] Connection timed out'.format(query_msg['host_ip']))
+                'Unable to connect to {}: [Errno 110] Connection timed out'.format(query_host_msg.host_ip))
             return {'status': 1}
 
 
