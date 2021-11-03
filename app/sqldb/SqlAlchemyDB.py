@@ -13,6 +13,10 @@ class t_host(db.Model):
     host_ip = db.Column(db.VARCHAR(16), nullable=False)
     # host_port字段, int类型 限制4 不为空
     host_port = db.Column(db.INT, nullable=False)
+    # host_user字段, varchar类型 限制20 不为空
+    host_user = db.Column(db.VARCHAR(20), nullable=False)
+    # host_password字段, varchar类型 限制20 不为空
+    host_password = db.Column(db.String(20), nullable=False)
     # group字段, varchar类型 限制20 可为空
     group = db.Column(db.String(20), nullable=True)
 
@@ -171,27 +175,27 @@ class t_settings(db.Model):
 
 if __name__ == '__main__':
     list_tool = ListTool()
-    results = User2.query.all()
+    results = t_acc_user.query.all()
     print(results)
     res = list_tool.dict_ls_reset_list(results)
     print(res)
-    results2 = User2.query.with_entities(User2.id).all()
+    results2 = t_acc_user.query.with_entities(t_acc_user.id).all()
     print(results2)
     results3 = list_tool.list_gather(results2)
     print(results3)
 
-    res_host = Host.query.offset(5).limit(5).all()
+    res_host = t_host.query.offset(5).limit(5).all()
     for host_ls in res_host:
         print(host_ls.id)
 
     print('需要的-----------------')
-    group_count = Host.query.with_entities(Host.group).all()
+    group_count = t_host.query.with_entities(t_host.group).all()
     print(t_group.query.with_entities(t_group.name).all())
     print(list_tool.list_rep_gather(group_count))
 
     print('-----------------')
     group_select = []
-    group_list = Host.query.filter_by(group='default').all()
+    group_list = t_host.query.filter_by(group='default').all()
     host_ip_list = []
     for groups in group_list:
         group_dict = groups.__dict__
@@ -199,7 +203,7 @@ if __name__ == '__main__':
         msg = ListTool.dict_reset_list(groups)
         group_select.append(msg)
         host_ip_list.append(group_dict['host_ip'])
-    print(Host.query.filter_by(group='default').count())
+    print(t_host.query.filter_by(group='default').count())
     print(ListTool.dict_ls_reset_list(group_list))
     print(host_ip_list)
     # 多条件查询
@@ -211,4 +215,4 @@ if __name__ == '__main__':
         t_login_log.login_time <= '2021-05-12 00:00:00').order_by(t_login_log.login_time.desc()).all()
 
     # 一个字段多值查询
-    test = Host.query.filter(Host.group.in_([1, 2, 3])).all()
+    test = t_host.query.filter(t_host.group.in_([1, 2, 3])).all()
