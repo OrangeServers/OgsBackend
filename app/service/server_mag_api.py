@@ -1,4 +1,4 @@
-from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd2, ServerListCmd, ServerDel, GroupCmd, \
+from app.foo.property.ServerManagement import ServerAdd, ServerList, ServerCmd, ServerListCmd, ServerDel, GroupCmd, \
     GroupList, ServerUpdate, ServerScript
 
 

@@ -38,7 +38,7 @@ class ServerList:
         try:
             host_id = request.values.get("id")
             query_msg = t_host.query.filter_by(id=host_id).first()
-            list_msg = self.lt.dict_reset_pop(query_msg)
+            list_msg = self.lt.dict_reset_pop_auto(query_msg)
             return jsonify(list_msg)
         except IOError:
             return jsonify({"host_list_msg": 'select list msg error'})
@@ -72,7 +72,7 @@ class ServerList:
             table_offset = (int(table_page) - 1) * 10
             auth_list = auth_list_get()
             query_msg = t_host.query.filter(t_host.group.in_(auth_list)).offset(table_offset).limit(table_limit).all()
-            list_msg = self.lt.dict_ls_reset_dict(query_msg)
+            list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
             len_msg = t_host.query.filter(t_host.group.in_(auth_list)).count()
             return jsonify({"host_status": 0,
                             "host_list_msg": list_msg,
@@ -146,8 +146,6 @@ class ServerAdd:
         self.alias = request.values.get('alias')
         self.host_ip = request.values.get('host_ip')
         self.host_port = request.values.get('host_port')
-        self.host_user = request.values.get('host_user')
-        self.host_password = request.values.get('host_password')
         self.group = request.values.get('group', type=str, default='default')
         self.host_sqlalh = HostSqlalh()
         self.basesec = BaseSec()
@@ -162,11 +160,9 @@ class ServerAdd:
         try:
             user_chk = t_host.query.filter_by(host_ip=self.host_ip).first()
             if user_chk is None:
-                password_en = self.basesec.base_en(self.host_password)
-                conn = RemoteConnection(self.host_ip, int(self.host_port), self.host_user, self.host_password)
-                conn.ssh_cmd('hostname')
-                self.host_sqlalh.ins_sql(self.alias, self.host_ip, self.host_port, self.host_user, password_en,
-                                         self.group)
+                # conn = RemoteConnection(self.host_ip, int(self.host_port), self.host_user, self.host_password)
+                # conn.ssh_cmd('hostname')
+                self.host_sqlalh.ins_sql(self.alias, self.host_ip, self.host_port, self.group)
                 self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '成功', None, self.new_date)
                 self.ser_auto.host_grp_auto_update(self.group)
                 return jsonify({'server_add_status': 'true'})
@@ -189,15 +185,12 @@ class ServerUpdate(ServerAdd):
     @property
     def update(self):
         try:
-            conn = RemoteConnection(self.host_ip, int(self.host_port), self.host_user, self.host_password)
-            conn.ssh_cmd('hostname')
+            # conn = RemoteConnection(self.host_ip, int(self.host_port), self.host_user, self.host_password)
+            # conn.ssh_cmd('hostname')
             try:
-                password_en = self.basesec.base_en(self.host_password)
                 up_host = t_host.query.filter_by(id=self.id).first()
-                t_host.query.filter_by(id=self.id).update({'alias': self.alias, 'host_ip': self.host_ip,
-                                                           'host_port': self.host_port,
-                                                           'host_user': self.host_user,
-                                                           'host_password': password_en, 'group': self.group})
+                t_host.query.filter_by(id=self.id).update(
+                    {'alias': self.alias, 'host_ip': self.host_ip, 'host_port': self.host_port, 'group': self.group})
                 db.session.commit()
                 self.cz_ins.ins_sql(self.cz_name, '资产操作', '变更资产', self.alias, '成功', None, self.new_date)
                 if up_host.group == self.group:
@@ -215,23 +208,7 @@ class ServerUpdate(ServerAdd):
             return jsonify({'server_ping_status': 'fail'})
 
 
-class ServerCmd(ServerAdd):
-    def __init__(self):
-        super(ServerCmd, self).__init__()
-        self.command = request.values.get('command')
-
-    @property
-    def sh_cmd(self):
-        try:
-            conn = RemoteConnection(self.host_ip, int(self.host_port), self.host_user, self.host_password)
-            msg = conn.ssh_cmd(self.command)
-            return jsonify({'server_ping_status': 'true',
-                            'command_msg': msg})
-        except IOError:
-            return jsonify({'server_ping_status': 'fail'})
-
-
-class ServerCmd2:
+class ServerCmd:
     def __init__(self):
         # self.host_ip = request.values.get('host_ip')
         self.host_id = request.values.get('host_id')
@@ -253,7 +230,7 @@ class ServerCmd2:
             return jsonify({'server_ping_status': 'fail'})
 
 
-class ServerListCmd(ServerCmd2):
+class ServerListCmd(ServerCmd):
     def __init__(self):
         super(ServerListCmd, self).__init__()
         self.host_id = request.values.getlist('host_id')

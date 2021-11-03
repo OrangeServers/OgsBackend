@@ -24,14 +24,6 @@ class ListTool:
         msg.pop(0)
         return msg
 
-    # bug待修复
-    @staticmethod
-    def dict_reset_pop(one_dict):
-        msg = one_dict.__dict__
-        msg.pop('_sa_instance_state')
-        msg.pop('host_password')
-        return msg
-
     @staticmethod
     def dict_reset_pop_auto(one_dict, pop=None):
         msg = one_dict.__dict__
@@ -51,16 +43,6 @@ class ListTool:
         return msg
 
     # 查询的dict组传list内dict组 针对查询主机列表
-    @staticmethod
-    def dict_ls_reset_dict(ls_dict):
-        msg = []
-        for ds in ls_dict:
-            ds_ls = ds.__dict__
-            ds_ls.pop('_sa_instance_state')
-            ds_ls.pop('host_password')
-            msg.append(ds_ls)
-        return msg
-
     @staticmethod
     def dict_ls_reset_dict_auto(ls_dict, pop=None):
         msg = []

@@ -13,10 +13,6 @@ class t_host(db.Model):
     host_ip = db.Column(db.VARCHAR(16), nullable=False)
     # host_port字段, int类型 限制4 不为空
     host_port = db.Column(db.INT, nullable=False)
-    # host_user字段, varchar类型 限制20 不为空
-    host_user = db.Column(db.VARCHAR(20), nullable=False)
-    # host_password字段, varchar类型 限制20 不为空
-    host_password = db.Column(db.String(20), nullable=False)
     # group字段, varchar类型 限制20 可为空
     group = db.Column(db.String(20), nullable=True)
 

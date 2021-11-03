@@ -8,10 +8,8 @@ class HostSqlalh:
         pass
 
     @staticmethod
-    # def ins_sql(alias, host_ip, host_port, host_user, host_password, group=None):
-    def ins_sql(alias, host_ip, host_port, host_user, host_password, group):
-        sql = t_host(alias=alias, host_ip=host_ip, host_port=host_port, host_user=host_user,
-                     host_password=host_password,
+    def ins_sql(alias, host_ip, host_port, group):
+        sql = t_host(alias=alias, host_ip=host_ip, host_port=host_port,
                      group=group)
         db.session.add(sql)
         db.session.commit()
