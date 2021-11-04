@@ -123,12 +123,13 @@ CREATE TABLE `t_cron` (
   `job_week` varchar(20) NOT NULL,
   `job_hosts` varchar(255) DEFAULT NULL,
   `job_groups` varchar(255) NOT NULL,
+  `job_sys_user` varchar(255) NOT NULL,
   `job_command` varchar(255) NOT NULL,
   `job_status` varchar(20) NOT NULL,
   `job_remarks` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `job_name` (`job_name`) USING HASH
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -197,7 +198,7 @@ CREATE TABLE `t_line_chart` (
   `login_count` int(255) DEFAULT NULL,
   `user_count` int(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=106 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -218,7 +219,7 @@ CREATE TABLE `t_login_log` (
   `login_reason` varchar(30) DEFAULT NULL,
   `login_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=227 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=228 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -283,4 +284,4 @@ CREATE TABLE `t_user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-11-03 14:59:39
+-- Dump completed on 2021-11-04 15:13:50
