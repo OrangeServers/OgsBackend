@@ -1,32 +1,36 @@
 from flask import request, jsonify
 from app.cron.CronSettings import scheduler, app
-from app.sqldb.SqlAlchemyDB import t_host, t_auth_host, t_cron, db
+from app.sqldb.SqlAlchemyDB import t_host, t_auth_host, t_sys_user, t_cron, db
 from app.sqldb.SqlAlchemyInsert import CronSqlalh
 from app.tools.basesec import BaseSec
-from app.tools.shellcmd import RemoteConnection
+from app.tools.shellcmd import RemoteConnection, RemoteConnectionKey
 from app.tools.SqlListTool import ListTool
 from app.tools.at import Log
 
 scheduler.start()
 
 
-def cron_list_cmd(job_name, host_id: list, command: str):
+def cron_list_cmd(job_name, job_sys_user, host_id: list, command: str):
     basesec = BaseSec()
     msg_list = []
     alias_list = []
     error_list = []
+    sys_user_info = t_sys_user.query.filter_by(alias=job_sys_user).first()
     for hid in host_id:
         host = t_host.query.filter_by(id=hid).first()
-        host_dict = host.__dict__
-        password_de = basesec.base_de(host_dict['host_password'])
         try:
-            conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'],
-                                    password_de)
+            if sys_user_info.host_key:
+                conn = RemoteConnectionKey(host.host_ip, host.host_port, sys_user_info.host_user,
+                                           sys_user_info.host_key)
+            else:
+                password_de = basesec.base_de(sys_user_info.host_password)
+                conn = RemoteConnection(host.host_ip, host.host_port, host.host_user,
+                                        password_de)
             msg = conn.ssh_cmd(command)
             msg_list.append(msg)
-            alias_list.append(host_dict['alias'])
+            alias_list.append(host.alias)
         except IOError:
-            error_list.append(host_dict['alias'])
+            error_list.append(host.alias)
     if len(error_list) == 0:
         Log.logger.info('job %s cron run.... [ run_msg=%s run_ip%s ]' % (job_name, msg_list, alias_list))
     else:
@@ -48,12 +52,14 @@ class OgsCron:
         job_week = request.values.get('job_week', default="*")
         job_hosts = request.values.get('job_hosts', default=None)
         job_groups = request.values.get('job_groups')
+        job_sys_user = request.values.get('job_sys_user')
         job_command = request.values.get('job_command')
         job_remarks = request.values.get('job_remarks', default=None)
         try:
             job_name_query = t_cron.query.filter_by(job_name=self.job_name).with_hint(t_cron, "force index(job_name)",
                                                                                       'mysql').first()
             if job_name_query is None:
+                print(job_sys_user)
                 id_list = []
                 id_list2 = []
                 id_list_rep = ''
@@ -69,10 +75,10 @@ class OgsCron:
                         id_list2.append(host_list2)
                         id_list_rep = list(set(self.lt.list_gather(id_list) + self.lt.list_gather(id_list2)))
                 scheduler.add_job(cron_list_cmd, 'cron', week=job_week, month=job_month, day=job_day, hour=job_hour,
-                                  minute=job_minute, args=[self.job_name, id_list_rep, job_command],
+                                  minute=job_minute, args=[self.job_name, job_sys_user, id_list_rep, job_command],
                                   id=self.job_name)
                 self.cron_ins.ins_sql(self.job_name, job_minute, job_hour, job_day, job_month, job_week, job_hosts,
-                                      job_groups,
+                                      job_groups, job_sys_user,
                                       job_command, '启动', job_remarks)
                 return jsonify({'cron_add_status': 'true'})
             else:
