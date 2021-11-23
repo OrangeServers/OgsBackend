@@ -45,8 +45,7 @@ class SysUserSqlalh:
     @staticmethod
     def ins_sql(alias, host_user, host_password, host_key, agreement, remarks):
         sql = t_sys_user(alias=alias, host_user=host_user, host_password=host_password, host_key=host_key,
-                         agreement=agreement, nums=0,
-                         remarks=remarks)
+                         agreement=agreement, remarks=remarks)
         db.session.add(sql)
         db.session.commit()
 

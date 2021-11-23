@@ -28,7 +28,6 @@ class t_sys_user(db.Model):
     host_password = db.Column(db.String(25), nullable=True)
     host_key = db.Column(db.String(50), nullable=True)
     agreement = db.Column(db.String(10), nullable=False)
-    nums = db.Column(db.INT, nullable=False)
     remarks = db.Column(db.String(30), nullable=True)
 
 

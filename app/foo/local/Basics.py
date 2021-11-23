@@ -127,18 +127,6 @@ class DataSumAll:
             except IOError:
                 return jsonify({'update_table_sum': 'fail'})
 
-        elif self.sum_name == 'sys_user':
-            try:
-                query_sys_user = t_sys_user.query.with_entities(t_sys_user.host_user).all()
-                sys_user_list = self.lt.list_rep_gather(query_sys_user)
-                for i in sys_user_list:
-                    sys_user_count = t_host.query.filter_by(host_user=i).count()
-                    t_sys_user.query.filter_by(host_user=i).update({'nums': sys_user_count})
-                    db.session.commit()
-                    return jsonify({'update_table_sum': 'true'})
-            except IOError:
-                return jsonify({'update_table_sum': 'fail'})
-
 
 class GetUserImage:
     def __init__(self):
