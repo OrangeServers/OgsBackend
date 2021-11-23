@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.6.21-70.0, for Linux (x86_64)
 --
--- Host: localhost    Database: orange
+-- Host: localhost    Database: orange1
 -- ------------------------------------------------------
 -- Server version	5.6.21-70.0-log
 
@@ -32,6 +32,15 @@ CREATE TABLE `apscheduler_jobs` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `apscheduler_jobs`
+--
+
+LOCK TABLES `apscheduler_jobs` WRITE;
+/*!40000 ALTER TABLE `apscheduler_jobs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `apscheduler_jobs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `t_acc_group`
 --
 
@@ -46,6 +55,15 @@ CREATE TABLE `t_acc_group` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `t_acc_group`
+--
+
+LOCK TABLES `t_acc_group` WRITE;
+/*!40000 ALTER TABLE `t_acc_group` DISABLE KEYS */;
+/*!40000 ALTER TABLE `t_acc_group` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `t_acc_user`
@@ -68,6 +86,16 @@ CREATE TABLE `t_acc_user` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `t_acc_user`
+--
+
+LOCK TABLES `t_acc_user` WRITE;
+/*!40000 ALTER TABLE `t_acc_user` DISABLE KEYS */;
+INSERT INTO `t_acc_user` VALUES (1,'管理员','admin','admin','YWRtaW4=','admin','admin@orange.com','超级管理员');
+/*!40000 ALTER TABLE `t_acc_user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `t_auth_host`
 --
 
@@ -87,6 +115,15 @@ CREATE TABLE `t_auth_host` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `t_auth_host`
+--
+
+LOCK TABLES `t_auth_host` WRITE;
+/*!40000 ALTER TABLE `t_auth_host` DISABLE KEYS */;
+/*!40000 ALTER TABLE `t_auth_host` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `t_command_log`
 --
 
@@ -103,8 +140,17 @@ CREATE TABLE `t_command_log` (
   `com_reason` varchar(255) DEFAULT NULL,
   `com_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=113 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `t_command_log`
+--
+
+LOCK TABLES `t_command_log` WRITE;
+/*!40000 ALTER TABLE `t_command_log` DISABLE KEYS */;
+/*!40000 ALTER TABLE `t_command_log` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `t_cron`
@@ -133,6 +179,15 @@ CREATE TABLE `t_cron` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `t_cron`
+--
+
+LOCK TABLES `t_cron` WRITE;
+/*!40000 ALTER TABLE `t_cron` DISABLE KEYS */;
+/*!40000 ALTER TABLE `t_cron` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `t_cz_log`
 --
 
@@ -153,6 +208,15 @@ CREATE TABLE `t_cz_log` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `t_cz_log`
+--
+
+LOCK TABLES `t_cz_log` WRITE;
+/*!40000 ALTER TABLE `t_cz_log` DISABLE KEYS */;
+/*!40000 ALTER TABLE `t_cz_log` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `t_group`
 --
 
@@ -169,6 +233,15 @@ CREATE TABLE `t_group` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `t_group`
+--
+
+LOCK TABLES `t_group` WRITE;
+/*!40000 ALTER TABLE `t_group` DISABLE KEYS */;
+/*!40000 ALTER TABLE `t_group` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `t_host`
 --
 
@@ -182,8 +255,17 @@ CREATE TABLE `t_host` (
   `host_port` int(5) NOT NULL,
   `group` varchar(20) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `t_host`
+--
+
+LOCK TABLES `t_host` WRITE;
+/*!40000 ALTER TABLE `t_host` DISABLE KEYS */;
+/*!40000 ALTER TABLE `t_host` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `t_line_chart`
@@ -198,8 +280,17 @@ CREATE TABLE `t_line_chart` (
   `login_count` int(255) DEFAULT NULL,
   `user_count` int(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=111 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `t_line_chart`
+--
+
+LOCK TABLES `t_line_chart` WRITE;
+/*!40000 ALTER TABLE `t_line_chart` DISABLE KEYS */;
+/*!40000 ALTER TABLE `t_line_chart` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `t_login_log`
@@ -219,8 +310,17 @@ CREATE TABLE `t_login_log` (
   `login_reason` varchar(30) DEFAULT NULL,
   `login_time` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=228 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=240 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `t_login_log`
+--
+
+LOCK TABLES `t_login_log` WRITE;
+/*!40000 ALTER TABLE `t_login_log` DISABLE KEYS */;
+/*!40000 ALTER TABLE `t_login_log` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `t_settings`
@@ -240,6 +340,16 @@ CREATE TABLE `t_settings` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Dumping data for table `t_settings`
+--
+
+LOCK TABLES `t_settings` WRITE;
+/*!40000 ALTER TABLE `t_settings` DISABLE KEYS */;
+INSERT INTO `t_settings` VALUES (1,'default',3,'off','orange');
+/*!40000 ALTER TABLE `t_settings` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `t_sys_user`
 --
 
@@ -253,27 +363,19 @@ CREATE TABLE `t_sys_user` (
   `host_password` varchar(25) DEFAULT NULL,
   `host_key` varchar(50) DEFAULT NULL,
   `agreement` varchar(10) NOT NULL,
-  `nums` int(5) NOT NULL,
   `remarks` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `t_user`
+-- Dumping data for table `t_sys_user`
 --
 
-DROP TABLE IF EXISTS `t_user`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `t_user` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(24) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(24) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `mail` varchar(24) COLLATE utf8mb4_unicode_ci NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
+LOCK TABLES `t_sys_user` WRITE;
+/*!40000 ALTER TABLE `t_sys_user` DISABLE KEYS */;
+/*!40000 ALTER TABLE `t_sys_user` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -284,4 +386,4 @@ CREATE TABLE `t_user` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-11-04 15:13:50
+-- Dump completed on 2021-11-23 15:36:13
