@@ -106,7 +106,7 @@ class OgsWebSocket:
                 # print(res_msg)
                 self.client_socket.send(res_msg)
         except TypeError:
-            print('val is none')
+            return {'status': 2}
         except paramiko.ssh_exception.SSHException:
             self.client_socket.send(
                 'Unable to connect to {}: [Errno 110] Connection timed out'.format(query_host_msg.host_ip))
