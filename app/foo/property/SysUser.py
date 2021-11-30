@@ -40,9 +40,15 @@ class SysUserList:
     @property
     def sys_user_list(self):
         try:
-            sys_user_id = request.values.get("id")
-            query_msg = t_sys_user.query.filter_by(id=sys_user_id).first()
-            list_msg = self.ls_tool.dict_reset_pop_auto(query_msg)
+            user_type = request.values.get('type')
+            if user_type == 'user_id':
+                sys_user_id = request.values.get("id")
+                query_msg = t_sys_user.query.filter_by(id=sys_user_id).first()
+                list_msg = self.ls_tool.dict_reset_pop_auto(query_msg)
+            elif user_type == 'user_alias':
+                sys_user_alias = request.values.get("alias")
+                query_msg = t_sys_user.query.filter_by(alias=sys_user_alias).first()
+                list_msg = self.ls_tool.dict_reset_pop_auto(query_msg)
             return jsonify(list_msg)
         except IOError:
             return jsonify({"sys_user_list_msg": 'select list msg error'})

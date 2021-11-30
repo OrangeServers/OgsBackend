@@ -36,10 +36,17 @@ class ServerList:
     @property
     def server_list(self):
         try:
-            host_id = request.values.get("id")
-            query_msg = t_host.query.filter_by(id=host_id).first()
-            list_msg = self.lt.dict_reset_pop_auto(query_msg)
-            return jsonify(list_msg)
+            host_type = request.values.get('type')
+            if host_type == 'host_id':
+                host_id = request.values.get("id")
+                query_msg = t_host.query.filter_by(id=host_id).first()
+                list_msg = self.lt.dict_reset_pop_auto(query_msg)
+                return jsonify(list_msg)
+            elif host_type == 'host_alias':
+                host_alias = request.values.get("alias")
+                query_msg = t_host.query.filter_by(alias=host_alias).first()
+                list_msg = self.lt.dict_reset_pop_auto(query_msg)
+                return jsonify(list_msg)
         except IOError:
             return jsonify({"host_list_msg": 'select list msg error'})
 
