@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title> WebSSH </title>
+    <link href="static/img/bitbug_favicon.ico" rel="icon" type="image/png">
+    <link href="static/css/bootstrap.min.css" rel="stylesheet" type="text/css"/>
+    <link href="static/css/xterm.min.css" rel="stylesheet" type="text/css"/>
+    <link href="static/css/fullscreen.min.css" rel="stylesheet" type="text/css"/>
+
+
+    <link rel="stylesheet" href="static/layui/css/layui.css" media="all">
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <link rel="stylesheet" href="static/layui/layuimod/dtree/dtree.css">
+    <link rel="stylesheet" href="static/layui/layuimod/dtree/font/dtreefont.css">
+    <link rel="stylesheet" href="static/css/shell.css">
+
+    <style>
+      .row {
+        margin-top: 15px;
+        margin-bottom: 10px;
+      }
+
+      .container {
+        margin-top: 20px;
+      }
+
+      .btn {
+        margin-top: 15px;
+      }
+
+      .btn-danger {
+        margin-left: 5px;
+      }
+      {% if font.family %}
+      @font-face {
+        font-family: '{{ font.family }}';
+        src: url('{{ font.url }}');
+      }
+
+      body {
+        font-family: '{{ font.family }}';
+      }
+      {% end %}
+    </style>
+  </head>
+  <body>
+
+  <div class="layui-layout layui-layout-admin">
+
+
+    <div style="margin: 0 auto; max-width: 100%;">
+        <div class="layui-row">
+
+            <div class="layui-col-xs6 layui-col-md12" style="background-color: #23262E">
+                <img src="/image/juzi11.png" style="margin-left: 20px; height: 30px; width: 30px; float: left">
+                <p style="margin-left: 80px; color: #fff; font-size: 23px">Orange Shell</p>
+            </div>
+
+            <div class="layui-col-xs3" style="background-color: #EBEEF0; height: 680px">
+
+                <label class="orange-lab">选择登录用户: </label>
+                <select id="orange_sys-user" name="quiz1" class="layui-btn-primary">
+                </select>
+                <div id="orange-fx1" class="demo-tree" style="margin-left: 10px;"></div>
+                <!--            <p style="text-align:center; margin-top: 610px">Copyright @ 2021-04-09 by Xuzhiwei Version1.0</p>-->
+
+            </div>
+            <div class="layui-col-xs9" style="height: 680px">
+
+                <div class="layui-tab layui-tab-card" lay-filter="demo" lay-allowclose="true">
+                    <ul class="layui-tab-title">
+                    </ul>
+                    <div class="layui-tab-content" style="height: 600px">
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <!--    <div class="layui-footer" style="margin-left: 0px!important;">-->
+    <!--    &lt;!&ndash; 底部固定区域 &ndash;&gt;-->
+    <!--    <p >Copyright @ 2021-04-09 by Xuzhiwei Version1.0</p>-->
+    <!--  </div>-->
+
+</div>
+
+    <div id="waiter" style="display: none;" hidden="hidden"> Connecting ... </div>
+
+
+
+    <div class="container form-container" style="display: none" hidden="hidden">
+      <form id="connect" action="" method="post" enctype="multipart/form-data"{% if debug %} novalidate{% end %}>
+        <div class="row">
+          <div class="col">
+            <label for="Hostname">Hostname</label>
+            <input class="form-control" type="text" id="hostname" name="hostname" value="" required>
+          </div>
+          <div class="col">
+            <label for="Port">Port</label>
+            <input class="form-control" type="number" id="port" name="port" placeholder="22" value="" min=1 max=65535>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="Username">Username</label>
+            <input class="form-control" type="text" id="username" name="username" value="" required>
+          </div>
+          <div class="col">
+            <label for="Password">Password</label>
+            <input class="form-control" type="password" id="password" name="password" value="">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="Username">Private Key</label>
+            <input class="form-control" type="file" id="privatekey" name="privatekey" value="">
+          </div>
+          <div class="col">
+            <label for="Passphrase">Passphrase</label>
+            <input class="form-control" type="password" id="passphrase" name="passphrase" value="">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="totp">Totp (time-based one-time password)</label>
+            <input class="form-control" type="password" id="totp" name="totp" value="">
+          </div>
+          <div class="col">
+          </div>
+        </div>
+        <input type="hidden" id="term" name="term" value="xterm-256color">
+        {% module xsrf_form_html() %}
+        <button type="submit" class="btn btn-primary">Connect</button>
+        <button type="reset" class="btn btn-danger">Reset</button>
+      </form>
+        <button class="btn btn-primary" onclick="con_199()">连接199</button>
+    </div>
+
+    <div class="container">
+      <div id="status" style="color: red;"></div>
+      <div id="terminal"></div>
+    </div>
+
+    <script src="static/js/jquery.min.js"></script>
+    <script src="static/js/popper.min.js"></script>
+    <script src="static/js/bootstrap.min.js"></script>
+    <script src="static/js/xterm.min.js"></script>
+    <script src="static/js/xterm-addon-fit.min.js"></script>
+    <script src="static/js/main.js"></script>
+
+
+    <script src="static/layui/layui.js" charset="utf-8"></script>
+    <script src="static/js/jquery.cookie.min.js"></script>
+    <script src="static/js/shell.js"></script>
+  <script>
+        function con_199() {
+            wssh.connect('10.0.1.199', 22, 'root', 'jlb123')
+        }
+
+  </script>
+  </body>
+</html>
