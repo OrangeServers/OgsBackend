@@ -61,7 +61,7 @@ class ServerList:
                 return self.server_list_all
             else:
                 query_msg = t_host.query.filter_by(group=group_name).offset(table_offset).limit(table_limit).all()
-                list_msg = self.lt.dict_ls_reset_dict(query_msg)
+                list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
                 len_msg = t_host.query.filter_by(group=group_name).count()
                 return jsonify({"host_status": 0,
                                 "host_list_msg": list_msg,
