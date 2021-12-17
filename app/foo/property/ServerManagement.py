@@ -376,10 +376,16 @@ class ServerScript:
                     password_de = self.basesec.base_de(sys_user_info.host_password)
                     conn = RemoteConnection(host.host_ip, host.host_port, sys_user_info.host_user, password_de)
                 conn.put_file(self.on_file, self.to_file)
-                msg = conn.ssh_cmd("chmod +x %s && %s" % (self.to_file, self.to_file))
-                msg_list.append(msg)
-                alias_list.append(host.alias)
-                conn.ssh_cmd("rm -f %s" % self.to_file)
+                put_type = request.values.get('put_type')
+                if put_type == 'send':
+                    return jsonify({'server_ping_status': 'true',
+                                    'command_msg': ['上传成功'],
+                                    'hostname_list': ['文件上传']})
+                elif put_type == 'sh':
+                    msg = conn.ssh_cmd("chmod +x %s && %s" % (self.to_file, self.to_file))
+                    msg_list.append(msg)
+                    alias_list.append(host.alias)
+                    conn.ssh_cmd("rm -f %s" % self.to_file)
             except IOError:
                 error_list.append(host.alias)
             except paramiko.ssh_exception.AuthenticationException:
