@@ -74,6 +74,9 @@ class ServerList:
     @property
     def server_list_all(self):
         try:
+            # 模拟获取cookie
+            cok = request.cookies.get('username')
+            print(cok)
             table_page = request.values.get('page')
             table_limit = request.values.get('limit')
             table_offset = (int(table_page) - 1) * 10

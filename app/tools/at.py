@@ -25,6 +25,17 @@ def ogs_runtime_test(func):
     return wrapper
 
 
+# 鉴权装饰器
+def ogs_auth_token(func):
+    def wrapper(*args, **kwargs):
+        xw = {'ogs_token': '1a2b3c4d5e6f7g'}
+        tk = request.cookies.get('ogs_token')
+        if tk != xw['ogs_token']:
+            return {'code': 0, 'msg': '未授权访问'}
+
+    return wrapper()
+
+
 def ogs_runtime(text):
     def decorator(func):
         @functools.wraps(func)
