@@ -13,14 +13,14 @@ from app.tools.at import Log
 class AccUserList:
     def __init__(self):
         self.lt = ListTool()
-        self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
 
     @property
     def acc_user_alias(self):
         acc_user_name = request.values.get("name")
         log_msg = 'req_body: [ name=%s ] /account/user/alias' % acc_user_name
         try:
-            user_alias = self.cnres.get_red(acc_user_name + '_alias')
+            user_alias = self.ords.conn.get(acc_user_name + '_alias')
             return jsonify({'alias': user_alias})
         except IOError:
             Log.logger.info(log_msg + ' \"fail select list msg error\"')
@@ -51,7 +51,7 @@ class AccUserList:
         log_msg = 'req_body: [ name=%s ] /account/user/auth_list' % acc_user_name
         try:
             user_role = acc_user_name + '_role'
-            role = self.cnres.get_red(user_role)
+            role = self.ords.conn.get(user_role)
             return jsonify({'usrole': role})
         except IOError:
             Log.logger.info(log_msg + ' \"fail select list msg error\"')
@@ -84,7 +84,7 @@ class CheckMail:
     def __init__(self):
         self.email = request.values.get('email')
         self.sendmail = SendMail(MAIL_CONF['form_mail'], MAIL_CONF['password'], MAIL_CONF['smtp_server'])
-        self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
 
     def send(self):
         mail_chk = t_acc_user.query.filter_by(mail=self.email).first()
@@ -92,8 +92,8 @@ class CheckMail:
         if not mail_chk:
             mail_verification = ''.join(random.sample(string.digits, 4))
             msg = ("您在OrangeServer上注册账号的的验证码是   %s   验证码有效期3分钟，请在3分钟内完成注册" % mail_verification)
-            self.cnres.set_red(self.email, mail_verification)
-            self.cnres.exp_red(self.email, 180)
+            self.ords.conn.set(self.email, mail_verification)
+            self.ords.conn.expire(self.email, 180)
             self.sendmail.send(self.email, 'OrangeServer', '注册验证码', msg)
             return jsonify({'send_status': 'true'})
         else:
@@ -125,7 +125,7 @@ class UserLogin(CheckUser):
         self.base = BaseSec()
         self.login_ins = LoginLogSqlalh
 
-        self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
 
     def login_dl(self):
         log_msg = 'req_body: [ username=%s, password=%s ] /account/login_dl' % (self.username, self.password)
@@ -140,7 +140,7 @@ class UserLogin(CheckUser):
                 query_user_role = t_acc_user.query.filter_by(name=self.username).first()
                 user_role = query_user_role.__dict__
                 role_name = self.username + '_role'
-                self.cnres.set_red(role_name, user_role['usrole'])
+                self.ords.conn.set(role_name, user_role['usrole'])
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功',
                                        None, self.new_date)
                 return jsonify({'chk_status': 'true'})
@@ -161,7 +161,7 @@ class UserRegister(UserLogin):
         super(UserRegister, self).__init__()
         self.email = request.values.get('email')
         self.verification = request.values.get('verification')
-        self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
         self.reg_ins = AccUserSqlalh
 
     def register(self):
@@ -171,12 +171,12 @@ class UserRegister(UserLogin):
         mail_chk = t_acc_user.query.filter_by(mail=self.email)
         if not user_chk is None:
             if not mail_chk is None:
-                if not self.cnres.get_red(self.email) is None:
-                    if self.verification == self.cnres.get_red(self.email):
+                if not self.ords.conn.get(self.email) is None:
+                    if self.verification == self.ords.conn.get(self.email):
                         # self.user_sqlalh.ins_sql(self.username, self.base.base_en(self.password), self.email)
                         self.reg_ins.ins_sql(None, self.username, self.base.base_en(self.password), 'develop',
                                              self.email, None)
-                        self.cnres.set_red(self.username + '_alias', 'develop')
+                        self.ords.conn.set(self.username + '_alias', 'develop')
                         return jsonify({
                             'chk_user_status': 'true',
                             'verification': 'true',
@@ -222,7 +222,7 @@ class AccUserDel:
         # 新增记录日志相关
         self.cz_name = request.values.get('cz_name')
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
         self.cz_ins = CzLogSqlalh()
         self.use_auto = UserAuto()
 
@@ -236,7 +236,7 @@ class AccUserDel:
             db.session.delete(user_chk)
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '删除用户', self.id, '成功', None, self.new_date)
-            self.cnres.del_red(alias_name + '_alias')
+            self.ords.del_red(alias_name + '_alias')
             self.use_auto.user_grp_auto_update(user_chk.group)
             return jsonify({'acc_user_del_status': 'true'})
         else:
@@ -256,7 +256,7 @@ class AccUserAdd:
         self.remarks = request.values.get('remarks', type=str, default=None)
         self.user_ins = AccUserSqlalh()
         self.basesec = BaseSec()
-        self.cnres = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
         # 新增记录日志相关
         self.cz_name = request.values.get('cz_name')
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -276,7 +276,7 @@ class AccUserAdd:
                 self.user_ins.ins_sql(self.alias, self.name, password_en, self.usrole, self.mail, self.group,
                                       self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '成功', None, self.new_date)
-                self.cnres.set_red(self.name + '_alias', self.alias)
+                self.ords.conn.set(self.name + '_alias', self.alias)
                 self.use_auto.user_grp_auto_update(self.group)
                 return jsonify({'acc_user_add_status': 'true'})
             else:
@@ -314,9 +314,9 @@ class AccUserUpdate(AccUserAdd):
                                                            'mail': self.mail, 'remarks': self.remarks})
             db.session.commit()
             role_name = self.name + '_role'
-            self.cnres.set_red(role_name, self.usrole)
+            self.ords.conn.set(role_name, self.usrole)
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '变更用户', self.name, '成功', None, self.new_date)
-            self.cnres.set_red(self.name + '_alias', self.alias)
+            self.ords.conn.set(self.name + '_alias', self.alias)
             if up_user.group == self.group:
                 self.use_auto.user_grp_auto_update(self.group)
             else:

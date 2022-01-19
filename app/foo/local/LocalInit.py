@@ -9,7 +9,7 @@ from app.tools.at import ogs_runtime, Log
 
 class AppInit:
     def __init__(self):
-        self.res = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
         self.mysql_list = [t_host, t_group, t_line_chart, t_acc_user, t_login_log, t_acc_group, t_command_log,
                            t_auth_host, t_sys_user]
         self.Log = Log
@@ -17,7 +17,7 @@ class AppInit:
     def con_init(self):
         self.Log.logger.info('check connection redis............')
         self.Log.logger.info('check connection mysql............')
-        if self.res.status_red() is False:
+        if self.ords.conn.ping() is False:
             self.Log.logger.error('error! redis is not connection')
             sys.exit(1)
         for i in self.mysql_list:
