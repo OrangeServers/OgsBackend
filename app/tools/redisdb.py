@@ -15,7 +15,7 @@ class ConnRedis:
         self.port = port
         self.max_connections = max_connections
         self.Pool = redis.ConnectionPool(host=self.host, port=self.port, db=10, max_connections=self.max_connections, decode_responses=True)
-        self.conn = redis.Redis(connection_pool=self.Pool)
+        self.conn = redis.StrictRedis(connection_pool=self.Pool)
 
 
 if __name__ == "__main__":
