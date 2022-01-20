@@ -95,6 +95,8 @@ def orange_init_api():
     app.add_url_rule('/account/login_dl', view_func=acc_login_dl, methods=['POST', 'get'])
     app.add_url_rule('/account/chk_username', view_func=acc_chk_username, methods=['POST', 'get'])
     app.add_url_rule('/account/com_register', view_func=acc_com_register, methods=['POST', 'get'])
+    app.add_url_rule('/account/login_dl2', view_func=acc_login_dl2, methods=['POST', 'get'])
+    app.add_url_rule('/account/login_check', view_func=acc_login_check, methods=['POST', 'get'])
 
     # 用户登录日志
     app.add_url_rule('/account/login/logs', view_func=acc_login_logs, methods=['POST', 'get'])

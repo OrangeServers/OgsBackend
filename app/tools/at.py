@@ -2,6 +2,7 @@ import datetime, functools, logging
 from logging import handlers
 from enum import Enum, unique
 from flask import request
+from app.tools.redisdb import ConnRedis, REDIS_CONF
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyDB import t_acc_user, t_auth_host
 
@@ -28,12 +29,14 @@ def ogs_runtime_test(func):
 # 鉴权装饰器
 def ogs_auth_token(func):
     def wrapper(*args, **kwargs):
-        xw = {'ogs_token': '1a2b3c4d5e6f7g'}
+        ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
         tk = request.cookies.get('ogs_token')
-        if tk != xw['ogs_token']:
+        if ords.conn.get(str(tk)):
+            return {'code': 0, 'msg': '登录成功'}
+        else:
             return {'code': 3, 'msg': '未授权访问'}
 
-    return wrapper()
+    return wrapper
 
 
 def ogs_runtime(text):

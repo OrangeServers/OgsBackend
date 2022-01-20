@@ -1,4 +1,4 @@
-import random, string, time
+import random, string, time, hashlib, os
 from flask import request, jsonify, session
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
@@ -144,6 +144,50 @@ class UserLogin(CheckUser):
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功',
                                        None, self.new_date)
                 return jsonify({'chk_status': 'true'})
+            else:
+                self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
+                                       '密码错误', self.new_date)
+                Log.logger.info(log_msg + ' \"fail password_status\"')
+                return jsonify({'password_status': 'fail'})
+        else:
+            self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
+                                   '用户名无效', self.new_date)
+            Log.logger.info(log_msg + ' \"fail user_status\"')
+            return jsonify({'user_status': 'fail'})
+
+
+class UserLogin2(CheckUser):
+    def __init__(self):
+        super(UserLogin2, self).__init__()
+        self.password = request.values.get('password')
+        self.user_nw_ip = request.headers.get('X-Real-IP')
+        self.user_agent = request.headers.get('User-Agent')
+        self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        self.base = BaseSec()
+        self.login_ins = LoginLogSqlalh
+
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+
+    def login_dl(self):
+        log_msg = 'req_body: [ username=%s, password=%s ] /account/login_dl' % (self.username, self.password)
+        user_info = t_acc_user.query.filter_by(name=self.username).first()
+        user_gw_ip = request.values.get('user_gw_ip')
+        user_gw_cs = request.values.get('user_gw_cs')
+        if user_info is not None:
+            password_de = self.base.base_de(user_info.password)
+            if self.username == user_info.name and self.password == password_de:
+                # 每个用户登录生成一个session
+                # session["user"] = self.username
+                query_user_role = t_acc_user.query.filter_by(name=self.username).first()
+                user_role = query_user_role.__dict__
+                user_token = hashlib.sha1(os.urandom(24)).hexdigest()
+                role_name = self.username + '_role'
+                self.ords.conn.set(user_token, self.username)
+                self.ords.conn.expire(user_token, 21600)
+                self.ords.conn.set(role_name, user_role['usrole'])
+                self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功',
+                                       None, self.new_date)
+                return jsonify({'code': '0', 'token': user_token})
             else:
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
                                        '密码错误', self.new_date)
