@@ -40,12 +40,12 @@ class LocalDirList(LocalShell):
             dir2_path = (self.dir2path % self.group_dir)
             dir2 = self.cmdlist_shell(dir2_path)
             return jsonify({
-                'status': 'sucessfuly',
+                'code': 0,
                 "msg": dir2
             })
         else:
             return jsonify({
-                'status': 'error',
+                'code': 121,
                 'msg': ("server is not group_dir %s !" % self.group_dir)
             })
 
@@ -60,23 +60,23 @@ class LocalDirList(LocalShell):
                 try:
                     msg_out = LocalShell().cmdlist_shell(rsync_dir)
                     return jsonify({
-                        'status': 'sucessfuly',
+                        'code': 0,
                         # 'msg': ("rsync %s %s is ok!" % (self.group_dir, project_dir))
                         'msg': msg_out
                     })
                 except Exception:
                     return jsonify({
-                        'status': 'fail',
+                        'code': 121,
                         'msg': ("rsync %s %s is fail!" % (self.group_dir, project_dir))
                     })
             else:
                 return jsonify({
-                    'status': 'error',
+                    'code': 121,
                     'msg': ("server is not project_dir %s !" % project_dir)
                 })
         else:
             return jsonify({
-                'status': 'error',
+                'code': 121,
                 'msg': ("server is not group_dir %s !" % self.group_dir)
             })
 

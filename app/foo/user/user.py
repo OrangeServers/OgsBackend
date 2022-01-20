@@ -70,14 +70,13 @@ class AccUserList:
             query_msg = t_acc_user.query.offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg, 'password')
             len_msg = t_acc_user.query.count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "acc_user_list_msg": list_msg,
                             "msg": "",
                             "acc_user_len_msg": len_msg})
         except IOError:
             Log.logger.info(log_msg + ' \"fail select list msg error\"')
-            return jsonify({"acc_user_list_msg": 'select list msg error',
-                            "acc_user_len_msg": 0})
+            return jsonify({'code': 201})
 
 
 class CheckMail:
@@ -271,13 +270,13 @@ class AccUserDel:
             db.session.delete(user_chk)
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '删除用户', self.id, '成功', None, self.new_date)
-            self.ords.del_red(alias_name + '_alias')
+            self.ords.conn.delete(alias_name + '_alias')
             self.use_auto.user_grp_auto_update(user_chk.group)
-            return jsonify({'acc_user_del_status': 'true'})
+            return jsonify({'code': 0})
         else:
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '删除用户', self.id, '失败', '系统内没有该用户', self.new_date)
             Log.logger.info(log_msg + ' \"fail acc_user_del_status\"')
-            return jsonify({'acc_user_del_status': 'fail'})
+            return jsonify({'code': 111})
 
 
 class AccUserAdd:
@@ -313,20 +312,19 @@ class AccUserAdd:
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '成功', None, self.new_date)
                 self.ords.conn.set(self.name + '_alias', self.alias)
                 self.use_auto.user_grp_auto_update(self.group)
-                return jsonify({'acc_user_add_status': 'true'})
+                return jsonify({'code': 'true'})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '失败', '该用户已存在', self.new_date)
                 Log.logger.info(log_msg + ' \"fail sel_fail\"')
-                return jsonify({'acc_user_add_status': 'sel_fail'})
+                return jsonify({'code': 111})
         except IOError:
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '失败', '连接数据库错误', self.new_date)
             Log.logger.info(log_msg + ' \"fail con_fail\"')
-            return jsonify({'acc_user_add_status': 'con_fail'})
-        except Exception as e:
-            print(e)
+            return jsonify({'code': 201})
+        except Exception:
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '失败', '未知错误', self.new_date)
             Log.logger.info(log_msg + ' \"fail\"')
-            return jsonify({'acc_user_add_status': 'fail'})
+            return jsonify({'code': 2})
 
 
 class AccUserUpdate(AccUserAdd):

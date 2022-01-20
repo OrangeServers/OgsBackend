@@ -16,9 +16,10 @@ class AccGroupList:
             group_id = request.values.get("id")
             query_msg = t_acc_group.query.filter_by(id=group_id).first()
             list_msg = self.lt.dict_reset_pop_auto(query_msg)
+            list_msg.update({'code': 0})
             return jsonify(list_msg)
         except IOError:
-            return jsonify({"acc_group_list_msg": 'select list msg error'})
+            return jsonify({"code": 201})
 
     @property
     def group_name_list(self):
@@ -39,7 +40,7 @@ class AccGroupList:
             query_msg = t_acc_group.query.offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
             len_msg = t_acc_group.query.count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "group_list_msg": list_msg,
                             "msg": "",
                             "group_len_msg": len_msg})
@@ -67,10 +68,10 @@ class AccGroupDel:
                 db.session.delete(i)
                 db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '删除用户组', self.id, '成功', None, self.new_date)
-            return jsonify({'acc_group_del_status': 'true'})
+            return jsonify({'code': 0})
         else:
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '删除用户组', self.id, '失败', '系统内没有该用户组', self.new_date)
-            return jsonify({'acc_group_del_status': 'fail'})
+            return jsonify({'code': 111})
 
 
 class AccGroupAdd:
@@ -91,17 +92,16 @@ class AccGroupAdd:
             if user_chk is None:
                 self.host_sqlalh.ins_sql(self.name, self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '成功', None, self.new_date)
-                return jsonify({'acc_group_add_status': 'true'})
+                return jsonify({'code': 0})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '失败', '该用户组已存在', self.new_date)
-                return jsonify({'acc_group_add_status': 'sel_fail'})
+                return jsonify({'code': 111})
         except IOError:
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '失败', '连接数据库错误', self.new_date)
-            return jsonify({'acc_group_add_status': 'con_fail'})
-        except Exception as e:
-            print(e)
+            return jsonify({'code': 201})
+        except Exception:
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '失败', '未知错误', self.new_date)
-            return jsonify({'acc_group_add_status': 'fail'})
+            return jsonify({'code': 2})
 
 
 class AccGroupUpdate(AccGroupAdd):
@@ -116,8 +116,7 @@ class AccGroupUpdate(AccGroupAdd):
             t_acc_group.query.filter_by(id=self.id).update(
                 {'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
-            return jsonify({'acc_group_ping_status': 'true',
-                            'acc_group_into_update': 'true'})
+            return jsonify({'code': 0})
         except Exception:
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '修改用户组', self.name, '失败', '连接数据库错误', self.new_date)
-            return jsonify({'acc_group_into_update': 'fail'})
+            return jsonify({'code': 2})

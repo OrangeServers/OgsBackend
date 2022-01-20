@@ -232,11 +232,11 @@ class ServerCmd:
             password_de = self.basesec.base_de(host_dict['host_password'])
             conn = RemoteConnection(host_dict['host_ip'], host_dict['host_port'], host_dict['host_user'], password_de)
             msg = conn.ssh_cmd(self.command)
-            return jsonify({'server_ping_status': 'true',
+            return jsonify({'code': 0,
                             'command_msg': msg,
                             'hostname_list': self.host_id})
         except IOError:
-            return jsonify({'server_ping_status': 'fail'})
+            return jsonify({'code': 112})
 
 
 class ServerListCmd(ServerCmd):
@@ -276,12 +276,12 @@ class ServerListCmd(ServerCmd):
                 error_list.append(host.alias)
         if len(error_list) == 0:
             self.com_ins.ins_sql(self.com_name, '批量命令', self.command, self.com_host, '成功', None, self.new_date)
-            return jsonify({'server_ping_status': 'true',
+            return jsonify({'code': 0,
                             'command_msg': msg_list,
                             'hostname_list': alias_list})
         else:
             self.com_ins.ins_sql(self.com_name, '批量命令', self.command, self.com_host, '失败', '连接主机失败', self.new_date)
-            return jsonify({'server_ping_status': 'fail',
+            return jsonify({'code': 112,
                             'error_list': error_list,
                             'msg': 'host connect to timeout!'})
 
@@ -305,12 +305,12 @@ class GroupCmd:
                 msg = conn.ssh_cmd(self.command)
                 msg_list.append(msg)
                 group_in_host_list.append(groups.host_ip)
-            return jsonify({'group_ping_status': 'true',
+            return jsonify({'code': 0,
                             'command_msg': msg_list,
                             'group_list': self.group,
                             'hostname_list': group_in_host_list})
         except IOError:
-            return jsonify({'group_ping_status': 'fail'})
+            return jsonify({'code': 112})
 
 
 class GroupListCmd(GroupCmd):
@@ -335,10 +335,10 @@ class GroupListCmd(GroupCmd):
                     msg_list.append(msg)
                 msg_dict = {group: msg_list}
                 gop_list_msg.append(msg_dict)
-            return jsonify({'server_ping_status': 'true',
+            return jsonify({'code': 0,
                             'command_msg': gop_list_msg})
         except IOError:
-            return jsonify({'server_ping_status': 'fail'})
+            return jsonify({'code': 112})
 
 
 # 脚本上传接口
@@ -395,12 +395,12 @@ class ServerScript:
         if len(error_list) == 0:
             self.com_ins.ins_sql(self.com_name, '批量脚本', self.filename, self.com_host, '成功', None, self.new_date)
             self.local_cmd.cmd_shell("rm -f %s" % self.on_file)
-            return jsonify({'server_ping_status': 'true',
+            return jsonify({'code': 0,
                             'command_msg': msg_list,
                             'hostname_list': alias_list})
         else:
             self.com_ins.ins_sql(self.com_name, '批量脚本', self.filename, self.com_host, '失败', '连接主机失败', self.new_date)
-            return jsonify({'server_ping_status': 'fail',
+            return jsonify({'code': 112,
                             'error_list': error_list,
                             'msg': 'host connect to timeout!'})
 
