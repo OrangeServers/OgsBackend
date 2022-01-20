@@ -25,9 +25,9 @@ class CountUpdate:
         try:
             if self.query_msg is None:
                 self.line_ins.ins_sql(self.query_login_count, self.query_user_count, self.now_date)
-            return jsonify({'status': 'true'})
+            return jsonify({'code': 0})
         except IOError:
-            return jsonify({'status': 'fail'})
+            return jsonify({'code': 201})
 
     @property
     def count_update_all(self):
@@ -39,9 +39,9 @@ class CountUpdate:
                     {'login_count': self.query_login_count, 'user_count': self.query_user_count,
                      'chart_date': self.now_date})
                 db.session.commit()
-            return jsonify({'status': 'true'})
+            return jsonify({'code': 0})
         except IOError:
-            return jsonify({'status': 'fail'})
+            return jsonify({'code': 201})
 
 
 class CountList:
@@ -62,7 +62,7 @@ class CountList:
                 'container_len': 0
             })
         except IOError:
-            return jsonify({'code': 1})
+            return jsonify({'code': 201})
 
     @property
     def server_chart_count_all(self):
@@ -78,9 +78,9 @@ class CountList:
                 query_msg = i.__dict__
                 login_list.append({'date': str(query_msg['chart_date']), 'value': query_msg['login_count']})
                 user_list.append({'date': str(query_msg['chart_date']), 'value': query_msg['user_count']})
-            return jsonify({'login_msg': login_list, 'user_msg': user_list})
+            return jsonify({'code': 0, 'login_msg': login_list, 'user_msg': user_list})
         except IOError:
-            jsonify({'status': 'fail'})
+            jsonify({'code': 201})
 
 
 class DataList:

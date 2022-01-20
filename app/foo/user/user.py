@@ -95,10 +95,10 @@ class CheckMail:
             self.ords.conn.set(self.email, mail_verification)
             self.ords.conn.expire(self.email, 180)
             self.sendmail.send(self.email, 'OrangeServer', '注册验证码', msg)
-            return jsonify({'send_status': 'true'})
+            return jsonify({'code': 0})
         else:
             Log.logger.info(log_msg + ' \"fail\"')
-            return jsonify({'send_status': 'fail'})
+            return jsonify({'code': 104})
 
 
 class CheckUser:
@@ -110,9 +110,9 @@ class CheckUser:
         log_msg = 'req_body: [ username=%s ] /account/chk_username' % self.username
         if user_chk:
             Log.logger.info(log_msg + ' \"fail\"')
-            return jsonify({'chk_user_status': 'fail'})
+            return jsonify({'code': 103})
         else:
-            return jsonify({'chk_user_status': 'true'})
+            return jsonify({'code': 0})
 
 
 class UserLogin(CheckUser):
@@ -143,17 +143,17 @@ class UserLogin(CheckUser):
                 self.ords.conn.set(role_name, user_role['usrole'])
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功',
                                        None, self.new_date)
-                return jsonify({'chk_status': 'true'})
+                return jsonify({'code': 0})
             else:
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
                                        '密码错误', self.new_date)
                 Log.logger.info(log_msg + ' \"fail password_status\"')
-                return jsonify({'password_status': 'fail'})
+                return jsonify({'code': 102})
         else:
             self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
                                    '用户名无效', self.new_date)
             Log.logger.info(log_msg + ' \"fail user_status\"')
-            return jsonify({'user_status': 'fail'})
+            return jsonify({'code': 101})
 
 
 class UserLogin2(CheckUser):
@@ -221,28 +221,19 @@ class UserRegister(UserLogin):
                         self.reg_ins.ins_sql(None, self.username, self.base.base_en(self.password), 'develop',
                                              self.email, None)
                         self.ords.conn.set(self.username + '_alias', 'develop')
-                        return jsonify({
-                            'chk_user_status': 'true',
-                            'verification': 'true',
-                            'chk_mail_status': 'true'
-                        })
+                        return jsonify({'code': 0})
                     else:
                         Log.logger.info(log_msg + '\"fail verification\"')
-                        return jsonify({
-                            'verification': 'fail',
-                        })
+                        return jsonify({'code': 106})
                 else:
                     Log.logger.info(log_msg + ' \"fail chk_verification\"')
-                    return jsonify({'chk_verification': 'fail'})
+                    return jsonify({'code': 105})
             else:
                 Log.logger.info(log_msg + ' \"fail chk_mail_status\"')
-                return jsonify({
-                    'chk_user_status': 'true',
-                    'chk_mail_status': 'fail'
-                })
+                return jsonify({'code': 104})
         else:
             Log.logger.info(log_msg + ' \"fail chk_user_status\"')
-            return jsonify({'chk_user_status': 'fail'})
+            return jsonify({'code': 103})
 
 
 class UserAuto:

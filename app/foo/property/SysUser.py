@@ -33,7 +33,7 @@ class SysUserList:
                 return list(set(self.ls_tool.list_gather(sys_list)))
 
             name_list = list(set(sys_list_get(user_name_list) + sys_list_get(user_gre_list)))
-            return jsonify({'msg': name_list})
+            return jsonify({'code': 0, 'msg': name_list})
         except IOError:
             return jsonify({"sys_user_list_msg": 'select list msg error'})
 
@@ -45,13 +45,16 @@ class SysUserList:
                 sys_user_id = request.values.get("id")
                 query_msg = t_sys_user.query.filter_by(id=sys_user_id).first()
                 list_msg = self.ls_tool.dict_reset_pop_auto(query_msg)
+                list_msg.update({'code': 0})
+                return jsonify(list_msg)
             elif user_type == 'user_alias':
                 sys_user_alias = request.values.get("alias")
                 query_msg = t_sys_user.query.filter_by(alias=sys_user_alias).first()
                 list_msg = self.ls_tool.dict_reset_pop_auto(query_msg)
-            return jsonify(list_msg)
+                list_msg.update({'code': 0})
+                return jsonify(list_msg)
         except IOError:
-            return jsonify({"sys_user_list_msg": 'select list msg error'})
+            return jsonify({"code": 201})
 
     @property
     def sys_user_list_all(self):
@@ -62,7 +65,7 @@ class SysUserList:
             query_msg = t_sys_user.query.offset(table_offset).limit(table_limit).all()
             list_msg = self.ls_tool.dict_ls_reset_dict_auto(query_msg, 'host_password')
             len_msg = t_sys_user.query.count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "sys_user_list_msg": list_msg,
                             "msg": "",
                             "sys_user_len_msg": len_msg})
@@ -106,10 +109,10 @@ class SysUserDel:
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '删除资产用户', self.id, '成功', None, self.new_date)
             self.user_auto.user_auth_auto_update()
-            return jsonify({'sys_user_del_status': 'true'})
+            return jsonify({'code': 0})
         else:
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '删除资产用户', self.id, '失败', '系统内没有该用户', self.new_date)
-            return jsonify({'sys_user_del_status': 'fail'})
+            return jsonify({'code': 111})
 
 
 class SysUserAdd:
@@ -150,16 +153,16 @@ class SysUserAdd:
                                          self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '新增资产用户', self.host_user, '成功', None, self.new_date)
                 self.user_auto.user_auth_auto_update()
-                return jsonify({'sys_user_add_status': 'true'})
+                return jsonify({'code': 0})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '新增资产用户', self.host_user, '失败', '该资产用户已存在', self.new_date)
-                return jsonify({'sys_user_add_status': 'sel_fail'})
+                return jsonify({'code': 111})
         except IOError:
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '新增资产用户', self.host_user, '失败', '连接数据库失败', self.new_date)
-            return jsonify({'sys_user_add_status': 'con_fail'})
+            return jsonify({'code': 201})
         except Exception:
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '新增资产用户', self.host_user, '失败', '未知错误', self.new_date)
-            return jsonify({'sys_user_add_status': 'fail'})
+            return jsonify({'code': 2})
 
 
 class SysUserUpdate(SysUserAdd):
@@ -186,13 +189,11 @@ class SysUserUpdate(SysUserAdd):
             t_sys_user.query.filter_by(id=self.id).update({'alias': self.alias, 'host_user': self.host_user,
                                                            'host_password': password_en,
                                                            'agreement': self.agreement,
-                                                           'host_key': key_path,
-                                                           'nums': self.nums, 'remarks': self.remarks})
+                                                           'host_key': key_path, 'remarks': self.remarks})
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '修改资产用户', self.host_user, '成功', None, self.new_date)
             self.user_auto.user_auth_auto_update()
-            return jsonify({'sys_user_ping_status': 'true',
-                            'sys_user_into_update': 'true'})
+            return jsonify({'code': 0})
         except Exception:
             self.cz_ins.ins_sql(self.cz_name, '资产用户操作', '修改资产用户', self.host_user, '失败', '连接数据失败', self.new_date)
-            return jsonify({'sys_user_into_update': 'fail'})
+            return jsonify({'code': 2})

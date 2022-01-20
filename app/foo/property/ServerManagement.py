@@ -31,7 +31,7 @@ class ServerList:
                 'container_len': 0
             })
         except IOError:
-            return jsonify({'code': 1})
+            return jsonify({'code': 201})
 
     @property
     def server_list(self):
@@ -41,14 +41,16 @@ class ServerList:
                 host_id = request.values.get("id")
                 query_msg = t_host.query.filter_by(id=host_id).first()
                 list_msg = self.lt.dict_reset_pop_auto(query_msg)
+                list_msg.update({'code': 0})
                 return jsonify(list_msg)
             elif host_type == 'host_alias':
                 host_alias = request.values.get("alias")
                 query_msg = t_host.query.filter_by(alias=host_alias).first()
                 list_msg = self.lt.dict_reset_pop_auto(query_msg)
+                list_msg.update({'code': 0})
                 return jsonify(list_msg)
         except IOError:
-            return jsonify({"host_list_msg": 'select list msg error'})
+            return jsonify({"code": 201})
 
     @property
     def server_list_page(self):
@@ -63,13 +65,12 @@ class ServerList:
                 query_msg = t_host.query.filter_by(group=group_name).offset(table_offset).limit(table_limit).all()
                 list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
                 len_msg = t_host.query.filter_by(group=group_name).count()
-                return jsonify({"host_status": 0,
+                return jsonify({"code": 0,
                                 "host_list_msg": list_msg,
                                 "msg": "",
                                 "host_len_msg": len_msg})
         except IOError:
-            return jsonify({"host_list_msg": 'select list msg error',
-                            "host_len_msg": 0})
+            return jsonify({"code": 201})
 
     @property
     def server_list_all(self):
@@ -84,13 +85,12 @@ class ServerList:
             query_msg = t_host.query.filter(t_host.group.in_(auth_list)).offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
             len_msg = t_host.query.filter(t_host.group.in_(auth_list)).count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "host_list_msg": list_msg,
                             "msg": "",
                             "host_len_msg": len_msg})
         except IOError:
-            return jsonify({"host_list_msg": 'select list msg error',
-                            "host_len_msg": 0})
+            return jsonify({'code': 201})
 
 
 class GroupList:
@@ -145,10 +145,10 @@ class ServerDel:
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产操作', '删除资产', self.id, '成功', None, self.new_date)
             self.ser_auto.host_grp_auto_update(user_chk.group)
-            return jsonify({'server_del_status': 'true'})
+            return jsonify({'code': 0})
         else:
             self.cz_ins.ins_sql(self.cz_name, '资产操作', '删除资产', self.id, '失败', '系统内没有该资产', self.new_date)
-            return jsonify({'server_del_status': 'fail'})
+            return jsonify({'code': 2})
 
 
 class ServerAdd:
@@ -175,16 +175,16 @@ class ServerAdd:
                 self.host_sqlalh.ins_sql(self.alias, self.host_ip, self.host_port, self.group)
                 self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '成功', None, self.new_date)
                 self.ser_auto.host_grp_auto_update(self.group)
-                return jsonify({'server_add_status': 'true'})
+                return jsonify({'code': 0})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '失败', '该资产已存在', self.new_date)
-                return jsonify({'server_add_status': 'sel_fail'})
+                return jsonify({'code': 111})
         except IOError:
             self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '失败', '连接主机失败', self.new_date)
-            return jsonify({'server_add_status': 'con_fail'})
+            return jsonify({'code': 201})
         except Exception:
             self.cz_ins.ins_sql(self.cz_name, '资产操作', '新增资产', self.alias, '失败', '未知错误', self.new_date)
-            return jsonify({'server_add_status': 'fail'})
+            return jsonify({'code': 2})
 
 
 class ServerUpdate(ServerAdd):
@@ -208,14 +208,13 @@ class ServerUpdate(ServerAdd):
                 else:
                     self.ser_auto.host_grp_auto_update(up_host.group)
                     self.ser_auto.host_grp_auto_update(self.group)
-                return jsonify({'server_ping_status': 'true',
-                                'server_into_update': 'true'})
+                return jsonify({'code': 0})
             except Exception:
                 self.cz_ins.ins_sql(self.cz_name, '资产操作', '变更资产', self.alias, '失败', '连接数据库错误', self.new_date)
-                return jsonify({'server_into_update': 'fail'})
+                return jsonify({'code': 201})
         except Exception:
             self.cz_ins.ins_sql(self.cz_name, '资产操作', '变更资产', self.alias, '失败', '未知错误', self.new_date)
-            return jsonify({'server_ping_status': 'fail'})
+            return jsonify({'code': 2})
 
 
 class ServerCmd:
