@@ -16,13 +16,12 @@ class LoginLogs:
             query_msg = t_login_log.query.order_by(t_login_log.login_time.desc()).offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
             len_msg = t_login_log.query.count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "login_list_msg": list_msg,
                             "msg": "",
                             "login_len_msg": len_msg})
         except IOError:
-            return jsonify({"login_list_msg": 'select list msg error',
-                            "login_len_msg": 0})
+            return jsonify({'code': 201})
 
     def get_select_logs(self):
         login_jg_date = request.values.get('login_jg_date')
@@ -31,13 +30,12 @@ class LoginLogs:
                 self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
             len_msg = t_login_log.query.filter(t_login_log.login_name.like("%{}%".format(login_jg_date))).count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "login_list_msg": list_msg,
                             "msg": "",
                             "login_len_msg": len_msg})
         except IOError:
-            return jsonify({"login_list_msg": 'select list msg error',
-                            "login_len_msg": 0})
+            return jsonify({"code": 201})
 
     def get_date_logs(self):
         login_jg_date = request.values.get('login_jg_date')
@@ -50,13 +48,12 @@ class LoginLogs:
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'login_time')
             len_msg = t_login_log.query.filter(t_login_log.login_time >= msg[0]).filter(
                 t_login_log.login_time <= msg[1]).order_by(t_login_log.login_time.desc()).count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "login_list_msg": list_msg,
                             "msg": "",
                             "login_len_msg": len_msg})
         except IOError:
-            return jsonify({"login_list_msg": 'select list msg error',
-                            "login_len_msg": 0})
+            return jsonify({"code": 201})
 
 
 class CommandLogs:
@@ -71,13 +68,12 @@ class CommandLogs:
             query_msg = t_command_log.query.order_by(t_command_log.com_time.desc()).offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
             len_msg = t_command_log.query.count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "command_list_msg": list_msg,
                             "msg": "",
                             "command_len_msg": len_msg})
         except IOError:
-            return jsonify({"command_list_msg": 'select list msg error',
-                            "command_len_msg": 0})
+            return jsonify({"code": 201})
 
     def get_select_logs(self):
         com_jg_date = request.values.get('com_jg_date')
@@ -86,13 +82,12 @@ class CommandLogs:
                 self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
             len_msg = t_command_log.query.filter(t_command_log.com_name.like("%{}%".format(com_jg_date))).count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "command_list_msg": list_msg,
                             "msg": "",
                             "command_len_msg": len_msg})
         except IOError:
-            return jsonify({"command_list_msg": 'select list msg error',
-                            "command_len_msg": 0})
+            return jsonify({"code": 201})
 
     def get_date_logs(self):
         com_jg_date = request.values.get('com_jg_date')
@@ -105,13 +100,12 @@ class CommandLogs:
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
             len_msg = t_command_log.query.filter(t_command_log.com_time >= msg[0]).filter(
                 t_command_log.com_time <= msg[1]).order_by(t_command_log.com_time.desc()).count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "command_list_msg": list_msg,
                             "msg": "",
                             "command_len_msg": len_msg})
         except IOError:
-            return jsonify({"command_list_msg": 'select list msg error',
-                            "command_len_msg": 0})
+            return jsonify({"code": 201})
 
 
 class CzLogs:
@@ -126,13 +120,12 @@ class CzLogs:
             query_msg = t_cz_log.query.order_by(t_cz_log.cz_time.desc()).offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'cz_time')
             len_msg = t_cz_log.query.count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "cz_list_msg": list_msg,
                             "msg": "",
                             "cz_len_msg": len_msg})
         except IOError:
-            return jsonify({"cz_list_msg": 'select list msg error',
-                            "cz_len_msg": 0})
+            return jsonify({"code": 201})
 
     def get_select_logs(self):
         cz_jg_date = request.values.get('cz_jg_date')
@@ -141,13 +134,12 @@ class CzLogs:
                 self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
             len_msg = t_cz_log.query.filter(t_cz_log.cz_name.like("%{}%".format(cz_jg_date))).count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "cz_list_msg": list_msg,
                             "msg": "",
                             "cz_len_msg": len_msg})
         except IOError:
-            return jsonify({"cz_list_msg": 'select list msg error',
-                            "cz_len_msg": 0})
+            return jsonify({"code": 201})
 
     def get_date_logs(self):
         cz_jg_date = request.values.get('cz_jg_date')
@@ -160,10 +152,9 @@ class CzLogs:
             list_msg = self.lt.time_ls_dict_que(query_msg, 'id', 'com_time')
             len_msg = t_cz_log.query.filter(t_cz_log.cz_time >= msg[0]).filter(
                 t_cz_log.cz_time <= msg[1]).order_by(t_cz_log.cz_time.desc()).count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "cz_list_msg": list_msg,
                             "msg": "",
                             "cz_len_msg": len_msg})
         except IOError:
-            return jsonify({"cz_list_msg": 'select list msg error',
-                            "cz_len_msg": 0})
+            return jsonify({"code": 201})

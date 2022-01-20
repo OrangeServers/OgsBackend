@@ -143,7 +143,7 @@ class AuthHostList:
             query_msg = t_auth_host.query.offset(table_offset).limit(table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
             len_msg = t_auth_host.query.count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "auth_host_list_msg": list_msg,
                             "msg": "",
                             "auth_host_len_msg": len_msg})
@@ -165,11 +165,11 @@ class AuthHostDel:
             if self.name != '所有权限':
                 db.session.delete(auth_chk)
                 db.session.commit()
-                return jsonify({'auth_host_del_status': 'true'})
+                return jsonify({'code': 0})
             elif self.name == '所有权限':
-                return jsonify({'auth_host_del_status': 'auth fail'})
+                return jsonify({'code': 131})
         else:
-            return jsonify({'auth_host_del_status': 'fail'})
+            return jsonify({'code': 2})
 
 
 class AuthHostAdd:
@@ -189,13 +189,13 @@ class AuthHostAdd:
             if auth_chk is None:
                 self.auth_sqlalh.ins_sql(self.name, self.user, self.user_group, self.host_group, self.sys_user,
                                          self.remarks)
-                return jsonify({'auth_host_add_status': 'true'})
+                return jsonify({'code': 0})
             else:
-                return jsonify({'auth_host_add_status': 'sel_fail'})
+                return jsonify({'code': 132})
         except IOError:
-            return jsonify({'auth_host_add_status': 'con_fail'})
+            return jsonify({'code': 201})
         except Exception:
-            return jsonify({'auth_host_add_status': 'fail'})
+            return jsonify({'code': 2})
 
 
 class AuthHostUpdate(AuthHostAdd):
@@ -212,7 +212,6 @@ class AuthHostUpdate(AuthHostAdd):
                                                                 'sys_user': self.sys_user,
                                                                 'remarks': self.remarks})
             db.session.commit()
-            return jsonify({'auth_host_ping_status': 'true',
-                            'auth_host_into_update': 'true'})
+            return jsonify({'code': 0})
         except Exception:
-            return jsonify({'auth_host_into_update': 'fail'})
+            return jsonify({'code': 2})

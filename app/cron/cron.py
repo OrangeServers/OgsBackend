@@ -80,14 +80,13 @@ class OgsCron:
                 self.cron_ins.ins_sql(self.job_name, job_minute, job_hour, job_day, job_month, job_week, job_hosts,
                                       job_groups, job_sys_user,
                                       job_command, '启动', job_remarks)
-                return jsonify({'cron_add_status': 'true'})
+                return jsonify({'code': 0})
             else:
-                return jsonify({'cron_add_status': 'sel_fail'})
+                return jsonify({'code': 141})
         except IOError:
-            return jsonify({'cron_add_status': 'con_fail'})
-        except Exception as e:
-            print(e)
-            return jsonify({'cron_add_status': 'fail'})
+            return jsonify({'code': 201})
+        except Exception:
+            return jsonify({'code': 2})
 
     # 动态暂停定时任务
     def pause_job(self, job_name=None):
@@ -98,9 +97,9 @@ class OgsCron:
             t_cron.query.filter_by(job_name=job_name).with_hint(t_cron, "force index(job_name)", 'mysql').update(
                 {'job_status': '暂停'})
             db.session.commit()
-            return jsonify({'cron_pause_status': 'true'})
+            return jsonify({'code': 0})
         except Exception:
-            return jsonify({'cron_pause_status': 'fail'})
+            return jsonify({'code': 2})
 
     # 动态恢复定时任务
     def resume_job(self, job_name=None):
@@ -111,9 +110,9 @@ class OgsCron:
             t_cron.query.filter_by(job_name=job_name).with_hint(t_cron, "force index(job_name)", 'mysql').update(
                 {'job_status': '启动'})
             db.session.commit()
-            return jsonify({'cron_resume_status': 'true'})
+            return jsonify({'code': 0})
         except Exception:
-            return jsonify({'cron_resume_status': 'fail'})
+            return jsonify({'code': 2})
 
     # 动态删除定时任务
     def remove_job(self, job_name=None):
@@ -125,10 +124,9 @@ class OgsCron:
                                                                       'mysql').first()
             db.session.delete(job)
             db.session.commit()
-            return jsonify({'cron_del_status': 'true'})
-        except Exception as e:
-            print(e)
-            return jsonify({'cron_del_status': 'fail'})
+            return jsonify({'code': 0})
+        except Exception:
+            return jsonify({'code': 2})
 
     def com_list_job(self):
         job_name_list = request.values.getlist('job_name_list')
@@ -143,10 +141,10 @@ class OgsCron:
             elif job_type == 'resume':
                 for i in job_name_list:
                     self.resume_job(i)
-            return jsonify({'cron_com_status': 'true'})
+            return jsonify({'code': 0})
         except Exception as e:
             print(e)
-            return jsonify({'cron_com_status': 'fail'})
+            return jsonify({'code': 2})
 
     # 关闭所有定时任务
     @property
@@ -181,13 +179,12 @@ class CronList:
             query_msg = t_cron.query.offset(self.table_offset).limit(self.table_limit).all()
             list_msg = self.lt.dict_ls_reset_dict_auto(query_msg)
             len_msg = t_cron.query.count()
-            return jsonify({"host_status": 0,
+            return jsonify({"code": 0,
                             "cron_list_msg": list_msg,
                             "msg": "",
                             "cron_len_msg": len_msg})
         except IOError:
-            return jsonify({"cron_list_msg": 'select list msg error',
-                            "cron_len_msg": 0})
+            return jsonify({"code": 201})
 
     @property
     def cron_auth_list(self):
