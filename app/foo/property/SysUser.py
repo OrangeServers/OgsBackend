@@ -35,7 +35,7 @@ class SysUserList:
             name_list = list(set(sys_list_get(user_name_list) + sys_list_get(user_gre_list)))
             return jsonify({'code': 0, 'msg': name_list})
         except IOError:
-            return jsonify({"sys_user_list_msg": 'select list msg error'})
+            return jsonify({"code": 201})
 
     @property
     def sys_user_list(self):

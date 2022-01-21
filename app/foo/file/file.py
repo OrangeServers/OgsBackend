@@ -60,10 +60,10 @@ class FileGet:
         os.chdir(self.old_def_dir)
         is_file = os.path.exists(mk_filename)
         if is_file:
-            return jsonify({'status': 'fail', 'msg': '该文件已存在'})
+            return jsonify({'code': 231, 'msg': '该文件已存在'})
         else:
             os.mkdir(mk_filename)
-            return jsonify({'status': 'true', 'msg': '创建成功'})
+            return jsonify({'code': 0, 'msg': '创建成功'})
 
     def change_file_name(self):
         old_name = request.values.get('old_name')
@@ -71,10 +71,10 @@ class FileGet:
         os.chdir(self.old_def_dir)
         is_file = os.path.exists(new_name)
         if is_file:
-            return jsonify({'status': 'fail', 'msg': '修改名称失败，已有该名称'})
+            return jsonify({'code': 232, 'msg': '修改名称失败，已有该名称'})
         else:
             os.rename(old_name, new_name)
-            return jsonify({'status': 'true', 'msg': '修改成功'})
+            return jsonify({'code': 0, 'msg': '修改成功'})
 
     def remove_file(self):
         rm_filename = request.values.get('rm_filename')
@@ -82,14 +82,14 @@ class FileGet:
         file_type = os.path.isfile(rm_filename)
         if file_type:
             os.remove(rm_filename)
-            return jsonify({'status': 'true', 'msg': '删除了一个文件'})
+            return jsonify({'code': 0, 'msg': '删除了一个文件'})
         else:
             os.rmdir(rm_filename)
-            return jsonify({'status': 'true', 'msg': '删除了一个目录'})
+            return jsonify({'code': 0, 'msg': '删除了一个目录'})
 
     def save_file(self):
         file = request.files.get('file')
         os.chdir(self.old_def_dir)
         filename = secure_filename(file.filename)
         file.save(filename)
-        return jsonify({'status': 'true'})
+        return jsonify({'code': 0})

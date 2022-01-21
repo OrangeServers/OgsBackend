@@ -30,13 +30,13 @@ class OgsSettings:
             query_msg = t_settings.query.filter_by(name=self.name).first()
             if query_msg is None:
                 self.set_ins.ins_sql(self.name, login_time, register_status, color_matching)
-                return jsonify({'status': 'true'})
+                return jsonify({'code': 0})
             else:
                 t_settings.query.filter_by(name=self.name).update(
                     {'name': self.name, 'login_time': login_time, 'register_status': register_status,
                      'color_matching': color_matching})
                 db.session.commit()
-                return jsonify({'status': 'true'})
+                return jsonify({'code': 0})
         except IOError:
             Log.logger.info(log_msg + ' \"fail"')
-            return jsonify({'status': 'fail'})
+            return jsonify({'code': 201})

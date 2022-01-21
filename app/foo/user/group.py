@@ -27,9 +27,9 @@ class AccGroupList:
         try:
             que_auth_group = t_acc_group.query.with_entities(t_acc_group.name).all()
             group_list = self.lt.list_gather(que_auth_group)
-            return jsonify({'group_name_list_msg': group_list})
+            return jsonify({'code': 0, 'group_name_list_msg': group_list})
         except IOError:
-            return jsonify({'get_name_list': 'fail'})
+            return jsonify({'code': 201})
 
     @property
     def group_list_all(self):

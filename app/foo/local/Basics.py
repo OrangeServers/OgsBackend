@@ -106,7 +106,7 @@ class DataList:
                 body_list.append({'title': host_name, 'id': host_id})
             dic = {'title': i, 'id': group_count, 'children': body_list}
             msg_list.append(dic)
-        return jsonify({"host": [{'title': '所有资产组', 'id': 0, 'spread': 'true', 'children': msg_list}]})
+        return jsonify({"code": 0, "host": [{'title': '所有资产组', 'id': 0, 'spread': 'true', 'children': msg_list}]})
 
 
 class DataSumAll:

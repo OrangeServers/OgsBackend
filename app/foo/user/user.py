@@ -43,7 +43,7 @@ class AccUserList:
                 return jsonify(list_msg)
         except IOError:
             Log.logger.info(log_msg + ' \"fail select list msg error\"')
-            return jsonify({"acc_user_list_msg": 'select list msg error'})
+            return jsonify({"code": 201})
 
     @property
     def acc_user_auth_list(self):
@@ -52,13 +52,13 @@ class AccUserList:
         try:
             user_role = acc_user_name + '_role'
             role = self.ords.conn.get(user_role)
-            return jsonify({'usrole': role})
+            return jsonify({'code': 0, 'usrole': role})
         except IOError:
             Log.logger.info(log_msg + ' \"fail select list msg error\"')
-            return jsonify({"acc_user_list_msg": 'select list msg error'})
+            return jsonify({"code": 201})
         except TypeError:
             Log.logger.info(log_msg + ' \"fail name is none error\"')
-            return jsonify({"acc_user_list_msg": 'name is none error'})
+            return jsonify({"code": 211})
 
     @property
     def acc_user_list_all(self):
@@ -312,7 +312,7 @@ class AccUserAdd:
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '成功', None, self.new_date)
                 self.ords.conn.set(self.name + '_alias', self.alias)
                 self.use_auto.user_grp_auto_update(self.group)
-                return jsonify({'code': 'true'})
+                return jsonify({'code': 0})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '用户操作', '新增用户', self.name, '失败', '该用户已存在', self.new_date)
                 Log.logger.info(log_msg + ' \"fail sel_fail\"')
@@ -355,9 +355,8 @@ class AccUserUpdate(AccUserAdd):
             else:
                 self.use_auto.user_grp_auto_update(up_user.group)
                 self.use_auto.user_grp_auto_update(self.group)
-            return jsonify({'acc_user_ping_status': 'true',
-                            'acc_user_into_update': 'true'})
+            return jsonify({'code': 0})
         except Exception:
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '变更用户', self.name, '失败', '连接数据库错误', self.new_date)
             Log.logger.info(log_msg + ' \"fail\"')
-            return jsonify({'acc_user_into_update': 'fail'})
+            return jsonify({'code': 2})
