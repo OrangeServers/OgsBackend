@@ -36,3 +36,7 @@ class AppInit:
         else:
             self.Log.logger.error(log_msg + ' \"fail 403\"')
             return jsonify({'status': 403})
+
+    @staticmethod
+    def app_auth_status():
+        return {'code': 0}

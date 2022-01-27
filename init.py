@@ -107,6 +107,7 @@ def index():
 def orange_init_api():
     # 服务状态
     app.add_url_rule('/local/init', view_func=local_app_status, methods=['POST', 'get'])
+    app.add_url_rule('/local/app_auth_ck', view_func=local__app_auth_status, methods=['POST', 'get'])
 
     # 发送邮件
     app.add_url_rule('/mail/send_user_mail', view_func=mail_send_user, methods=['POST', 'get'])
