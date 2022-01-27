@@ -28,13 +28,15 @@ def ogs_runtime_test(func):
 
 # 鉴权装饰器
 def ogs_auth_token(func):
+    @functools.wraps(func)
     def wrapper(*args, **kwargs):
         ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
         tk = request.cookies.get('ogs_token')
-        if ords.conn.get(str(tk)):
-            return {'code': 0, 'msg': '登录成功'}
-        else:
+        # 这里返回 func(*args, **kwargs) 就是调用装饰器原函数的返回值，否则直接返回装饰器的值
+        if ords.conn.get(str(tk)) is None:
             return {'code': 3, 'msg': '未授权访问'}
+        else:
+            return func(*args, **kwargs)
 
     return wrapper
 
