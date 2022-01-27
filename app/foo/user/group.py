@@ -4,6 +4,7 @@ from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyDB import t_acc_group, t_acc_user, db
 from app.sqldb.SqlAlchemyInsert import AccGroupSqlalh, CzLogSqlalh
+from app.tools.redisdb import ConnRedis, REDIS_CONF
 
 
 class AccGroupList:
@@ -23,7 +24,6 @@ class AccGroupList:
 
     @property
     def group_name_list(self):
-        name = request.values.get('name')
         try:
             que_auth_group = t_acc_group.query.with_entities(t_acc_group.name).all()
             group_list = self.lt.list_gather(que_auth_group)
@@ -53,7 +53,9 @@ class AccGroupDel:
     def __init__(self):
         self.id = request.values.get('id')
         # 新增记录日志相关
-        self.cz_name = request.values.get('cz_name')
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+        self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
 
@@ -81,7 +83,9 @@ class AccGroupAdd:
         self.host_sqlalh = AccGroupSqlalh()
         self.basesec = BaseSec()
         # 新增记录日志相关
-        self.cz_name = request.values.get('cz_name')
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+        self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
 

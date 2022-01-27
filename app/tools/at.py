@@ -9,7 +9,9 @@ from app.sqldb.SqlAlchemyDB import t_acc_user, t_auth_host
 
 def auth_list_get():
     lt = ListTool()
-    name = request.values.get('name')
+    ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+    user_token = request.cookies.get('ogs_token')
+    name = ords.conn.get(user_token)
     grp_name = t_acc_user.query.filter_by(name=name).first()
     que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
     que_grp_group = t_auth_host.query.filter(t_auth_host.user_group.like("%{}%".format(grp_name.group))).all()

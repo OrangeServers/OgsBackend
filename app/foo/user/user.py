@@ -17,11 +17,13 @@ class AccUserList:
 
     @property
     def acc_user_alias(self):
-        acc_user_name = request.values.get("name")
+        user_token = request.cookies.get('ogs_token')
+        acc_user_name = self.ords.conn.get(user_token)
+        # acc_user_name = request.values.get("name")
         log_msg = 'req_body: [ name=%s ] /account/user/alias' % acc_user_name
         try:
             user_alias = self.ords.conn.get(acc_user_name + '_alias')
-            return jsonify({'alias': user_alias})
+            return jsonify({'alias': user_alias, 'username': acc_user_name})
         except IOError:
             Log.logger.info(log_msg + ' \"fail select list msg error\"')
             return jsonify({"acc_user_list_msg": 'select list msg error'})
@@ -47,7 +49,8 @@ class AccUserList:
 
     @property
     def acc_user_auth_list(self):
-        acc_user_name = request.values.get("name")
+        user_token = request.cookies.get('ogs_token')
+        acc_user_name = self.ords.conn.get(user_token)
         log_msg = 'req_body: [ name=%s ] /account/user/auth_list' % acc_user_name
         try:
             user_role = acc_user_name + '_role'
@@ -255,7 +258,9 @@ class AccUserDel:
         # self.host_ip = request.values.get('host_ip')
         self.id = request.values.get('id')
         # 新增记录日志相关
-        self.cz_name = request.values.get('cz_name')
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+        self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
         self.cz_ins = CzLogSqlalh()
@@ -293,7 +298,8 @@ class AccUserAdd:
         self.basesec = BaseSec()
         self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
         # 新增记录日志相关
-        self.cz_name = request.values.get('cz_name')
+        self.user_token = request.cookies.get('ogs_token')
+        self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
         self.use_auto = UserAuto()

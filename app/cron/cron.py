@@ -5,6 +5,7 @@ from app.sqldb.SqlAlchemyInsert import CronSqlalh
 from app.tools.basesec import BaseSec
 from app.tools.shellcmd import RemoteConnection, RemoteConnectionKey
 from app.tools.SqlListTool import ListTool
+from app.tools.redisdb import ConnRedis, REDIS_CONF
 from app.tools.at import Log
 
 scheduler.start()
@@ -159,6 +160,7 @@ class OgsCron:
 class CronList:
     def __init__(self):
         self.lt = ListTool()
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
         self.table_page = request.values.get('page', default=1)
         self.table_limit = request.values.get('limit', default=10)
         self.table_offset = (int(self.table_page) - 1) * 10
@@ -188,7 +190,8 @@ class CronList:
 
     @property
     def cron_auth_list(self):
-        auth_name = request.values.get('name')
+        user_token = request.cookies.get('ogs_token')
+        auth_name = self.ords.conn.get(user_token)
         req_type = request.values.get("req_type")
         auth_list = []
         try:

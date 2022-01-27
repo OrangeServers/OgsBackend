@@ -4,12 +4,14 @@ from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyDB import t_group, t_auth_host, t_host, t_acc_user, db
 from app.sqldb.SqlAlchemyInsert import GroupSqlalh, CzLogSqlalh
+from app.tools.redisdb import ConnRedis, REDIS_CONF
 from app.tools.at import auth_list_get
 
 
 class ServerGroupList:
     def __init__(self):
         self.lt = ListTool()
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
 
     @property
     def group_list(self):
@@ -24,7 +26,8 @@ class ServerGroupList:
 
     @property
     def group_name_list(self):
-        name = request.values.get('name')
+        user_token = request.cookies.get('ogs_token')
+        name = self.ords.conn.get(user_token)
         try:
             que_auth_group = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
             auth_group = self.lt.auth_ls_list_que(que_auth_group)
@@ -69,7 +72,9 @@ class ServerGroupDel:
     def __init__(self):
         self.id = request.values.get('id')
         # 新增记录日志相关
-        self.cz_name = request.values.get('cz_name')
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+        self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
         self.grp_auto = ServerGroupAuto()
@@ -99,7 +104,9 @@ class ServerGroupAdd:
         self.host_sqlalh = GroupSqlalh()
         self.basesec = BaseSec()
         # 新增记录日志相关
-        self.cz_name = request.values.get('cz_name')
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+        self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
         self.grp_auto = ServerGroupAuto()

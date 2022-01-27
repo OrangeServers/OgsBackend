@@ -2,12 +2,15 @@ from flask import request, jsonify
 from app.sqldb.SqlAlchemyDB import t_settings, db
 from app.sqldb.SqlAlchemyInsert import SettingsSqlalh
 from app.tools.SqlListTool import ListTool
+from app.tools.redisdb import ConnRedis, REDIS_CONF
 from app.tools.at import Log
 
 
 class OgsSettings:
     def __init__(self):
-        self.name = request.values.get('name')
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+        self.name = self.ords.conn.get(self.user_token)
         self.lt = ListTool()
         self.set_ins = SettingsSqlalh()
 

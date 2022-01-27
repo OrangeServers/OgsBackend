@@ -6,19 +6,21 @@ from app.sqldb.SqlAlchemyDB import t_sys_user, t_auth_host, t_acc_user, db
 from app.sqldb.SqlAlchemyInsert import SysUserSqlalh, CzLogSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
+from app.tools.redisdb import ConnRedis, REDIS_CONF
 from app.conf.conf_test import FILE_CONF
 
 
 class SysUserList:
     def __init__(self):
         self.ls_tool = ListTool()
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
 
     @property
     def sys_user_name_list(self):
         try:
             # 还差根据用户组选出系统用户名
-            name = request.values.get('name')
-
+            user_token = request.cookies.get('ogs_token')
+            name = self.ords.conn.get(user_token)
             user_name_list = t_auth_host.query.filter(t_auth_host.user.like("%{}%".format(name))).all()
             grp_name = t_acc_user.query.filter_by(name=name).first()
             user_gre_list = t_auth_host.query.filter(t_auth_host.user_group.like("%{}%".format(grp_name.group))).all()
@@ -93,7 +95,9 @@ class SysUserDel:
         # self.host_ip = request.values.get('host_ip')
         self.id = request.values.get('id')
         # 新增记录日志相关
-        self.cz_name = request.values.get('cz_name')
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+        self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
         self.user_auto = SysUserAuto()
@@ -128,7 +132,9 @@ class SysUserAdd:
         self.host_sqlalh = SysUserSqlalh()
         self.basesec = BaseSec()
         # 新增记录日志相关
-        self.cz_name = request.values.get('cz_name')
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+        self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
         self.user_auto = SysUserAuto()

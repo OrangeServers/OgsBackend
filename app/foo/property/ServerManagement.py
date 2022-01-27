@@ -9,6 +9,7 @@ from app.sqldb.SqlAlchemySettings import db
 from app.sqldb.SqlAlchemyDB import t_host, t_group, t_auth_host, t_acc_user, t_cz_log, t_sys_user
 from app.sqldb.SqlAlchemyInsert import HostSqlalh, CommandLogSqlalh, CzLogSqlalh
 from app.tools.SqlListTool import ListTool
+from app.tools.redisdb import ConnRedis, REDIS_CONF
 from app.tools.basesec import BaseSec
 from app.tools.at import auth_list_get
 
@@ -75,9 +76,6 @@ class ServerList:
     @property
     def server_list_all(self):
         try:
-            # 模拟获取cookie
-            cok = request.cookies.get('username')
-            print(cok)
             table_page = request.values.get('page')
             table_limit = request.values.get('limit')
             table_offset = (int(table_page) - 1) * 10
@@ -131,7 +129,9 @@ class ServerDel:
         # self.host_ip = request.values.get('host_ip')
         self.id = request.values.get('id')
         # 新增记录日志相关
-        self.cz_name = request.values.get('cz_name')
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+        self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
         self.ser_auto = ServerAuto()
@@ -160,7 +160,9 @@ class ServerAdd:
         self.host_sqlalh = HostSqlalh()
         self.basesec = BaseSec()
         # 新增记录日志相关
-        self.cz_name = request.values.get('cz_name')
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+        self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
         self.ser_auto = ServerAuto()
@@ -244,7 +246,9 @@ class ServerListCmd(ServerCmd):
         super(ServerListCmd, self).__init__()
         self.host_id = request.values.getlist('host_id')
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        self.com_name = request.values.get('com_name')
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+        self.com_name = self.ords.conn.get(self.user_token)
         self.com_ins = CommandLogSqlalh
         self.com_host = ','.join(self.host_id)
 
@@ -352,9 +356,11 @@ class ServerScript:
         self.filename = secure_filename(self.file.filename)
         self.on_file = '/data/putfile/' + self.filename
         self.to_file = '/tmp/' + self.filename
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
 
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-        self.com_name = request.values.get('com_name')
+        self.user_token = request.cookies.get('ogs_token')
+        self.com_name = self.ords.conn.get(self.user_token)
         self.com_ins = CommandLogSqlalh
         self.com_host = ','.join(self.id_list)
 
