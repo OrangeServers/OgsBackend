@@ -107,7 +107,7 @@ def index():
 def orange_init_api():
     # 服务状态
     app.add_url_rule('/local/init', view_func=local_app_status, methods=['POST', 'get'])
-    app.add_url_rule('/local/app_auth_ck', view_func=local__app_auth_status, methods=['POST', 'get'])
+    app.add_url_rule('/local/app_auth_ck', view_func=local_app_auth_status, methods=['POST', 'get'])
 
     # 发送邮件
     app.add_url_rule('/mail/send_user_mail', view_func=mail_send_user, methods=['POST', 'get'])
@@ -118,7 +118,7 @@ def orange_init_api():
     app.add_url_rule('/account/chk_username', view_func=acc_chk_username, methods=['POST', 'get'])
     app.add_url_rule('/account/com_register', view_func=acc_com_register, methods=['POST', 'get'])
     app.add_url_rule('/account/login_dl2', view_func=acc_login_dl2, methods=['POST', 'get'])
-    app.add_url_rule('/account/login_check', view_func=acc_login_check, methods=['POST', 'get'])
+    app.add_url_rule('/account/login_out', view_func=acc_login_out, methods=['POST', 'get'])
 
     # 用户登录日志
     app.add_url_rule('/account/login/logs', view_func=acc_login_logs, methods=['POST', 'get'])
@@ -203,6 +203,7 @@ def orange_init_api():
     app.add_url_rule('/local/chart/update', view_func=local_chart_update, methods=['POST', 'get'])
     app.add_url_rule('/local/image/test_get/<img_name>', view_func=local_image_get, methods=['POST', 'get'])
     app.add_url_rule('/local/image/test_put', view_func=local_image_put, methods=['POST', 'get'])
+    app.add_url_rule('/local/settings/open', view_func=local_settings_open, methods=['POST', 'get'])
     app.add_url_rule('/local/settings/get', view_func=local_settings_get, methods=['POST', 'get'])
     app.add_url_rule('/local/settings/update', view_func=local_settings_update, methods=['POST', 'get'])
 

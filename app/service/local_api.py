@@ -20,7 +20,7 @@ def local_app_status():
 
 
 @ogs_auth_token
-def local__app_auth_status():
+def local_app_auth_status():
     orange = AppInit()
     return orange.app_auth_status()
 
@@ -100,6 +100,11 @@ def local_image_put():
 def local_web_ssh():
     orange = OgsWebSocket()
     return orange.web_ssh()
+
+
+def local_settings_open():
+    orange = OgsSettings()
+    return orange.settings_open_info()
 
 
 @ogs_auth_token

@@ -1,4 +1,4 @@
-from app.foo.user.user import UserLogin, CheckUser, UserRegister, UserLogin2
+from app.foo.user.user import UserLogin, CheckUser, UserRegister, UserLogin2, UserLogout
 from app.tools.at import ogs_auth_token
 
 
@@ -22,6 +22,6 @@ def acc_login_dl2():
     return orange.login_dl()
 
 
-@ogs_auth_token
-def acc_login_check():
-    return {'code': '0', 'msg': 'test'}
+def acc_login_out():
+    orange = UserLogout()
+    return orange.logout()

@@ -361,3 +361,16 @@ class AccUserUpdate(AccUserAdd):
             self.cz_ins.ins_sql(self.cz_name, '用户操作', '变更用户', self.name, '失败', '连接数据库错误', self.new_date)
             Log.logger.info(log_msg + ' \"fail\"')
             return jsonify({'code': 2})
+
+
+class UserLogout:
+    def __init__(self):
+        self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
+        self.user_token = request.cookies.get('ogs_token')
+
+    def logout(self):
+        if self.ords.conn.get(str(self.user_token)) is None:
+            return {'code': 3, 'msg': '未授权访问'}
+        else:
+            self.ords.conn.delete(self.user_token)
+            return {'code': 0}

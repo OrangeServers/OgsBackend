@@ -11,6 +11,11 @@ class OgsSettings:
         self.lt = ListTool()
         self.set_ins = SettingsSqlalh()
 
+    @staticmethod
+    def settings_open_info():
+        default_msg = t_settings.query.filter_by(name='default').first()
+        return {'name': default_msg.name, 'login_time': default_msg.login_time, 'register_status': default_msg.register_status}
+
     def settings_info(self):
         query_msg = t_settings.query.filter_by(name=self.name).first()
         if query_msg is None:
