@@ -4,7 +4,7 @@ from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
 from app.tools.sendmail import SendMail
 from app.tools.redisdb import ConnRedis
-from app.sqldb.SqlAlchemyDB import t_acc_user, t_acc_group, db
+from app.sqldb.SqlAlchemyDB import t_acc_user, t_acc_group, t_settings, db
 from app.sqldb.SqlAlchemyInsert import AccUserSqlalh, LoginLogSqlalh, CzLogSqlalh
 from app.conf.conf_test import REDIS_CONF, MAIL_CONF
 from app.tools.at import Log
@@ -177,26 +177,27 @@ class UserLogin2(CheckUser):
             if self.username == user_info.name and self.password == password_de:
                 # 每个用户登录生成一个session
                 # session["user"] = self.username
-                query_user_role = t_acc_user.query.filter_by(name=self.username).first()
-                user_role = query_user_role.__dict__
+                user_role = t_acc_user.query.filter_by(name=self.username).first()
+                user_setting = t_settings.query.filter_by(name=self.username).first()
+                exp_date = user_setting.login_time * 60 * 60
                 user_token = hashlib.sha1(os.urandom(24)).hexdigest()
                 role_name = self.username + '_role'
                 self.ords.conn.set(user_token, self.username)
-                self.ords.conn.expire(user_token, 21600)
-                self.ords.conn.set(role_name, user_role['usrole'])
+                self.ords.conn.expire(user_token, exp_date)
+                self.ords.conn.set(role_name, user_role.usrole)
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功',
                                        None, self.new_date)
-                return jsonify({'code': '0', 'token': user_token})
+                return jsonify({'code': 0, 'token': user_token})
             else:
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
                                        '密码错误', self.new_date)
                 Log.logger.info(log_msg + ' \"fail password_status\"')
-                return jsonify({'password_status': 'fail'})
+                return jsonify({'code': 102})
         else:
             self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '失败',
                                    '用户名无效', self.new_date)
             Log.logger.info(log_msg + ' \"fail user_status\"')
-            return jsonify({'user_status': 'fail'})
+            return jsonify({'code': 101})
 
 
 class UserRegister(UserLogin):
