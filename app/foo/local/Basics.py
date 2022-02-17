@@ -69,6 +69,7 @@ class CountList:
         try:
             login_list = []
             user_list = []
+            date_list = []
             new_date = (datetime.date.today() - datetime.timedelta(days=-5)).strftime("%Y-%m-%d")
             old_date = (datetime.date.today() - datetime.timedelta(days=+15)).strftime("%Y-%m-%d")
             now_date = datetime.date.today()
@@ -76,9 +77,13 @@ class CountList:
                 t_line_chart.chart_date >= old_date).all()
             for i in query_msg_all:
                 query_msg = i.__dict__
-                login_list.append({'date': str(query_msg['chart_date']), 'value': query_msg['login_count']})
-                user_list.append({'date': str(query_msg['chart_date']), 'value': query_msg['user_count']})
-            return jsonify({'code': 0, 'login_msg': login_list, 'user_msg': user_list})
+                date_list.append(str(query_msg['chart_date']))
+                login_list.append(query_msg['login_count'])
+                user_list.append(query_msg['user_count'])
+                # login_list.append({'date': str(query_msg['chart_date']), 'value': query_msg['login_count']})
+                # user_list.append({'date': str(query_msg['chart_date']), 'value': query_msg['user_count']})
+            # return jsonify({'code': 0, 'login_msg': login_list, 'user_msg': user_list})
+            return jsonify({'code': 0, 'date_msg': date_list, 'login_msg': login_list, 'user_msg': user_list})
         except IOError:
             jsonify({'code': 201})
 
