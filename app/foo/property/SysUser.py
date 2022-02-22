@@ -1,6 +1,7 @@
 import os
 import stat
 import time
+import re
 from flask import request, jsonify
 from app.sqldb.SqlAlchemyDB import t_sys_user, t_auth_host, t_acc_user, db
 from app.sqldb.SqlAlchemyInsert import SysUserSqlalh, CzLogSqlalh
@@ -66,6 +67,10 @@ class SysUserList:
             table_offset = (int(table_page) - 1) * 10
             query_msg = t_sys_user.query.offset(table_offset).limit(table_limit).all()
             list_msg = self.ls_tool.dict_ls_reset_dict_auto(query_msg, 'host_password')
+            # key信息过滤掉具体路径，只返回名字
+            for i in list_msg:
+                if i['host_key']:
+                    i['host_key'] = re.sub(FILE_CONF['key_path'], '', i['host_key'])
             len_msg = t_sys_user.query.count()
             return jsonify({"code": 0,
                             "sys_user_list_msg": list_msg,
