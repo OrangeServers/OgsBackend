@@ -1,5 +1,5 @@
 #!/bin/bash
-dir=$(dirname $0)
+dir=$(cd "$(dirname "$0")";pwd)
 case $1 in
   'start')
   echo 'start orangeservers .......'
