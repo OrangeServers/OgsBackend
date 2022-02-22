@@ -6,12 +6,13 @@ from werkzeug.utils import secure_filename
 from app.tools.shellcmd import RemoteConnection, RemoteConnectionKey
 from app.foo.local.LocalShell import LocalShell
 from app.sqldb.SqlAlchemySettings import db
-from app.sqldb.SqlAlchemyDB import t_host, t_group, t_auth_host, t_acc_user, t_cz_log, t_sys_user
+from app.sqldb.SqlAlchemyDB import t_host, t_group, t_acc_user, t_sys_user
 from app.sqldb.SqlAlchemyInsert import HostSqlalh, CommandLogSqlalh, CzLogSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.redisdb import ConnRedis, REDIS_CONF
 from app.tools.basesec import BaseSec
 from app.tools.at import auth_list_get
+from app.conf.conf_test import FILE_CONF
 
 
 class ServerList:
@@ -354,7 +355,7 @@ class ServerScript:
         self.basesec = BaseSec()
         self.local_cmd = LocalShell()
         self.filename = secure_filename(self.file.filename)
-        self.on_file = '/data/putfile/' + self.filename
+        self.on_file = FILE_CONF['file_path'] + self.filename
         self.to_file = '/tmp/' + self.filename
         self.ords = ConnRedis(REDIS_CONF['host'], REDIS_CONF['port'])
 

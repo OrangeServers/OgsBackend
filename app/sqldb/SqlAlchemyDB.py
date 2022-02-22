@@ -26,7 +26,7 @@ class t_sys_user(db.Model):
     host_user = db.Column(db.String(25), nullable=False)
     # passWord字段, varchar类型 限制45 不为空
     host_password = db.Column(db.String(25), nullable=True)
-    host_key = db.Column(db.String(50), nullable=True)
+    host_key = db.Column(db.String(255), nullable=True)
     agreement = db.Column(db.String(10), nullable=False)
     remarks = db.Column(db.String(30), nullable=True)
 

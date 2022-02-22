@@ -8,7 +8,7 @@ class FileGet:
     def __init__(self):
         self.req_dir = request.values.get('req_dir', default='')
         # self.def_dir_path = '/data/tmp/test'
-        self.def_dir_path = FILE_CONF['file_path']
+        self.def_dir_path = FILE_CONF['file_path2']
         self.old_def_dir = self.def_dir_path + self.req_dir
         self.dir_list = []
         self.file_list = []

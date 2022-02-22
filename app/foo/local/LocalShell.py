@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
-from app.tools.shellcmd import RemoteConnection
+from app.conf.conf_test import FILE_CONF
 import os, sys
 
 sys.path.append('../..')
@@ -85,7 +85,7 @@ class LocalFilePut:
     def __init__(self):
         self.file = request.files.get('file')
         self.file_name = secure_filename(self.file.filename)
-        self.file_route = '/data/putfile/'
+        self.file_route = FILE_CONF['file_path']
 
     def put_file(self):
         if self.file is not None:
