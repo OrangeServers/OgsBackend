@@ -21,12 +21,12 @@ from app.service.cron_api import *
 import asyncio
 from skywalking import agent, config
 
-config.init(collector_address='10.0.1.198:11800', service_name='orangeserver')
-# config.init(collector='10.0.1.198:11800', service='orangeserver')  # 采集服务的地址，给自己的服务起个名称
-agent.start()
+# config.init(collector_address='10.0.1.198:11800', service_name='orangeserver')
+# # config.init(collector='10.0.1.198:11800', service='orangeserver')  # 采集服务的地址，给自己的服务起个名称
+# agent.start()
 
 # 导入elastic apm链路追踪
-from elasticapm.contrib.flask import ElasticAPM
+# from elasticapm.contrib.flask import ElasticAPM
 
 app.config['ELASTIC_APM'] = {
     # Set required service name. Allowed characters:
