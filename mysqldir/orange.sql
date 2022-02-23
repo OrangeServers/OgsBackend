@@ -345,7 +345,7 @@ CREATE TABLE `t_settings` (
 
 LOCK TABLES `t_settings` WRITE;
 /*!40000 ALTER TABLE `t_settings` DISABLE KEYS */;
-INSERT INTO `t_settings` VALUES (1,'default',3,'off','orange');
+INSERT INTO `t_settings` VALUES (1,'default',3,'off','black');
 /*!40000 ALTER TABLE `t_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -386,4 +386,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-22 11:25:09
+-- Dump completed on 2022-02-23 16:29:50
