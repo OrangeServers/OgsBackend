@@ -188,6 +188,7 @@ class UserLogin2(CheckUser):
                 self.ords.conn.set(user_token, self.username)
                 self.ords.conn.expire(user_token, exp_date)
                 self.ords.conn.set(role_name, user_role.usrole)
+                self.ords.conn.set(self.username + '_alias', user_info.alias)
                 self.login_ins.ins_sql(self.username, self.user_nw_ip, user_gw_ip, user_gw_cs, self.user_agent, '成功',
                                        None, self.new_date)
                 return jsonify({'code': 0, 'token': user_token})
