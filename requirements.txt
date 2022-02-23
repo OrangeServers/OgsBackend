@@ -15,6 +15,5 @@ psutil==5.8.0
 apscheduler==3.8.1
 Werkzeug~=2.0.1
 ansible~=4.10.0
-asyncio~=3.4.3
 tornado==5.1.1; python_version < '3.5'
 tornado==6.0.4; python_version >= '3.5'
