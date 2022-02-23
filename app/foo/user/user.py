@@ -181,7 +181,7 @@ class UserLogin2(CheckUser):
                 # 每个用户登录生成一个session
                 # session["user"] = self.username
                 user_role = t_acc_user.query.filter_by(name=self.username).first()
-                user_setting = t_settings.query.filter_by(name=self.username).first()
+                user_setting = t_settings.query.filter_by(name='default').first()
                 exp_date = user_setting.login_time * 60 * 60
                 user_token = hashlib.sha1(os.urandom(24)).hexdigest()
                 role_name = self.username + '_role'
