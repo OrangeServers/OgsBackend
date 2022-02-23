@@ -46,11 +46,11 @@ from skywalking import agent, config
 # from app.foo.user.decorator import wrapper
 
 # 异步导入相关模块 ------------------------------------------------------------------------------------
-# from gevent import monkey
+from gevent import monkey
 # from gevent.pywsgi import WSGIServer
 # from geventwebsocket.handler import WebSocketHandler
 
-# monkey.patch_all()
+monkey.patch_all()
 # 初始化flask实例
 # app = Flask(__name__, static_folder='./static', template_folder='')
 app.config.update(DEBUG=False)
