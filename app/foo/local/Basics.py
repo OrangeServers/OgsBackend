@@ -123,11 +123,14 @@ class DataSumAll:
         if self.sum_name == 'group':
             try:
                 query_group = t_group.query.with_entities(t_group.name).all()
-                group_list = self.lt.list_rep_gather(query_group)
-                for i in group_list:
-                    group_count = t_host.query.filter_by(group=i).count()
-                    t_group.query.filter_by(name=i).update({'nums': group_count})
-                    db.session.commit()
+                if query_group:
+                    group_list = self.lt.list_rep_gather(query_group)
+                    for i in group_list:
+                        group_count = t_host.query.filter_by(group=i).count()
+                        t_group.query.filter_by(name=i).update({'nums': group_count})
+                        db.session.commit()
+                        return jsonify({'update_table_sum': 'true'})
+                else:
                     return jsonify({'update_table_sum': 'true'})
             except IOError:
                 return jsonify({'update_table_sum': 'fail'})
