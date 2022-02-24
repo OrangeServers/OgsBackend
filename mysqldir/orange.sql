@@ -53,7 +53,7 @@ CREATE TABLE `t_acc_group` (
   `nums` int(10) NOT NULL,
   `remarks` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -62,6 +62,7 @@ CREATE TABLE `t_acc_group` (
 
 LOCK TABLES `t_acc_group` WRITE;
 /*!40000 ALTER TABLE `t_acc_group` DISABLE KEYS */;
+INSERT INTO `t_acc_group` VALUES (1,'admin',1,'管理员组');
 /*!40000 ALTER TABLE `t_acc_group` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -111,7 +112,7 @@ CREATE TABLE `t_auth_host` (
   `sys_user` varchar(255) DEFAULT NULL,
   `remarks` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -120,6 +121,7 @@ CREATE TABLE `t_auth_host` (
 
 LOCK TABLES `t_auth_host` WRITE;
 /*!40000 ALTER TABLE `t_auth_host` DISABLE KEYS */;
+INSERT INTO `t_auth_host` VALUES (1,'所有权限','admin','admin',NULL,NULL,'管理员权限');
 /*!40000 ALTER TABLE `t_auth_host` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -386,4 +388,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-02-23 16:29:50
+-- Dump completed on 2022-02-23 17:17:05
