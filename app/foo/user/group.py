@@ -1,8 +1,8 @@
-import time
+import time, re
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_acc_group, t_acc_user, db
+from app.sqldb.SqlAlchemyDB import t_acc_group, t_auth_host, t_acc_user, db
 from app.sqldb.SqlAlchemyInsert import AccGroupSqlalh, CzLogSqlalh
 from app.tools.redisdb import ConnRedis, REDIS_CONF
 
@@ -57,7 +57,7 @@ class AccGroupAuto:
         try:
             query_msg = self.lt.list_gather(t_acc_group.query.with_entities(t_acc_group.name).all())
             grp_msg = ','.join(query_msg)
-            t_acc_group.query.filter_by(name='所有权限').update({'user_group': grp_msg})
+            t_auth_host.query.filter_by(name='所有权限').update({'user_group': grp_msg})
             return True
         except IOError:
             return False
@@ -136,15 +136,21 @@ class AccGroupUpdate(AccGroupAdd):
         try:
             old_group = t_acc_group.query.filter_by(id=self.id).first()
             g_host = t_acc_user.query.filter_by(group=old_group.name).all()
+            g_auth = t_auth_host.query.filter(t_auth_host.user_group.like("%{}%".format(old_group.name))).all()
             if g_host and self.name != old_group.name:
                 for i in g_host:
                     t_acc_user.query.filter_by(id=i.id).update({'group': self.name})
+                for x in g_auth:
+                    if x.name != '所有权限':
+                        g_auth_name = re.sub(old_group.name, self.name, x.user_group)
+                        t_auth_host.query.filter_by(id=x.id).update({'user_group': g_auth_name})
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '修改用户组', self.name, '成功', None, self.new_date)
             t_acc_group.query.filter_by(id=self.id).update(
-                {'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
+                {'name': self.name, 'remarks': self.remarks})
             db.session.commit()
             self.grp_auto.grp_auth_auto_update()
             return jsonify({'code': 0})
-        except Exception:
+        except Exception as e:
+            print(e)
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '修改用户组', self.name, '失败', '连接数据库错误', self.new_date)
             return jsonify({'code': 2})

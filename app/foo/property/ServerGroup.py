@@ -1,4 +1,4 @@
-import time
+import time, re
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
@@ -142,9 +142,14 @@ class ServerGroupUpdate(ServerGroupAdd):
         try:
             old_group = t_group.query.filter_by(id=self.id).first()
             g_host = t_host.query.filter_by(group=old_group.name).all()
+            g_auth = t_auth_host.query.filter(t_auth_host.host_group.like("%{}%".format(old_group.name))).all()
             if g_host and self.name != old_group.name:
                 for i in g_host:
                     t_host.query.filter_by(id=i.id).update({'group': self.name})
+                for x in g_auth:
+                    if x.name != '所有权限':
+                        g_auth_name = re.sub(old_group.name, self.name, x.host_group)
+                        t_auth_host.query.filter_by(id=x.id).update({'host_group': g_auth_name})
             t_group.query.filter_by(id=self.id).update({'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产组操作', '修改资产组', self.name, '成功', None, self.new_date)
