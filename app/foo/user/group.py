@@ -49,6 +49,20 @@ class AccGroupList:
                             "host_len_msg": 0})
 
 
+class AccGroupAuto:
+    def __init__(self):
+        self.lt = ListTool()
+
+    def grp_auth_auto_update(self):
+        try:
+            query_msg = self.lt.list_gather(t_acc_group.query.with_entities(t_acc_group.name).all())
+            grp_msg = ','.join(query_msg)
+            t_acc_group.query.filter_by(name='所有权限').update({'user_group': grp_msg})
+            return True
+        except IOError:
+            return False
+
+
 class AccGroupDel:
     def __init__(self):
         self.id = request.values.get('id')
@@ -58,6 +72,7 @@ class AccGroupDel:
         self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
+        self.grp_auto = AccGroupAuto()
 
     @property
     def host_del(self):
@@ -70,6 +85,7 @@ class AccGroupDel:
                 db.session.delete(i)
                 db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '删除用户组', self.id, '成功', None, self.new_date)
+            self.grp_auto.grp_auth_auto_update()
             return jsonify({'code': 0})
         else:
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '删除用户组', self.id, '失败', '系统内没有该用户组', self.new_date)
@@ -88,6 +104,7 @@ class AccGroupAdd:
         self.cz_name = self.ords.conn.get(self.user_token)
         self.new_date = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
         self.cz_ins = CzLogSqlalh()
+        self.grp_auto = AccGroupAuto()
 
     @property
     def host_add(self):
@@ -96,6 +113,7 @@ class AccGroupAdd:
             if user_chk is None:
                 self.host_sqlalh.ins_sql(self.name, self.remarks)
                 self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '成功', None, self.new_date)
+                self.grp_auto.grp_auth_auto_update()
                 return jsonify({'code': 0})
             else:
                 self.cz_ins.ins_sql(self.cz_name, '用户组操作', '新增用户组', self.name, '失败', '该用户组已存在', self.new_date)
@@ -120,6 +138,7 @@ class AccGroupUpdate(AccGroupAdd):
             t_acc_group.query.filter_by(id=self.id).update(
                 {'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
+            self.grp_auto.grp_auth_auto_update()
             return jsonify({'code': 0})
         except Exception:
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '修改用户组', self.name, '失败', '连接数据库错误', self.new_date)
