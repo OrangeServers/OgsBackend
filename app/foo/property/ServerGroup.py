@@ -2,7 +2,7 @@ import time
 from flask import request, jsonify
 from app.tools.basesec import BaseSec
 from app.tools.SqlListTool import ListTool
-from app.sqldb.SqlAlchemyDB import t_group, t_auth_host, t_host, t_acc_user, db
+from app.sqldb.SqlAlchemyDB import t_group, t_auth_host, t_host, db
 from app.sqldb.SqlAlchemyInsert import GroupSqlalh, CzLogSqlalh
 from app.tools.redisdb import ConnRedis, REDIS_CONF
 from app.tools.at import auth_list_get
@@ -140,6 +140,11 @@ class ServerGroupUpdate(ServerGroupAdd):
     @property
     def update(self):
         try:
+            old_group = t_group.query.filter_by(id=self.id).first()
+            g_host = t_host.query.filter_by(group=old_group.name).all()
+            if g_host and self.name != old_group.name:
+                for i in g_host:
+                    t_host.query.filter_by(id=i.id).update({'group': self.name})
             t_group.query.filter_by(id=self.id).update({'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产组操作', '修改资产组', self.name, '成功', None, self.new_date)

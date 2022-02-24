@@ -134,6 +134,11 @@ class AccGroupUpdate(AccGroupAdd):
     @property
     def update(self):
         try:
+            old_group = t_acc_group.query.filter_by(id=self.id).first()
+            g_host = t_acc_user.query.filter_by(group=old_group.name).all()
+            if g_host and self.name != old_group.name:
+                for i in g_host:
+                    t_acc_user.query.filter_by(id=i.id).update({'group': self.name})
             self.cz_ins.ins_sql(self.cz_name, '用户组操作', '修改用户组', self.name, '成功', None, self.new_date)
             t_acc_group.query.filter_by(id=self.id).update(
                 {'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
