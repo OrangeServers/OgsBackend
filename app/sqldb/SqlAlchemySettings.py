@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from Flask_App_Settings import app
-from app.conf.conf_test import MYSQL_CONF
+from app.conf.conf import MYSQL_CONF
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "mysql+pymysql://{}:{}@{}:{}/{}".format(MYSQL_CONF['user'],
                                                                                 MYSQL_CONF['password'],

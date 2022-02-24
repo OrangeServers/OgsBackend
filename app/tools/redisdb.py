@@ -1,5 +1,5 @@
 import redis
-from app.conf.conf_test import REDIS_CONF
+from app.conf.conf import REDIS_CONF
 
 
 # 操作redis数据库

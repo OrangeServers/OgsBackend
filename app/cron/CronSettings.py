@@ -1,5 +1,5 @@
 from Flask_App_Settings import app
-from app.conf.conf_test import MYSQL_CONF
+from app.conf.conf import MYSQL_CONF
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.executors.pool import ProcessPoolExecutor

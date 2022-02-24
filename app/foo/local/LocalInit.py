@@ -3,7 +3,7 @@ from flask import request, jsonify
 from app.tools.redisdb import ConnRedis
 from app.sqldb.SqlAlchemyDB import t_host, t_group, t_line_chart, t_acc_user, t_login_log, t_acc_group, t_command_log, \
     t_auth_host, t_sys_user
-from app.conf.conf_test import REDIS_CONF, DEFAULT_DATA_DIR, FILE_CONF
+from app.conf.conf import REDIS_CONF, DEFAULT_DATA_DIR, FILE_CONF
 from app.tools.at import Log
 
 

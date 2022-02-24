@@ -1,7 +1,7 @@
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
-from app.conf.conf_test import MAIL_CONF
+from app.conf.conf import MAIL_CONF
 
 
 # 发送电子邮件

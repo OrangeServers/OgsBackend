@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, INTEGER, create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
-from app.conf.conf_test import MYSQL_CONF
+from app.conf.conf import MYSQL_CONF
 
 """
     说明:

@@ -8,7 +8,7 @@ from app.sqldb.SqlAlchemyInsert import SysUserSqlalh, CzLogSqlalh
 from app.tools.SqlListTool import ListTool
 from app.tools.basesec import BaseSec
 from app.tools.redisdb import ConnRedis, REDIS_CONF
-from app.conf.conf_test import FILE_CONF
+from app.conf.conf import FILE_CONF
 
 
 class SysUserList:

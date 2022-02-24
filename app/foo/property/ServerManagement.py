@@ -12,7 +12,7 @@ from app.tools.SqlListTool import ListTool
 from app.tools.redisdb import ConnRedis, REDIS_CONF
 from app.tools.basesec import BaseSec
 from app.tools.at import auth_list_get
-from app.conf.conf_test import FILE_CONF
+from app.conf.conf import FILE_CONF
 
 
 class ServerList:

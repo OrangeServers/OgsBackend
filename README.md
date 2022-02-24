@@ -23,8 +23,8 @@ mysql> create database orange;
 mysql -uxxx -pxxx -hx.x.x.x orange < mysqldir/orange.sql
 
 # 修改后端配置文件
-cp app/conf/conf_test_exapmple.py app/conf/conf_test.py
-vim app/conf/conf_test.py
+cp app/conf/conf_exapmple.py app/conf/conf.py
+vim app/conf/conf.py
 # 一般只需要修改这三处即可
 # 邮件配置
 MAIL_CONF = {

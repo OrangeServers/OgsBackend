@@ -1,7 +1,7 @@
 import os, psutil
 from flask import request, jsonify
 from werkzeug.utils import secure_filename
-from app.conf.conf_test import FILE_CONF
+from app.conf.conf import FILE_CONF
 
 
 class FileGet:

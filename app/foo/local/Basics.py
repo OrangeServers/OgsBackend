@@ -4,7 +4,7 @@ from flask import request, jsonify, make_response
 from app.sqldb.SqlAlchemyDB import t_host, db, t_group, t_sys_user, t_acc_user, t_auth_host, t_login_log, t_line_chart
 from app.tools.SqlListTool import ListTool
 from app.sqldb.SqlAlchemyInsert import LineChartSqlalh
-from app.conf.conf_test import FILE_CONF
+from app.conf.conf import FILE_CONF
 from app.tools.at import auth_list_get
 
 

@@ -6,7 +6,7 @@ from app.tools.sendmail import SendMail
 from app.tools.redisdb import ConnRedis
 from app.sqldb.SqlAlchemyDB import t_acc_user, t_acc_group, t_settings, db
 from app.sqldb.SqlAlchemyInsert import AccUserSqlalh, LoginLogSqlalh, CzLogSqlalh
-from app.conf.conf_test import REDIS_CONF, MAIL_CONF
+from app.conf.conf import REDIS_CONF, MAIL_CONF
 from app.tools.at import Log
 
 

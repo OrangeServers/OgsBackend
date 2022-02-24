@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from app.tools.sendmail import SendMail
-from app.conf.conf_test import MAIL_CONF
+from app.conf.conf import MAIL_CONF
 
 
 class OrangeMailApi:
