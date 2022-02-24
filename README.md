@@ -1,32 +1,59 @@
-# OrangeServer
+# OgsBackend
 
-#### 介绍
-用python flask jinja2和ajax前后端交互实现的运维管理平台，同时使用gevent实现了进程异步处理请求
+### 简介
+orangeservers的后端项目，整体部署和展示文档在[OgsDocument](https://github.com/OrangeServers/OgsDocument)
 
-#### 软件架构
-软件架构说明: 管理界面，ansible批量执行命令，管理docker等功能待开发
+项目使用python3+flask编写
 
+### 部署
 
-#### 安装教程
+```shell
+# 该项目用到了python3环境，redis，mysql，nginx，需要提前安装
+# 下载后端服务压缩包
+wget http://58.135.83.162:19612/ogsbackend/v1.0/orangeservers_v1.0.tar.gz
 
-1.  必须为python3以上环境
-2.  pip3 install -r requirements.txt
-3.  python3 app_run.py --host 主机ip或者0.0.0.0 --port 端口号
+# 解压orangeserver压缩包，导入数据文件
+tar -xf orangeservers_v1.0.tar.gz && cd orangeservers
+# 安装依赖库
+pip3 install -r requirements.txt
+# 你的数据库地址用户名和密码
+mysql -uxxx -pxxx -hx.x.x.x
+mysql> create database orange;
+# 导入数据文件
+mysql -uxxx -pxxx -hx.x.x.x orange < mysqldir/orange.sql
 
-#### 使用说明
+# 修改后端配置文件
+cp app/conf/conf_test_exapmple.py app/conf/conf_test.py
+vim app/conf/conf_test.py
+# 一般只需要修改这三处即可
+# 邮件配置
+MAIL_CONF = {
+    'form_mail': 'you mail name',         # 邮箱账号 不用邮箱功能也可以不配置
+    'password': 'you mail password',        # 邮箱密码 这里通过smtp登录需要去邮箱获取授权码，而非密码
+    'smtp_server': 'you mail smtp server'    # 邮箱地址 例如163的 stmp.163.com
+}
 
-1.  注册界面展示
-2.  ![ys1](./pic/zc.png)
-3.  登录界面展示
-4.  ![ys1](./pic/dl.png)
-5.  同步代码功能,点击列表内仓库组和项目同步代码到线上，仅限linux环境
-6.  ![ys1](./pic/ys.png)
-7.  ![ys1](./pic/ys1.png)
-8.  ![ys1](./pic/ys2.png)
+# mysql配置
+MYSQL_CONF = {
+    'dbname': 'you dababase name',      # 数据库名
+    'user': 'you user name',           # 数据库用户名
+    'password': 'you password',       # 数据库用户密码
+    'host': 'you db host ip',        # 数据库地址
+    'port': 3306                    # 数据库端口号
+}
 
-#### 参与贡献
+# redis配置
+REDIS_CONF = {
+    'host': 'you redis ip',           # redis地址
+    'port': 6379                    # redis端口号
+}
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+# 配置python解释器路径,自行修改
+vim start.sh
+python3_path='python3'   # 修改值为解释器全路径
+
+# 启动服务，默认有两个端口 28000和8888
+chmod +x start.sh
+./start start
+```
+
