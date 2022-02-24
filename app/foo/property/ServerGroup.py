@@ -143,6 +143,7 @@ class ServerGroupUpdate(ServerGroupAdd):
             t_group.query.filter_by(id=self.id).update({'name': self.name, 'nums': self.nums, 'remarks': self.remarks})
             db.session.commit()
             self.cz_ins.ins_sql(self.cz_name, '资产组操作', '修改资产组', self.name, '成功', None, self.new_date)
+            self.grp_auto.grp_auth_auto_update()
             return jsonify({'code': 0})
         except Exception as e:
             print(e)
