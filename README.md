@@ -28,10 +28,14 @@ orangeservers是一款开源的运维管理平台（开源堡垒机）
 
 ### 部署
 
+查看不了图片或者克隆慢可以去gitee的仓库，[这是地址](https://gitee.com/xuwei777/OgsBackend)
+
 ```shell
 # 该项目用到了python3环境，redis，mysql，nginx，需要提前安装
-# 克隆OgsBackend安装包
+# 克隆OgsBackend安装包 国内环境克隆慢可以去gitee克隆
 git clone https://github.com/OrangeServers/OgsBackend.git
+
+# 也可以直接下载安装压缩包 wget  http://download.stisd.cn/ogsbackend/OgsBackend_v1.0.tar.gz
 # 改名
 mv OgsBackend orangeservers
 
