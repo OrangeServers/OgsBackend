@@ -9,11 +9,11 @@ orangeservers的后端项目，整体部署和展示文档在[OgsDocument](https
 
 ```shell
 # 该项目用到了python3环境，redis，mysql，nginx，需要提前安装
-# 下载后端服务压缩包
-wget http://58.135.83.162:19612/ogsbackend/v1.0/orangeservers_v1.0.tar.gz
+# 克隆OgsBackend安装包
+git clone https://github.com/OrangeServers/OgsBackend.git
+# 改名
+mv OgsBackend orangeservers
 
-# 解压orangeserver压缩包，导入数据文件
-tar -xf orangeservers_v1.0.tar.gz && cd orangeservers
 # 安装依赖库
 pip3 install -r requirements.txt
 # 你的数据库地址用户名和密码

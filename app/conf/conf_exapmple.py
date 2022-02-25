@@ -37,5 +37,6 @@ FILE_CONF = {
     'image_path': DEFAULT_DATA_DIR + '/img/',
     'file_path': DEFAULT_DATA_DIR + '/file/',
     'file_path2': DEFAULT_DATA_DIR + '/file',
-    'key_path': DEFAULT_DATA_DIR + '/key/'
+    'key_path': DEFAULT_DATA_DIR + '/key/',
+    'log_path': DEFAULT_DATA_DIR + '/log/'
 }
