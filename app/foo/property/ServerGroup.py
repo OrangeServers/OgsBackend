@@ -33,6 +33,11 @@ class ServerGroupList:
             auth_group = self.lt.auth_ls_list_que(que_auth_group)
             group_list = list(auth_group)
             return jsonify({'code': 0, 'group_name_list_msg': group_list})
+        except AttributeError:
+            return jsonify({"code": 0,
+                            "group_list_msg": '',
+                            "msg": "",
+                            "group_len_msg": 0})
         except IOError:
             return jsonify({'code': 201})
 
@@ -50,6 +55,11 @@ class ServerGroupList:
                             "group_list_msg": list_msg,
                             "msg": "",
                             "group_len_msg": len_msg})
+        except AttributeError:
+            return jsonify({"code": 0,
+                            "group_list_msg": '',
+                            "msg": "",
+                            "group_len_msg": 0})
         except IOError:
             return jsonify({"code": 201})
 

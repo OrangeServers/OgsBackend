@@ -88,6 +88,11 @@ class ServerList:
                             "host_list_msg": list_msg,
                             "msg": "",
                             "host_len_msg": len_msg})
+        except AttributeError:
+            return jsonify({"code": 0,
+                            "group_list_msg": '',
+                            "msg": "",
+                            "group_len_msg": 0})
         except IOError:
             return jsonify({'code': 201})
 
