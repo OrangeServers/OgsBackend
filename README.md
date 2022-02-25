@@ -1,9 +1,30 @@
 # OgsBackend
 
 ### 简介
-orangeservers的后端项目，整体部署和展示文档在[OgsDocument](https://github.com/OrangeServers/OgsDocument)
+
+orangeservers是一款开源的运维管理平台（开源堡垒机）
+
+该项目是orangeserver v1.0的官方文档，安装，使用，部署文档将集中在此，项目的部分还在开发中
+
+该项目orangeservers的后端项目，整体部署和展示文档在[OgsDocument](https://github.com/OrangeServers/OgsDocument)
 
 项目使用python3+flask编写
+
+### 功能概述
+
+- 注册
+- 登录
+- 资产管理
+- 用户管理
+- 批量命令
+- 批量脚本（目前只支持shell）
+- web终端
+- 容器管理（还在开发中，暂无功能）
+- 日志审计
+- 权限管理
+- 定时任务（可批量）
+- 文件传输（暂时只实现文件上传到后端服务器，文件上传到资产机器还在开发中）
+- 系统设置（功能较少，后续完善）
 
 ### 部署
 
