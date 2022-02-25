@@ -28,20 +28,15 @@ class AppInit:
                 sys.exit(2)
         self.Log.logger.info('check connection redis mysql is ok!')
         if os.path.exists(DEFAULT_DATA_DIR):
-            if not os.path.exists(FILE_CONF['image_path']):
-                os.mkdir(FILE_CONF['image_path'])
-                self.Log.logger.info('mkdir is image_path')
-            if not os.path.exists(FILE_CONF['file_path']):
-                os.mkdir(FILE_CONF['file_path'])
-                self.Log.logger.info('mkdir is file_path')
-            if not os.path.exists(FILE_CONF['key_path']):
-                os.mkdir(FILE_CONF['key_path'])
-                self.Log.logger.info('mkdir is key_path')
+            for i in FILE_CONF.values():
+                if not os.path.exists(i):
+                    os.mkdir(i)
+                    self.Log.logger.info('mkdir is %s' % i)
         else:
             os.mkdir(DEFAULT_DATA_DIR)
-            os.mkdir(FILE_CONF['image_path'])
-            os.mkdir(FILE_CONF['file_path'])
-            os.mkdir(FILE_CONF['key_path'])
+            for i in FILE_CONF.values():
+                if not os.path.exists(i):
+                    os.mkdir(i)
             self.Log.logger.info('mkdir is data and subdirectory......')
 
     def app_status(self):
