@@ -6,7 +6,7 @@ orangeservers是一款开源的运维管理平台（开源堡垒机）
 
 该项目是orangeserver v1.0的官方文档，安装，使用，部署文档将集中在此，项目的部分还在开发中
 
-该项目orangeservers的后端项目，整体部署和展示文档在[OgsDocument](https://github.com/OrangeServers/OgsDocument)
+该项目orangeservers的后端项目，整体部署和展示文档在[OgsDocument](https://github.com/OrangeServers/OgsDocument)     [文档gitee地址](https://gitee.com/orangeservers/OgsDocument)
 
 项目使用python3+flask编写
 
@@ -28,7 +28,7 @@ orangeservers是一款开源的运维管理平台（开源堡垒机）
 
 ### 部署
 
-查看不了图片或者克隆慢可以去gitee的仓库，[这是地址](https://gitee.com/xuwei777/OgsBackend)
+查看不了图片或者克隆慢可以去gitee的仓库，[这是地址](https://gitee.com/orangeservers/OgsBackend)
 
 ```shell
 # 该项目用到了python3环境，redis，mysql，nginx，需要提前安装
